@@ -1,4 +1,4 @@
-polars
 yfinance
 rapidfuzz
 tqdm
+pandas

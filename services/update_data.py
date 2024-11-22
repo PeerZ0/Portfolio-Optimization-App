@@ -1,5 +1,5 @@
 import requests
-import polars as pl
+import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
@@ -13,9 +13,6 @@ def fetch_data_from_api(url):
         response = requests.get(url)
         data = response.json()
         print("Data fetched from API")
-
-        # The issue is that we're assuming a specific data structure without validating it first
-        # Let's add more detailed error handling and logging
         
         if not isinstance(data, dict):
             print(f"Unexpected response format from {url}. Expected dictionary, got {type(data)}")
@@ -65,7 +62,7 @@ def get_wikipedia_tickers():
             response = requests.get(url)
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'html.parser')
-                tables = pl.read_html(response.text)
+                tables = pd.read_html(response.text)
 
                 # Each Wikipedia page may have different structures, so adjust accordingly
                 for table in tables:
@@ -100,14 +97,14 @@ def update_data():
 
         # Fetch stock data from NASDAQ API
         print("Fetching NASDAQ stock data...")
-        nasdaq_stocks = fetch_data_from_api(nasdaq_url)
+        # nasdaq_stocks = fetch_data_from_api(nasdaq_url)
 
         # Fetch Wikipedia tickers
         print("Fetching tickers from Wikipedia...")
         wikipedia_tickers = get_wikipedia_tickers()
 
         # Combine NASDAQ and Wikipedia data
-        all_stocks = nasdaq_stocks + wikipedia_tickers
+        all_stocks = wikipedia_tickers
 
         # Clean and prepare the data for use with Polars
         # Extract relevant information (Symbol, Name, Sector, etc.)
@@ -125,10 +122,10 @@ def update_data():
             })
 
         # Convert to a Polars DataFrame and save as CSV
-        df = pl.DataFrame(stock_data)
+        df = pd.DataFrame(stock_data)
 
         # Save the data to a CSV file
-        df.write_csv('static/stocks_data.csv')
+        df.to_csv('static/stocks_data.csv', index=False)
 
         print("Data successfully saved to 'stocks_data.csv'.")
     else:
