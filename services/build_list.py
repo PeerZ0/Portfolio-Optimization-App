@@ -3,10 +3,6 @@ from typing import List, Dict
 import pandas as pd
 from models.user import User
 
-def is_penny_stock(price: float) -> bool:
-    """Check if stock price classifies as penny stock (< $5)"""
-    return price < 5.0 if pd.notna(price) else False
-
 def filter_by_user_preferences(df: pd.DataFrame, user: User) -> pd.DataFrame:
     """Filter DataFrame based on user preferences"""
     # Remove sectors user wants to avoid
@@ -16,8 +12,8 @@ def filter_by_user_preferences(df: pd.DataFrame, user: User) -> pd.DataFrame:
     # Filter by risk tolerance with ±2 range
     if user.data["risk_tolerance"]:
         risk_tolerance = user.data["risk_tolerance"]
-        min_risk = max(1, risk_tolerance - 1)
-        max_risk = min(10, risk_tolerance + 1)
+        min_risk = max(1, risk_tolerance)
+        max_risk = min(10, risk_tolerance)
         df = df[(df['overallRisk'] >= min_risk) & (df['overallRisk'] <= max_risk)]
         
     return df
@@ -54,7 +50,7 @@ def build_available_tickers(user: User) -> List[Dict]:
         if len(result) == 0:
             print("Warning: No tickers match your criteria. Consider relaxing some constraints.")
         
-        # return lits only containing tickers
+        # return list only containing tickers
         result = [ticker['Ticker'] for ticker in result]
         return result
         

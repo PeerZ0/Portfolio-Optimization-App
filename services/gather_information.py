@@ -76,22 +76,24 @@ def get_sector_preferences(user, df) -> None:
         user.data["sectors_to_avoid"] = []
 
 def get_portfolio_constraints(user) -> None:
-    while True:
-        try:
-            max_equity = float(get_input("What is the maximum you want to invest in a single equity? (in percent): ",
-                                        lambda x: x.replace('.', '', 1).isdigit() and validate_percentage(float(x)), "Max equity investment must be between 0 and 100."))
-            min_equity = float(get_input("What is the minimum you want to invest in a single equity? (in percent): ",
-                                        lambda x: x.replace('.', '', 1).isdigit() and validate_percentage(float(x)), "Min equity investment must be between 0 and 100."))
+    set_constraints = get_input("Do you want to set minimum and maximum weights for individual equities? (yes/no): ", lambda x: x.lower() in ["yes", "no"], "Please enter 'yes' or 'no'.").lower()
+    if set_constraints == "yes":
+        while True:
+            try:
+                max_equity = float(get_input("What is the maximum you want to invest in a single equity? (in percent): ",
+                                            lambda x: x.replace('.', '', 1).isdigit() and validate_percentage(float(x)), "Max equity investment must be between 0 and 100."))
+                min_equity = float(get_input("What is the minimum you want to invest in a single equity? (in percent): ",
+                                            lambda x: x.replace('.', '', 1).isdigit() and validate_percentage(float(x)), "Min equity investment must be between 0 and 100."))
 
-            if min_equity >= max_equity:
-                raise ValueError("Minimum investment must be less than maximum investment.")
+                if min_equity >= max_equity:
+                    raise ValueError("Minimum investment must be less than maximum investment.")
 
-            user.data["max_equity_investment"] = max_equity
-            user.data["min_equity_investment"] = min_equity
-            break
+                user.data["max_equity_investment"] = max_equity
+                user.data["min_equity_investment"] = min_equity
+                break
 
-        except ValueError as e:
-            print(f"Error: {e}. Please enter valid percentages for maximum and minimum equity investments.")
+            except ValueError as e:
+                print(f"Error: {e}. Please enter valid percentages for maximum and minimum equity investments.")
 
 def gather_information(user) -> None:
     try:

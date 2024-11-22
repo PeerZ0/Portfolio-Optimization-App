@@ -223,7 +223,7 @@ def update_data():
                 ticker_data = fetch_ticker_data(wikipedia_tickers)
                 df = pd.DataFrame(ticker_data)
                 df = df.dropna(subset=['longName']) 
-                df = df[df['sector'] != 'Unknown']               
+                df = df.dropna(subset=['sector']) 
 
                 # Save raw data to CSV
                 df.to_csv('static/ticker_data.csv', index=False)

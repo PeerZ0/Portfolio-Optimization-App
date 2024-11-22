@@ -10,10 +10,8 @@ class User:
             "sectors_to_avoid": [],
             "risk_tolerance": 5,
             "invest_in_penny_stocks": False,
-            "max_equity_investment": 0,
-            "min_equity_investment": 0,
-            "existing_assets_info": [],
-            "asset_expectations": []
+            "max_equity_investment": None,
+            "min_equity_investment": None,
         }
     
     def display_information(self):
