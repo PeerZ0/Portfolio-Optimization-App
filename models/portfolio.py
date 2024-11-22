@@ -119,3 +119,7 @@ class Portfolio:
         
         return pd.Series(adjusted_returns, index=self.tickers)
 
+
+if __name__ == "__main__":
+    cl = Portfolio(['AAPL', 'MSFT', 'GOOGL'], '2020-01-01', '2021-01-01')
+    print(cl.min_variance_portfolio())
