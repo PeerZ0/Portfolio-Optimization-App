@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 import yfinance as yf
+from models.user import User
 
 class Portfolio:
-    def __init__(self, tickers: list, start_date: str, end_date: str, max_weight: float = 1.0, min_weight: float = 0.0):
+    def __init__(self, tickers: list, start_date: str, end_date: str, min_weight: float = 0.0):
         """
         Initialize the MinVariancePortfolio with stock ticker data and calculate mean returns and covariance matrix.
         
@@ -13,6 +14,7 @@ class Portfolio:
         start_date (str): The start date for fetching historical data in 'YYYY-MM-DD' format.
         end_date (str): The end date for fetching historical data in 'YYYY-MM-DD' format.
         """
+        self.user = User()
         self.tickers = tickers
         self.start_date = start_date
         self.end_date = end_date
@@ -20,7 +22,7 @@ class Portfolio:
         self.returns = self.calculate_returns()
         self.mean_returns = self.returns.mean()
         self.cov_matrix = self.returns.cov()
-        self.bounds = tuple((0, max_weight) for _ in range(len(tickers)))
+        self.bounds = tuple((self.user.data['min_equity_investment'], self.user.data['max_equity_investment']) for _ in range(len(tickers)))
         self.constraints = [{'type': 'eq', 'fun': lambda x: np.sum(x) - 1}, {'type': 'ineq', 'fun': lambda x: np.sum(x) - len(self.tickers) * min_weight}]
 
     def _get_data(self):
@@ -119,3 +121,7 @@ class Portfolio:
         
         return pd.Series(adjusted_returns, index=self.tickers)
 
+
+if __name__ == "__main__":
+    cl = Portfolio(['AAPL', 'MSFT', 'GOOGL'], '2020-02-01', '2023-01-01', 0.2)
+    print(cl.bounds)
