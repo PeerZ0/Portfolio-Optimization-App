@@ -207,30 +207,37 @@ def update_data():
     Fetches stock symbols and company names using Wikipedia indices, then stores it in CSV and HTML files.
     """
     try:
-        user_input = input("Do you want to update the data? (yes/no/static): ").strip().lower()
-        
-        if user_input == "static":
-            static_data()
+        while True:
+            user_input = input("Do you want to update the data? (yes/no/static): ").strip().lower()
+            
+            if user_input == "static":
+                static_data()
+                break
                             
-        elif user_input == "yes":
-            # Create static directory if it doesn't exist
-            os.makedirs('static', exist_ok=True)
+            elif user_input == "yes":
+                os.makedirs('static', exist_ok=True)
 
-            # Fetch and process data
-            print("Fetching tickers from Wikipedia...")
-            wikipedia_tickers = get_wikipedia_tickers()
-            ticker_data = fetch_ticker_data(wikipedia_tickers)
-            df = pd.DataFrame(ticker_data)
-            df = df.dropna(subset=['longName'])
+                # Fetch and process data
+                print("Fetching tickers from Wikipedia...")
+                wikipedia_tickers = get_wikipedia_tickers()
+                ticker_data = fetch_ticker_data(wikipedia_tickers)
+                df = pd.DataFrame(ticker_data)
+                df = df.dropna(subset=['longName']) 
+                df = df[df['sector'] != 'Unknown']               
 
-            # Save raw data to CSV
-            df.to_csv('static/ticker_data.csv', index=False)
-            print("Data successfully saved to 'ticker_data.csv'")
+                # Save raw data to CSV
+                df.to_csv('static/ticker_data.csv', index=False)
+                print("Data successfully saved to 'ticker_data.csv'")
 
-            # Generate static HTML files
-            static_data()            
-        else:
-            pass
+                # Generate static HTML files
+                static_data()
+                break
+
+            elif user_input == "no":
+                break
+
+            else:
+                print("Invalid input. Please enter 'yes', 'no', or 'static'.")
             
     except Exception as e:
         print(f"An error occurred: {str(e)}")

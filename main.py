@@ -9,6 +9,7 @@ def main():
     update_data()
     gather_information(user)
     available_tickers = build_available_tickers(user)
+    print(f"Available tickers: {available_tickers}")
     portfolio = Portfolio(available_tickers)
     
 if __name__ == "__main__":

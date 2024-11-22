@@ -8,7 +8,7 @@ class User:
             "age": None,
             "preferred_stocks": [],
             "sectors_to_avoid": [],
-            "risk_tolerance": 0,
+            "risk_tolerance": 5,
             "invest_in_penny_stocks": False,
             "max_equity_investment": 0,
             "min_equity_investment": 0,
