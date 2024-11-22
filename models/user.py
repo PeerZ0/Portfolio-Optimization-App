@@ -16,9 +16,6 @@ class User:
             "asset_expectations": []
         }
     
-    def optimize_portfolio(self):
-        pass
-
     def display_information(self):
         print("\nPortfolio Information Collected:")
         for key, value in self.data.items():
