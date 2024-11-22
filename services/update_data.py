@@ -230,7 +230,7 @@ def update_data():
             # Generate static HTML files
             static_data()            
         else:
-            print("No updates performed.")
+            pass
             
     except Exception as e:
         print(f"An error occurred: {str(e)}")
