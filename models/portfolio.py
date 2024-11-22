@@ -118,8 +118,3 @@ class Portfolio:
         adjusted_returns = self.mean_returns + np.dot(np.dot(tau * self.cov_matrix, P.T), np.dot(M_inverse, (Q - np.dot(P, pi))))
         
         return pd.Series(adjusted_returns, index=self.tickers)
-
-
-if __name__ == "__main__":
-    cl = Portfolio(['AAPL', 'MSFT', 'GOOGL'], '2020-01-01', '2021-01-01')
-    print(cl.min_variance_portfolio())
