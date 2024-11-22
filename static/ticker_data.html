@@ -1,0 +1,3976 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Stock List</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                margin: 2rem;
+                background-color: #f5f5f5;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background-color: white;
+                padding: 2rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 1rem 0;
+            }
+            .table th, .table td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            .table th {
+                background-color: #f8f9fa;
+                font-weight: 600;
+            }
+            .table-striped tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+            .table tr:hover {
+                background-color: #f2f2f2;
+            }
+            .metadata {
+                color: #666;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+            .search {
+                width: 100%;
+                padding: 8px;
+                margin: 1rem 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+        </style>
+        <script>
+            function searchTable(inputId, tableId) {
+                const input = document.getElementById(inputId);
+                const filter = input.value.toUpperCase();
+                const table = document.getElementById(tableId);
+                const rows = table.getElementsByTagName('tr');
+
+                for (let i = 1; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let found = false;
+                    for (let j = 0; j < cells.length; j++) {
+                        const cell = cells[j];
+                        if (cell) {
+                            const text = cell.textContent || cell.innerText;
+                            if (text.toUpperCase().indexOf(filter) > -1) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    rows[i].style.display = found ? '' : 'none';
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="metadata">
+                Last updated: 2024-11-22 15:51:54
+            </div>
+            
+            <h1>Stock List</h1>
+            <input type="text" id="stockSearch" class="search" 
+                    onkeyup="searchTable('stockSearch', 'stockTable')" 
+                    placeholder="Search for stocks...">
+            <table border="1" class="dataframe table table-striped" id="stockTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Ticker</th>
+      <th>longName</th>
+      <th>sector</th>
+      <th>marketCap</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ARE</td>
+      <td>Alexandria Real Estate Equities, Inc.</td>
+      <td>Real Estate</td>
+      <td>18,505,547,776</td>
+    </tr>
+    <tr>
+      <td>COST</td>
+      <td>Costco Wholesale Corporation</td>
+      <td>Consumer Defensive</td>
+      <td>423,423,672,320</td>
+    </tr>
+    <tr>
+      <td>LYB</td>
+      <td>LyondellBasell Industries N.V.</td>
+      <td>Basic Materials</td>
+      <td>26,889,879,552</td>
+    </tr>
+    <tr>
+      <td>ETR</td>
+      <td>Entergy Corporation</td>
+      <td>Utilities</td>
+      <td>32,493,533,184</td>
+    </tr>
+    <tr>
+      <td>MC.PA</td>
+      <td>LVMH Moët Hennessy - Louis Vuitton, Société Européenne</td>
+      <td>Consumer Cyclical</td>
+      <td>287,145,033,728</td>
+    </tr>
+    <tr>
+      <td>YUM</td>
+      <td>Yum! Brands, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>37,457,043,456</td>
+    </tr>
+    <tr>
+      <td>ABNB</td>
+      <td>Airbnb, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>83,257,106,432</td>
+    </tr>
+    <tr>
+      <td>IR</td>
+      <td>Ingersoll Rand Inc.</td>
+      <td>Industrials</td>
+      <td>41,526,358,016</td>
+    </tr>
+    <tr>
+      <td>DLR</td>
+      <td>Digital Realty Trust, Inc.</td>
+      <td>Real Estate</td>
+      <td>63,351,480,320</td>
+    </tr>
+    <tr>
+      <td>LAND</td>
+      <td>Gladstone Land Corporation</td>
+      <td>Real Estate</td>
+      <td>427,703,136</td>
+    </tr>
+    <tr>
+      <td>KR</td>
+      <td>The Kroger Co.</td>
+      <td>Consumer Defensive</td>
+      <td>42,381,811,712</td>
+    </tr>
+    <tr>
+      <td>STE</td>
+      <td>STERIS plc</td>
+      <td>Healthcare</td>
+      <td>21,298,073,600</td>
+    </tr>
+    <tr>
+      <td>NXT</td>
+      <td>Nextracker Inc.</td>
+      <td>Technology</td>
+      <td>5,514,891,776</td>
+    </tr>
+    <tr>
+      <td>SBAC</td>
+      <td>SBA Communications Corporation</td>
+      <td>Real Estate</td>
+      <td>23,593,771,008</td>
+    </tr>
+    <tr>
+      <td>GEN</td>
+      <td>Gen Digital Inc.</td>
+      <td>Technology</td>
+      <td>18,369,071,104</td>
+    </tr>
+    <tr>
+      <td>ON</td>
+      <td>ON Semiconductor Corporation</td>
+      <td>Technology</td>
+      <td>29,154,320,384</td>
+    </tr>
+    <tr>
+      <td>LULU</td>
+      <td>Lululemon Athletica Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>38,691,946,496</td>
+    </tr>
+    <tr>
+      <td>VICI</td>
+      <td>VICI Properties Inc.</td>
+      <td>Real Estate</td>
+      <td>34,123,481,088</td>
+    </tr>
+    <tr>
+      <td>CRL</td>
+      <td>Charles River Laboratories International, Inc.</td>
+      <td>Healthcare</td>
+      <td>9,930,138,624</td>
+    </tr>
+    <tr>
+      <td>BALL</td>
+      <td>Ball Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>18,153,252,864</td>
+    </tr>
+    <tr>
+      <td>DTG.DE</td>
+      <td>Daimler Truck Holding AG</td>
+      <td>Industrials</td>
+      <td>28,230,490,112</td>
+    </tr>
+    <tr>
+      <td>GM</td>
+      <td>General Motors Company</td>
+      <td>Consumer Cyclical</td>
+      <td>61,225,730,048</td>
+    </tr>
+    <tr>
+      <td>LW</td>
+      <td>Lamb Weston Holdings, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>10,944,396,288</td>
+    </tr>
+    <tr>
+      <td>MRK</td>
+      <td>Merck &amp; Co., Inc.</td>
+      <td>Healthcare</td>
+      <td>252,609,839,104</td>
+    </tr>
+    <tr>
+      <td>APH</td>
+      <td>Amphenol Corporation</td>
+      <td>Technology</td>
+      <td>88,298,872,832</td>
+    </tr>
+    <tr>
+      <td>JNPR</td>
+      <td>Juniper Networks, Inc.</td>
+      <td>Technology</td>
+      <td>11,730,483,200</td>
+    </tr>
+    <tr>
+      <td>QRVO</td>
+      <td>Qorvo, Inc.</td>
+      <td>Technology</td>
+      <td>6,415,527,424</td>
+    </tr>
+    <tr>
+      <td>AXP</td>
+      <td>American Express Company</td>
+      <td>Financial Services</td>
+      <td>206,402,387,968</td>
+    </tr>
+    <tr>
+      <td>ALB</td>
+      <td>Albemarle Corporation</td>
+      <td>Basic Materials</td>
+      <td>12,809,509,888</td>
+    </tr>
+    <tr>
+      <td>AAPL</td>
+      <td>Apple Inc.</td>
+      <td>Technology</td>
+      <td>3,454,262,575,104</td>
+    </tr>
+    <tr>
+      <td>SW</td>
+      <td>Smurfit Westrock Plc</td>
+      <td>Consumer Cyclical</td>
+      <td>29,321,193,472</td>
+    </tr>
+    <tr>
+      <td>PANW</td>
+      <td>Palo Alto Networks, Inc.</td>
+      <td>Technology</td>
+      <td>130,485,370,880</td>
+    </tr>
+    <tr>
+      <td>CNA</td>
+      <td>CNA Financial Corporation</td>
+      <td>Financial Services</td>
+      <td>13,333,551,104</td>
+    </tr>
+    <tr>
+      <td>VTRS</td>
+      <td>Viatris Inc.</td>
+      <td>Healthcare</td>
+      <td>15,815,067,648</td>
+    </tr>
+    <tr>
+      <td>CSX</td>
+      <td>CSX Corporation</td>
+      <td>Industrials</td>
+      <td>68,150,362,112</td>
+    </tr>
+    <tr>
+      <td>FI</td>
+      <td>Fiserv, Inc.</td>
+      <td>Technology</td>
+      <td>123,688,673,280</td>
+    </tr>
+    <tr>
+      <td>META</td>
+      <td>Meta Platforms, Inc.</td>
+      <td>Communication Services</td>
+      <td>1,421,515,161,600</td>
+    </tr>
+    <tr>
+      <td>ZURN.SW</td>
+      <td>Zurich Insurance Group AG</td>
+      <td>Financial Services</td>
+      <td>78,762,532,864</td>
+    </tr>
+    <tr>
+      <td>LHX</td>
+      <td>L3Harris Technologies, Inc.</td>
+      <td>Industrials</td>
+      <td>46,772,129,792</td>
+    </tr>
+    <tr>
+      <td>PPG</td>
+      <td>PPG Industries, Inc.</td>
+      <td>Basic Materials</td>
+      <td>28,461,760,512</td>
+    </tr>
+    <tr>
+      <td>ABI.BR</td>
+      <td>Anheuser-Busch InBev SA/NV</td>
+      <td>Consumer Defensive</td>
+      <td>103,135,076,352</td>
+    </tr>
+    <tr>
+      <td>CFR.SW</td>
+      <td>Compagnie Financière Richemont SA</td>
+      <td>Consumer Cyclical</td>
+      <td>68,953,055,232</td>
+    </tr>
+    <tr>
+      <td>DELL</td>
+      <td>Dell Technologies Inc.</td>
+      <td>Technology</td>
+      <td>97,521,287,168</td>
+    </tr>
+    <tr>
+      <td>AES</td>
+      <td>The AES Corporation</td>
+      <td>Utilities</td>
+      <td>9,421,108,224</td>
+    </tr>
+    <tr>
+      <td>NVDA</td>
+      <td>NVIDIA Corporation</td>
+      <td>Technology</td>
+      <td>3,591,948,206,080</td>
+    </tr>
+    <tr>
+      <td>HPQ</td>
+      <td>HP Inc.</td>
+      <td>Technology</td>
+      <td>36,522,799,104</td>
+    </tr>
+    <tr>
+      <td>LLY</td>
+      <td>Eli Lilly and Company</td>
+      <td>Healthcare</td>
+      <td>711,911,014,400</td>
+    </tr>
+    <tr>
+      <td>ACN</td>
+      <td>Accenture plc</td>
+      <td>Technology</td>
+      <td>225,604,255,744</td>
+    </tr>
+    <tr>
+      <td>FFIV</td>
+      <td>F5, Inc.</td>
+      <td>Technology</td>
+      <td>14,319,033,344</td>
+    </tr>
+    <tr>
+      <td>MKC</td>
+      <td>McCormick &amp; Company, Incorporated</td>
+      <td>Consumer Defensive</td>
+      <td>20,921,311,232</td>
+    </tr>
+    <tr>
+      <td>GOOGL</td>
+      <td>Alphabet Inc.</td>
+      <td>Communication Services</td>
+      <td>2,060,876,906,496</td>
+    </tr>
+    <tr>
+      <td>VRSK</td>
+      <td>Verisk Analytics, Inc.</td>
+      <td>Industrials</td>
+      <td>40,606,638,080</td>
+    </tr>
+    <tr>
+      <td>USB</td>
+      <td>U.S. Bancorp</td>
+      <td>Financial Services</td>
+      <td>80,169,934,848</td>
+    </tr>
+    <tr>
+      <td>ADYEN.AS</td>
+      <td>Adyen N.V.</td>
+      <td>Technology</td>
+      <td>40,461,692,928</td>
+    </tr>
+    <tr>
+      <td>CRM</td>
+      <td>Salesforce, Inc.</td>
+      <td>Technology</td>
+      <td>321,005,682,688</td>
+    </tr>
+    <tr>
+      <td>MBG.DE</td>
+      <td>Mercedes-Benz Group AG</td>
+      <td>Consumer Cyclical</td>
+      <td>55,213,932,544</td>
+    </tr>
+    <tr>
+      <td>KLAC</td>
+      <td>KLA Corporation</td>
+      <td>Technology</td>
+      <td>84,691,476,480</td>
+    </tr>
+    <tr>
+      <td>MRO</td>
+      <td>Marathon Oil Corporation</td>
+      <td>Energy</td>
+      <td>15,971,154,944</td>
+    </tr>
+    <tr>
+      <td>RACE.MI</td>
+      <td>Ferrari N.V.</td>
+      <td>Consumer Cyclical</td>
+      <td>73,892,593,664</td>
+    </tr>
+    <tr>
+      <td>PGR</td>
+      <td>The Progressive Corporation</td>
+      <td>Financial Services</td>
+      <td>154,326,302,720</td>
+    </tr>
+    <tr>
+      <td>CSGP</td>
+      <td>CoStar Group, Inc.</td>
+      <td>Real Estate</td>
+      <td>31,566,919,680</td>
+    </tr>
+    <tr>
+      <td>MMC</td>
+      <td>Marsh &amp; McLennan Companies, Inc.</td>
+      <td>Financial Services</td>
+      <td>110,217,592,832</td>
+    </tr>
+    <tr>
+      <td>SGO.PA</td>
+      <td>Compagnie de Saint-Gobain S.A.</td>
+      <td>Industrials</td>
+      <td>43,681,525,760</td>
+    </tr>
+    <tr>
+      <td>WFC</td>
+      <td>Wells Fargo &amp; Company</td>
+      <td>Financial Services</td>
+      <td>249,145,737,216</td>
+    </tr>
+    <tr>
+      <td>CAG</td>
+      <td>Conagra Brands, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>12,967,506,944</td>
+    </tr>
+    <tr>
+      <td>SNPS</td>
+      <td>Synopsys, Inc.</td>
+      <td>Technology</td>
+      <td>85,707,399,168</td>
+    </tr>
+    <tr>
+      <td>TGT</td>
+      <td>Target Corporation</td>
+      <td>Consumer Defensive</td>
+      <td>55,839,596,544</td>
+    </tr>
+    <tr>
+      <td>MKTX</td>
+      <td>MarketAxess Holdings Inc.</td>
+      <td>Financial Services</td>
+      <td>9,814,832,128</td>
+    </tr>
+    <tr>
+      <td>SLHN.SW</td>
+      <td>Swiss Life Holding AG</td>
+      <td>Financial Services</td>
+      <td>20,160,288,768</td>
+    </tr>
+    <tr>
+      <td>LIN</td>
+      <td>Linde plc</td>
+      <td>Basic Materials</td>
+      <td>216,685,232,128</td>
+    </tr>
+    <tr>
+      <td>TMUS</td>
+      <td>T-Mobile US, Inc.</td>
+      <td>Communication Services</td>
+      <td>274,548,719,616</td>
+    </tr>
+    <tr>
+      <td>AMD</td>
+      <td>Advanced Micro Devices, Inc.</td>
+      <td>Technology</td>
+      <td>223,120,146,432</td>
+    </tr>
+    <tr>
+      <td>NUE</td>
+      <td>Nucor Corporation</td>
+      <td>Basic Materials</td>
+      <td>35,219,603,456</td>
+    </tr>
+    <tr>
+      <td>SJM</td>
+      <td>The J. M. Smucker Company</td>
+      <td>Consumer Defensive</td>
+      <td>12,118,579,200</td>
+    </tr>
+    <tr>
+      <td>XOM</td>
+      <td>Exxon Mobil Corporation</td>
+      <td>Energy</td>
+      <td>535,893,311,488</td>
+    </tr>
+    <tr>
+      <td>GS</td>
+      <td>The Goldman Sachs Group, Inc.</td>
+      <td>Financial Services</td>
+      <td>187,124,891,648</td>
+    </tr>
+    <tr>
+      <td>EIX</td>
+      <td>Edison International</td>
+      <td>Utilities</td>
+      <td>33,716,893,696</td>
+    </tr>
+    <tr>
+      <td>HUM</td>
+      <td>Humana Inc.</td>
+      <td>Healthcare</td>
+      <td>35,606,736,896</td>
+    </tr>
+    <tr>
+      <td>GEBN.SW</td>
+      <td>Geberit AG</td>
+      <td>Industrials</td>
+      <td>17,276,858,368</td>
+    </tr>
+    <tr>
+      <td>CTRA</td>
+      <td>Coterra Energy Inc.</td>
+      <td>Energy</td>
+      <td>20,212,660,224</td>
+    </tr>
+    <tr>
+      <td>WMB</td>
+      <td>The Williams Companies, Inc.</td>
+      <td>Energy</td>
+      <td>72,823,660,544</td>
+    </tr>
+    <tr>
+      <td>MSI</td>
+      <td>Motorola Solutions, Inc.</td>
+      <td>Technology</td>
+      <td>82,698,149,888</td>
+    </tr>
+    <tr>
+      <td>ENPH</td>
+      <td>Enphase Energy, Inc.</td>
+      <td>Technology</td>
+      <td>8,588,752,384</td>
+    </tr>
+    <tr>
+      <td>AD.AS</td>
+      <td>Koninklijke Ahold Delhaize N.V.</td>
+      <td>Consumer Defensive</td>
+      <td>29,977,116,672</td>
+    </tr>
+    <tr>
+      <td>III</td>
+      <td>Information Services Group, Inc.</td>
+      <td>Technology</td>
+      <td>163,656,128</td>
+    </tr>
+    <tr>
+      <td>IDXX</td>
+      <td>IDEXX Laboratories, Inc.</td>
+      <td>Healthcare</td>
+      <td>34,272,841,728</td>
+    </tr>
+    <tr>
+      <td>AMT</td>
+      <td>American Tower Corporation</td>
+      <td>Real Estate</td>
+      <td>94,770,880,512</td>
+    </tr>
+    <tr>
+      <td>KMI</td>
+      <td>Kinder Morgan, Inc.</td>
+      <td>Energy</td>
+      <td>63,405,604,864</td>
+    </tr>
+    <tr>
+      <td>KDP</td>
+      <td>Keurig Dr Pepper Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>43,731,951,616</td>
+    </tr>
+    <tr>
+      <td>HSIC</td>
+      <td>Henry Schein, Inc.</td>
+      <td>Healthcare</td>
+      <td>9,197,716,480</td>
+    </tr>
+    <tr>
+      <td>EXPD</td>
+      <td>Expeditors International of Washington, Inc.</td>
+      <td>Industrials</td>
+      <td>16,895,102,976</td>
+    </tr>
+    <tr>
+      <td>GOOG</td>
+      <td>Alphabet Inc.</td>
+      <td>Communication Services</td>
+      <td>2,060,869,435,392</td>
+    </tr>
+    <tr>
+      <td>LNT</td>
+      <td>Alliant Energy Corporation</td>
+      <td>Utilities</td>
+      <td>16,217,057,280</td>
+    </tr>
+    <tr>
+      <td>CF</td>
+      <td>CF Industries Holdings, Inc.</td>
+      <td>Basic Materials</td>
+      <td>15,773,172,736</td>
+    </tr>
+    <tr>
+      <td>RL</td>
+      <td>Ralph Lauren Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>12,861,799,424</td>
+    </tr>
+    <tr>
+      <td>HLT</td>
+      <td>Hilton Worldwide Holdings Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>61,391,118,336</td>
+    </tr>
+    <tr>
+      <td>AMGN</td>
+      <td>Amgen Inc.</td>
+      <td>Healthcare</td>
+      <td>155,830,812,672</td>
+    </tr>
+    <tr>
+      <td>BEI.DE</td>
+      <td>Beiersdorf Aktiengesellschaft</td>
+      <td>Consumer Defensive</td>
+      <td>27,509,174,272</td>
+    </tr>
+    <tr>
+      <td>AWK</td>
+      <td>American Water Works Company, Inc.</td>
+      <td>Utilities</td>
+      <td>27,049,336,832</td>
+    </tr>
+    <tr>
+      <td>CON.DE</td>
+      <td>Continental Aktiengesellschaft</td>
+      <td>Consumer Cyclical</td>
+      <td>12,338,837,504</td>
+    </tr>
+    <tr>
+      <td>EG</td>
+      <td>Everest Group, Ltd.</td>
+      <td>Financial Services</td>
+      <td>16,553,207,808</td>
+    </tr>
+    <tr>
+      <td>APD</td>
+      <td>Air Products and Chemicals, Inc.</td>
+      <td>Basic Materials</td>
+      <td>73,136,013,312</td>
+    </tr>
+    <tr>
+      <td>ENR.DE</td>
+      <td>Siemens Energy AG</td>
+      <td>Industrials</td>
+      <td>37,768,069,120</td>
+    </tr>
+    <tr>
+      <td>SBUX</td>
+      <td>Starbucks Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>113,448,017,920</td>
+    </tr>
+    <tr>
+      <td>AME</td>
+      <td>AMETEK, Inc.</td>
+      <td>Industrials</td>
+      <td>45,280,854,016</td>
+    </tr>
+    <tr>
+      <td>STT</td>
+      <td>State Street Corporation</td>
+      <td>Financial Services</td>
+      <td>28,242,167,808</td>
+    </tr>
+    <tr>
+      <td>LUV</td>
+      <td>Southwest Airlines Co.</td>
+      <td>Industrials</td>
+      <td>19,065,640,960</td>
+    </tr>
+    <tr>
+      <td>CHRW</td>
+      <td>C.H. Robinson Worldwide, Inc.</td>
+      <td>Industrials</td>
+      <td>12,829,970,432</td>
+    </tr>
+    <tr>
+      <td>AJG</td>
+      <td>Arthur J. Gallagher &amp; Co.</td>
+      <td>Financial Services</td>
+      <td>66,369,249,280</td>
+    </tr>
+    <tr>
+      <td>DAY</td>
+      <td>Dayforce Inc</td>
+      <td>Technology</td>
+      <td>12,410,989,568</td>
+    </tr>
+    <tr>
+      <td>IQV</td>
+      <td>IQVIA Holdings Inc.</td>
+      <td>Healthcare</td>
+      <td>35,864,399,872</td>
+    </tr>
+    <tr>
+      <td>BX</td>
+      <td>Blackstone Inc.</td>
+      <td>Financial Services</td>
+      <td>235,310,841,856</td>
+    </tr>
+    <tr>
+      <td>MUV2.DE</td>
+      <td>Münchener Rückversicherungs-Gesellschaft Aktiengesellschaft in München</td>
+      <td>Financial Services</td>
+      <td>64,472,317,952</td>
+    </tr>
+    <tr>
+      <td>HRL</td>
+      <td>Hormel Foods Corporation</td>
+      <td>Consumer Defensive</td>
+      <td>16,725,102,592</td>
+    </tr>
+    <tr>
+      <td>IEX</td>
+      <td>IDEX Corporation</td>
+      <td>Industrials</td>
+      <td>17,223,264,256</td>
+    </tr>
+    <tr>
+      <td>LKQ</td>
+      <td>LKQ Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>9,847,284,736</td>
+    </tr>
+    <tr>
+      <td>NSC</td>
+      <td>Norfolk Southern Corporation</td>
+      <td>Industrials</td>
+      <td>59,786,182,656</td>
+    </tr>
+    <tr>
+      <td>TSLA</td>
+      <td>Tesla, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>1,090,264,825,856</td>
+    </tr>
+    <tr>
+      <td>BLND</td>
+      <td>Blend Labs, Inc.</td>
+      <td>Technology</td>
+      <td>1,333,395,328</td>
+    </tr>
+    <tr>
+      <td>SCHW</td>
+      <td>The Charles Schwab Corporation</td>
+      <td>Financial Services</td>
+      <td>147,909,246,976</td>
+    </tr>
+    <tr>
+      <td>SPG</td>
+      <td>Simon Property Group, Inc.</td>
+      <td>Real Estate</td>
+      <td>68,260,990,976</td>
+    </tr>
+    <tr>
+      <td>UHS</td>
+      <td>Universal Health Services, Inc.</td>
+      <td>Healthcare</td>
+      <td>13,035,462,656</td>
+    </tr>
+    <tr>
+      <td>TFX</td>
+      <td>Teleflex Incorporated</td>
+      <td>Healthcare</td>
+      <td>8,854,027,264</td>
+    </tr>
+    <tr>
+      <td>MKS</td>
+      <td>Meet Kevin Select ETF</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>DHI</td>
+      <td>D.R. Horton, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>51,984,572,416</td>
+    </tr>
+    <tr>
+      <td>TRV</td>
+      <td>The Travelers Companies, Inc.</td>
+      <td>Financial Services</td>
+      <td>59,208,826,880</td>
+    </tr>
+    <tr>
+      <td>ENI.MI</td>
+      <td>Eni S.p.A.</td>
+      <td>Energy</td>
+      <td>43,089,297,408</td>
+    </tr>
+    <tr>
+      <td>EMN</td>
+      <td>Eastman Chemical Company</td>
+      <td>Basic Materials</td>
+      <td>12,008,586,240</td>
+    </tr>
+    <tr>
+      <td>CAH</td>
+      <td>Cardinal Health, Inc.</td>
+      <td>Healthcare</td>
+      <td>29,868,873,728</td>
+    </tr>
+    <tr>
+      <td>CB</td>
+      <td>Chubb Limited</td>
+      <td>Financial Services</td>
+      <td>114,927,263,744</td>
+    </tr>
+    <tr>
+      <td>DFS</td>
+      <td>Discover Financial Services</td>
+      <td>Financial Services</td>
+      <td>43,915,005,952</td>
+    </tr>
+    <tr>
+      <td>ICE</td>
+      <td>Intercontinental Exchange, Inc.</td>
+      <td>Financial Services</td>
+      <td>90,920,935,424</td>
+    </tr>
+    <tr>
+      <td>DTE</td>
+      <td>DTE Energy Company</td>
+      <td>Utilities</td>
+      <td>25,676,382,208</td>
+    </tr>
+    <tr>
+      <td>ADP</td>
+      <td>Automatic Data Processing, Inc.</td>
+      <td>Technology</td>
+      <td>124,099,182,592</td>
+    </tr>
+    <tr>
+      <td>ENEL.MI</td>
+      <td>Enel SpA</td>
+      <td>Utilities</td>
+      <td>67,660,103,680</td>
+    </tr>
+    <tr>
+      <td>CTSH</td>
+      <td>Cognizant Technology Solutions Corporation</td>
+      <td>Technology</td>
+      <td>39,100,682,240</td>
+    </tr>
+    <tr>
+      <td>DXCM</td>
+      <td>DexCom, Inc.</td>
+      <td>Healthcare</td>
+      <td>29,083,703,296</td>
+    </tr>
+    <tr>
+      <td>PFG</td>
+      <td>Principal Financial Group, Inc.</td>
+      <td>Financial Services</td>
+      <td>19,373,090,816</td>
+    </tr>
+    <tr>
+      <td>ES</td>
+      <td>Eversource Energy</td>
+      <td>Utilities</td>
+      <td>22,991,724,544</td>
+    </tr>
+    <tr>
+      <td>GDDY</td>
+      <td>GoDaddy Inc.</td>
+      <td>Technology</td>
+      <td>27,096,866,816</td>
+    </tr>
+    <tr>
+      <td>CHTR</td>
+      <td>Charter Communications, Inc.</td>
+      <td>Communication Services</td>
+      <td>54,575,906,816</td>
+    </tr>
+    <tr>
+      <td>KEY</td>
+      <td>KeyCorp</td>
+      <td>Financial Services</td>
+      <td>19,052,457,984</td>
+    </tr>
+    <tr>
+      <td>SAP.DE</td>
+      <td>SAP SE</td>
+      <td>Technology</td>
+      <td>261,820,907,520</td>
+    </tr>
+    <tr>
+      <td>FSLR</td>
+      <td>First Solar, Inc.</td>
+      <td>Technology</td>
+      <td>19,479,201,792</td>
+    </tr>
+    <tr>
+      <td>IT</td>
+      <td>Gartner, Inc.</td>
+      <td>Technology</td>
+      <td>40,051,216,384</td>
+    </tr>
+    <tr>
+      <td>ASML.AS</td>
+      <td>ASML Holding N.V.</td>
+      <td>Technology</td>
+      <td>250,743,652,352</td>
+    </tr>
+    <tr>
+      <td>BN.PA</td>
+      <td>Danone S.A.</td>
+      <td>Consumer Defensive</td>
+      <td>41,882,566,656</td>
+    </tr>
+    <tr>
+      <td>NOVN.SW</td>
+      <td>Novartis AG</td>
+      <td>Healthcare</td>
+      <td>185,352,323,072</td>
+    </tr>
+    <tr>
+      <td>EMR</td>
+      <td>Emerson Electric Co.</td>
+      <td>Industrials</td>
+      <td>73,139,560,448</td>
+    </tr>
+    <tr>
+      <td>NI</td>
+      <td>NiSource Inc.</td>
+      <td>Utilities</td>
+      <td>17,667,584,000</td>
+    </tr>
+    <tr>
+      <td>ELV</td>
+      <td>Elevance Health, Inc.</td>
+      <td>Healthcare</td>
+      <td>93,604,126,720</td>
+    </tr>
+    <tr>
+      <td>GSK</td>
+      <td>GSK plc</td>
+      <td>Healthcare</td>
+      <td>68,756,422,656</td>
+    </tr>
+    <tr>
+      <td>CCL</td>
+      <td>Carnival Corporation &amp; plc</td>
+      <td>Consumer Cyclical</td>
+      <td>34,015,897,600</td>
+    </tr>
+    <tr>
+      <td>CFG</td>
+      <td>Citizens Financial Group, Inc.</td>
+      <td>Financial Services</td>
+      <td>20,611,586,048</td>
+    </tr>
+    <tr>
+      <td>GIVN.SW</td>
+      <td>Givaudan SA</td>
+      <td>Basic Materials</td>
+      <td>36,489,818,112</td>
+    </tr>
+    <tr>
+      <td>J</td>
+      <td>Jacobs Solutions Inc.</td>
+      <td>Industrials</td>
+      <td>16,827,718,656</td>
+    </tr>
+    <tr>
+      <td>HWM</td>
+      <td>Howmet Aerospace Inc.</td>
+      <td>Industrials</td>
+      <td>47,524,413,440</td>
+    </tr>
+    <tr>
+      <td>SYF</td>
+      <td>Synchrony Financial</td>
+      <td>Financial Services</td>
+      <td>25,361,868,800</td>
+    </tr>
+    <tr>
+      <td>HNR1.DE</td>
+      <td>Hannover Rück SE</td>
+      <td>Financial Services</td>
+      <td>29,558,325,248</td>
+    </tr>
+    <tr>
+      <td>UTG</td>
+      <td>Reaves Utility Income Fund</td>
+      <td>Financial Services</td>
+      <td>2,807,341,568</td>
+    </tr>
+    <tr>
+      <td>FE</td>
+      <td>FirstEnergy Corp.</td>
+      <td>Utilities</td>
+      <td>24,320,577,536</td>
+    </tr>
+    <tr>
+      <td>INVH</td>
+      <td>Invitation Homes Inc.</td>
+      <td>Real Estate</td>
+      <td>20,718,336,000</td>
+    </tr>
+    <tr>
+      <td>RIO</td>
+      <td>Rio Tinto Group</td>
+      <td>Basic Materials</td>
+      <td>101,459,755,008</td>
+    </tr>
+    <tr>
+      <td>AEE</td>
+      <td>Ameren Corporation</td>
+      <td>Utilities</td>
+      <td>25,083,224,064</td>
+    </tr>
+    <tr>
+      <td>NEM</td>
+      <td>Newmont Corporation</td>
+      <td>Basic Materials</td>
+      <td>49,317,654,528</td>
+    </tr>
+    <tr>
+      <td>RF</td>
+      <td>Regions Financial Corporation</td>
+      <td>Financial Services</td>
+      <td>24,303,024,128</td>
+    </tr>
+    <tr>
+      <td>ZBRA</td>
+      <td>Zebra Technologies Corporation</td>
+      <td>Technology</td>
+      <td>20,235,350,016</td>
+    </tr>
+    <tr>
+      <td>MMM</td>
+      <td>3M Company</td>
+      <td>Industrials</td>
+      <td>69,333,245,952</td>
+    </tr>
+    <tr>
+      <td>DD</td>
+      <td>DuPont de Nemours, Inc.</td>
+      <td>Basic Materials</td>
+      <td>34,585,776,128</td>
+    </tr>
+    <tr>
+      <td>1COV.DE</td>
+      <td>Covestro AG</td>
+      <td>Basic Materials</td>
+      <td>10,829,985,792</td>
+    </tr>
+    <tr>
+      <td>MAA</td>
+      <td>Mid-America Apartment Communities, Inc.</td>
+      <td>Real Estate</td>
+      <td>19,016,624,128</td>
+    </tr>
+    <tr>
+      <td>ITX.MC</td>
+      <td>Industria de Diseño Textil, S.A.</td>
+      <td>Consumer Cyclical</td>
+      <td>162,875,817,984</td>
+    </tr>
+    <tr>
+      <td>SYK</td>
+      <td>Stryker Corporation</td>
+      <td>Healthcare</td>
+      <td>148,727,611,392</td>
+    </tr>
+    <tr>
+      <td>WAB</td>
+      <td>Westinghouse Air Brake Technologies Corporation</td>
+      <td>Industrials</td>
+      <td>34,039,375,872</td>
+    </tr>
+    <tr>
+      <td>ROST</td>
+      <td>Ross Stores, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>47,428,694,016</td>
+    </tr>
+    <tr>
+      <td>BEZ</td>
+      <td>NaN</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>POOL</td>
+      <td>Pool Corporation</td>
+      <td>Industrials</td>
+      <td>13,865,901,056</td>
+    </tr>
+    <tr>
+      <td>DGX</td>
+      <td>Quest Diagnostics Incorporated</td>
+      <td>Healthcare</td>
+      <td>18,292,582,400</td>
+    </tr>
+    <tr>
+      <td>BEN</td>
+      <td>Franklin Resources, Inc.</td>
+      <td>Financial Services</td>
+      <td>11,374,068,736</td>
+    </tr>
+    <tr>
+      <td>PGHN.SW</td>
+      <td>Partners Group Holding AG</td>
+      <td>Financial Services</td>
+      <td>32,608,643,072</td>
+    </tr>
+    <tr>
+      <td>BWA</td>
+      <td>BorgWarner Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>7,383,311,872</td>
+    </tr>
+    <tr>
+      <td>EXPE</td>
+      <td>Expedia Group, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>23,552,774,144</td>
+    </tr>
+    <tr>
+      <td>UCG.MI</td>
+      <td>UniCredit S.p.A.</td>
+      <td>Financial Services</td>
+      <td>58,077,343,744</td>
+    </tr>
+    <tr>
+      <td>NTRS</td>
+      <td>Northern Trust Corporation</td>
+      <td>Financial Services</td>
+      <td>21,593,870,336</td>
+    </tr>
+    <tr>
+      <td>UNP</td>
+      <td>Union Pacific Corporation</td>
+      <td>Industrials</td>
+      <td>144,907,550,720</td>
+    </tr>
+    <tr>
+      <td>CBOE</td>
+      <td>Cboe Global Markets, Inc.</td>
+      <td>Financial Services</td>
+      <td>22,086,651,904</td>
+    </tr>
+    <tr>
+      <td>CVX</td>
+      <td>Chevron Corporation</td>
+      <td>Energy</td>
+      <td>288,173,359,104</td>
+    </tr>
+    <tr>
+      <td>COP</td>
+      <td>ConocoPhillips</td>
+      <td>Energy</td>
+      <td>128,786,825,216</td>
+    </tr>
+    <tr>
+      <td>DECK</td>
+      <td>Deckers Outdoor Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>27,636,131,840</td>
+    </tr>
+    <tr>
+      <td>FMC</td>
+      <td>FMC Corporation</td>
+      <td>Basic Materials</td>
+      <td>7,281,683,968</td>
+    </tr>
+    <tr>
+      <td>DHR</td>
+      <td>Danaher Corporation</td>
+      <td>Healthcare</td>
+      <td>169,770,745,856</td>
+    </tr>
+    <tr>
+      <td>WRB</td>
+      <td>W. R. Berkley Corporation</td>
+      <td>Financial Services</td>
+      <td>23,679,627,264</td>
+    </tr>
+    <tr>
+      <td>LMP</td>
+      <td>NaN</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>BAC</td>
+      <td>Bank of America Corporation</td>
+      <td>Financial Services</td>
+      <td>356,481,990,656</td>
+    </tr>
+    <tr>
+      <td>IP</td>
+      <td>International Paper Company</td>
+      <td>Consumer Cyclical</td>
+      <td>20,559,605,760</td>
+    </tr>
+    <tr>
+      <td>ANET</td>
+      <td>Arista Networks, Inc.</td>
+      <td>Technology</td>
+      <td>127,541,256,192</td>
+    </tr>
+    <tr>
+      <td>SMCI</td>
+      <td>Super Micro Computer, Inc.</td>
+      <td>Technology</td>
+      <td>17,391,280,128</td>
+    </tr>
+    <tr>
+      <td>CRDA</td>
+      <td>Crawford &amp; Company</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>KNIN.SW</td>
+      <td>Kuehne + Nagel International AG</td>
+      <td>Industrials</td>
+      <td>24,538,529,792</td>
+    </tr>
+    <tr>
+      <td>MHK</td>
+      <td>Mohawk Industries, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>8,678,547,456</td>
+    </tr>
+    <tr>
+      <td>BMY</td>
+      <td>Bristol-Myers Squibb Company</td>
+      <td>Healthcare</td>
+      <td>118,100,918,272</td>
+    </tr>
+    <tr>
+      <td>EBAY</td>
+      <td>eBay Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>29,415,389,184</td>
+    </tr>
+    <tr>
+      <td>TDY</td>
+      <td>Teledyne Technologies Incorporated</td>
+      <td>Technology</td>
+      <td>22,379,356,160</td>
+    </tr>
+    <tr>
+      <td>HST</td>
+      <td>Host Hotels &amp; Resorts, Inc.</td>
+      <td>Real Estate</td>
+      <td>12,675,584,000</td>
+    </tr>
+    <tr>
+      <td>WAT</td>
+      <td>Waters Corporation</td>
+      <td>Healthcare</td>
+      <td>21,880,129,536</td>
+    </tr>
+    <tr>
+      <td>BR</td>
+      <td>Broadridge Financial Solutions, Inc.</td>
+      <td>Technology</td>
+      <td>26,588,741,632</td>
+    </tr>
+    <tr>
+      <td>VTR</td>
+      <td>Ventas, Inc.</td>
+      <td>Real Estate</td>
+      <td>26,974,558,208</td>
+    </tr>
+    <tr>
+      <td>ROK</td>
+      <td>Rockwell Automation, Inc.</td>
+      <td>Industrials</td>
+      <td>31,419,234,304</td>
+    </tr>
+    <tr>
+      <td>MNG</td>
+      <td>NaN</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>LOGN.SW</td>
+      <td>Logitech International S.A.</td>
+      <td>Technology</td>
+      <td>10,701,547,520</td>
+    </tr>
+    <tr>
+      <td>TFC</td>
+      <td>Truist Financial Corporation</td>
+      <td>Financial Services</td>
+      <td>62,141,214,720</td>
+    </tr>
+    <tr>
+      <td>SPGI</td>
+      <td>S&amp;P Global Inc.</td>
+      <td>Financial Services</td>
+      <td>158,678,106,112</td>
+    </tr>
+    <tr>
+      <td>EOG</td>
+      <td>EOG Resources, Inc.</td>
+      <td>Energy</td>
+      <td>76,211,970,048</td>
+    </tr>
+    <tr>
+      <td>UU</td>
+      <td>NaN</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>MET</td>
+      <td>MetLife, Inc.</td>
+      <td>Financial Services</td>
+      <td>58,987,257,856</td>
+    </tr>
+    <tr>
+      <td>SAF.PA</td>
+      <td>Safran SA</td>
+      <td>Industrials</td>
+      <td>91,271,192,576</td>
+    </tr>
+    <tr>
+      <td>CNP</td>
+      <td>CenterPoint Energy, Inc.</td>
+      <td>Utilities</td>
+      <td>20,679,297,024</td>
+    </tr>
+    <tr>
+      <td>CBK.DE</td>
+      <td>Commerzbank AG</td>
+      <td>Financial Services</td>
+      <td>18,135,515,136</td>
+    </tr>
+    <tr>
+      <td>BNR.DE</td>
+      <td>Brenntag SE</td>
+      <td>Basic Materials</td>
+      <td>9,013,691,392</td>
+    </tr>
+    <tr>
+      <td>SOON.SW</td>
+      <td>Sonova Holding AG</td>
+      <td>Healthcare</td>
+      <td>18,528,831,488</td>
+    </tr>
+    <tr>
+      <td>HEI.DE</td>
+      <td>Heidelberg Materials AG</td>
+      <td>Basic Materials</td>
+      <td>21,482,137,600</td>
+    </tr>
+    <tr>
+      <td>CME</td>
+      <td>CME Group Inc.</td>
+      <td>Financial Services</td>
+      <td>81,643,610,112</td>
+    </tr>
+    <tr>
+      <td>UDR</td>
+      <td>UDR, Inc.</td>
+      <td>Real Estate</td>
+      <td>16,833,325,056</td>
+    </tr>
+    <tr>
+      <td>VOW.DE</td>
+      <td>Volkswagen AG</td>
+      <td>Consumer Cyclical</td>
+      <td>41,594,507,264</td>
+    </tr>
+    <tr>
+      <td>CTEC</td>
+      <td>Global X CleanTech ETF</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>ABT</td>
+      <td>Abbott Laboratories</td>
+      <td>Healthcare</td>
+      <td>203,382,784,000</td>
+    </tr>
+    <tr>
+      <td>SO</td>
+      <td>The Southern Company</td>
+      <td>Utilities</td>
+      <td>96,573,235,200</td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td>Dominion Energy, Inc.</td>
+      <td>Utilities</td>
+      <td>49,031,380,992</td>
+    </tr>
+    <tr>
+      <td>AVB</td>
+      <td>AvalonBay Communities, Inc.</td>
+      <td>Real Estate</td>
+      <td>32,804,118,528</td>
+    </tr>
+    <tr>
+      <td>BA</td>
+      <td>The Boeing Company</td>
+      <td>Industrials</td>
+      <td>107,209,875,456</td>
+    </tr>
+    <tr>
+      <td>VMC</td>
+      <td>Vulcan Materials Company</td>
+      <td>Basic Materials</td>
+      <td>37,132,910,592</td>
+    </tr>
+    <tr>
+      <td>RJF</td>
+      <td>Raymond James Financial, Inc.</td>
+      <td>Financial Services</td>
+      <td>33,296,474,112</td>
+    </tr>
+    <tr>
+      <td>SLB</td>
+      <td>Schlumberger Limited</td>
+      <td>Energy</td>
+      <td>62,219,333,632</td>
+    </tr>
+    <tr>
+      <td>VOW3.DE</td>
+      <td>Volkswagen AG</td>
+      <td>Consumer Cyclical</td>
+      <td>41,516,679,168</td>
+    </tr>
+    <tr>
+      <td>PAH3.DE</td>
+      <td>Porsche Automobil Holding SE</td>
+      <td>Consumer Cyclical</td>
+      <td>10,396,565,504</td>
+    </tr>
+    <tr>
+      <td>ZBH</td>
+      <td>Zimmer Biomet Holdings, Inc.</td>
+      <td>Healthcare</td>
+      <td>21,579,622,400</td>
+    </tr>
+    <tr>
+      <td>WMT</td>
+      <td>Walmart Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>710,500,941,824</td>
+    </tr>
+    <tr>
+      <td>MPC</td>
+      <td>Marathon Petroleum Corporation</td>
+      <td>Energy</td>
+      <td>51,194,048,512</td>
+    </tr>
+    <tr>
+      <td>WY</td>
+      <td>Weyerhaeuser Company</td>
+      <td>Real Estate</td>
+      <td>22,233,409,536</td>
+    </tr>
+    <tr>
+      <td>MNST</td>
+      <td>Monster Beverage Corporation</td>
+      <td>Consumer Defensive</td>
+      <td>52,496,629,760</td>
+    </tr>
+    <tr>
+      <td>HUBB</td>
+      <td>Hubbell Incorporated</td>
+      <td>Industrials</td>
+      <td>24,499,511,296</td>
+    </tr>
+    <tr>
+      <td>MTB</td>
+      <td>M&amp;T Bank Corporation</td>
+      <td>Financial Services</td>
+      <td>35,941,806,080</td>
+    </tr>
+    <tr>
+      <td>PCG</td>
+      <td>PG&amp;E Corporation</td>
+      <td>Utilities</td>
+      <td>55,522,607,104</td>
+    </tr>
+    <tr>
+      <td>DB1.DE</td>
+      <td>Deutsche Börse AG</td>
+      <td>Financial Services</td>
+      <td>39,001,526,272</td>
+    </tr>
+    <tr>
+      <td>GE</td>
+      <td>GE Aerospace</td>
+      <td>Industrials</td>
+      <td>193,405,222,912</td>
+    </tr>
+    <tr>
+      <td>RCL</td>
+      <td>Royal Caribbean Cruises Ltd.</td>
+      <td>Consumer Cyclical</td>
+      <td>63,876,636,672</td>
+    </tr>
+    <tr>
+      <td>PEP</td>
+      <td>PepsiCo, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>219,984,871,424</td>
+    </tr>
+    <tr>
+      <td>MTX.DE</td>
+      <td>MTU Aero Engines AG</td>
+      <td>Industrials</td>
+      <td>16,932,456,448</td>
+    </tr>
+    <tr>
+      <td>SNA</td>
+      <td>Snap-on Incorporated</td>
+      <td>Industrials</td>
+      <td>18,976,174,080</td>
+    </tr>
+    <tr>
+      <td>WDC</td>
+      <td>Western Digital Corporation</td>
+      <td>Technology</td>
+      <td>22,775,242,752</td>
+    </tr>
+    <tr>
+      <td>VLTO</td>
+      <td>Veralto Corporation</td>
+      <td>Industrials</td>
+      <td>26,217,121,792</td>
+    </tr>
+    <tr>
+      <td>UBSG.SW</td>
+      <td>UBS Group AG</td>
+      <td>Financial Services</td>
+      <td>89,422,880,768</td>
+    </tr>
+    <tr>
+      <td>GNRC</td>
+      <td>Generac Holdings Inc.</td>
+      <td>Industrials</td>
+      <td>10,918,944,768</td>
+    </tr>
+    <tr>
+      <td>CAT</td>
+      <td>Caterpillar Inc.</td>
+      <td>Industrials</td>
+      <td>188,094,824,448</td>
+    </tr>
+    <tr>
+      <td>VST</td>
+      <td>Vistra Corp.</td>
+      <td>Utilities</td>
+      <td>56,685,051,904</td>
+    </tr>
+    <tr>
+      <td>CZR</td>
+      <td>Caesars Entertainment, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>7,980,749,312</td>
+    </tr>
+    <tr>
+      <td>CNC</td>
+      <td>Centene Corporation</td>
+      <td>Healthcare</td>
+      <td>30,468,601,856</td>
+    </tr>
+    <tr>
+      <td>DIS</td>
+      <td>The Walt Disney Company</td>
+      <td>Communication Services</td>
+      <td>207,751,036,928</td>
+    </tr>
+    <tr>
+      <td>SU.PA</td>
+      <td>Schneider Electric S.E.</td>
+      <td>Industrials</td>
+      <td>135,277,101,056</td>
+    </tr>
+    <tr>
+      <td>STAN</td>
+      <td>SP Plus Corporation</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>MDLZ</td>
+      <td>Mondelez International, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>86,636,544,000</td>
+    </tr>
+    <tr>
+      <td>MA</td>
+      <td>Mastercard Incorporated</td>
+      <td>Financial Services</td>
+      <td>472,774,705,152</td>
+    </tr>
+    <tr>
+      <td>LVS</td>
+      <td>Las Vegas Sands Corp.</td>
+      <td>Consumer Cyclical</td>
+      <td>36,302,049,280</td>
+    </tr>
+    <tr>
+      <td>ETN</td>
+      <td>Eaton Corporation plc</td>
+      <td>Industrials</td>
+      <td>146,599,444,480</td>
+    </tr>
+    <tr>
+      <td>AMCR</td>
+      <td>Amcor plc</td>
+      <td>Consumer Cyclical</td>
+      <td>15,132,710,912</td>
+    </tr>
+    <tr>
+      <td>OXY</td>
+      <td>Occidental Petroleum Corporation</td>
+      <td>Energy</td>
+      <td>48,362,196,992</td>
+    </tr>
+    <tr>
+      <td>PARA</td>
+      <td>Paramount Global</td>
+      <td>Communication Services</td>
+      <td>7,893,729,280</td>
+    </tr>
+    <tr>
+      <td>CPB</td>
+      <td>Campbell Soup Company</td>
+      <td>Consumer Defensive</td>
+      <td>13,232,007,168</td>
+    </tr>
+    <tr>
+      <td>SSE</td>
+      <td>NaN</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>LONN.SW</td>
+      <td>Lonza Group AG</td>
+      <td>Healthcare</td>
+      <td>37,991,022,592</td>
+    </tr>
+    <tr>
+      <td>GD</td>
+      <td>General Dynamics Corporation</td>
+      <td>Industrials</td>
+      <td>76,972,064,768</td>
+    </tr>
+    <tr>
+      <td>TYL</td>
+      <td>Tyler Technologies, Inc.</td>
+      <td>Technology</td>
+      <td>25,559,752,704</td>
+    </tr>
+    <tr>
+      <td>ALC.SW</td>
+      <td>Alcon Inc.</td>
+      <td>Healthcare</td>
+      <td>37,906,145,280</td>
+    </tr>
+    <tr>
+      <td>ALGN</td>
+      <td>Align Technology, Inc.</td>
+      <td>Healthcare</td>
+      <td>17,036,584,960</td>
+    </tr>
+    <tr>
+      <td>EPAM</td>
+      <td>EPAM Systems, Inc.</td>
+      <td>Technology</td>
+      <td>13,909,221,376</td>
+    </tr>
+    <tr>
+      <td>LMT</td>
+      <td>Lockheed Martin Corporation</td>
+      <td>Industrials</td>
+      <td>128,475,348,992</td>
+    </tr>
+    <tr>
+      <td>TPR</td>
+      <td>Tapestry, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>13,145,561,088</td>
+    </tr>
+    <tr>
+      <td>TRGP</td>
+      <td>Targa Resources Corp.</td>
+      <td>Energy</td>
+      <td>45,289,504,768</td>
+    </tr>
+    <tr>
+      <td>XEL</td>
+      <td>Xcel Energy Inc.</td>
+      <td>Utilities</td>
+      <td>40,989,392,896</td>
+    </tr>
+    <tr>
+      <td>COF</td>
+      <td>Capital One Financial Corporation</td>
+      <td>Financial Services</td>
+      <td>69,678,989,312</td>
+    </tr>
+    <tr>
+      <td>PLD</td>
+      <td>Prologis, Inc.</td>
+      <td>Real Estate</td>
+      <td>105,556,164,608</td>
+    </tr>
+    <tr>
+      <td>NDA-FI.HE</td>
+      <td>Nordea Bank Abp</td>
+      <td>Financial Services</td>
+      <td>36,826,779,648</td>
+    </tr>
+    <tr>
+      <td>JPM</td>
+      <td>JPMorgan Chase &amp; Co.</td>
+      <td>Financial Services</td>
+      <td>689,082,597,376</td>
+    </tr>
+    <tr>
+      <td>IVZ</td>
+      <td>Invesco Ltd.</td>
+      <td>Financial Services</td>
+      <td>7,946,099,200</td>
+    </tr>
+    <tr>
+      <td>VNA.DE</td>
+      <td>Vonovia SE</td>
+      <td>Real Estate</td>
+      <td>24,689,801,216</td>
+    </tr>
+    <tr>
+      <td>JBHT</td>
+      <td>J.B. Hunt Transport Services, Inc.</td>
+      <td>Industrials</td>
+      <td>18,307,704,832</td>
+    </tr>
+    <tr>
+      <td>RTX</td>
+      <td>RTX Corporation</td>
+      <td>Industrials</td>
+      <td>160,427,835,392</td>
+    </tr>
+    <tr>
+      <td>IPG</td>
+      <td>The Interpublic Group of Companies, Inc.</td>
+      <td>Communication Services</td>
+      <td>10,858,637,312</td>
+    </tr>
+    <tr>
+      <td>AV</td>
+      <td>NaN</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>FRT</td>
+      <td>Federal Realty Investment Trust</td>
+      <td>Real Estate</td>
+      <td>9,791,793,152</td>
+    </tr>
+    <tr>
+      <td>PSH</td>
+      <td>PGIM Short Duration High Yield ETF</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>CTVA</td>
+      <td>Corteva, Inc.</td>
+      <td>Basic Materials</td>
+      <td>41,759,920,128</td>
+    </tr>
+    <tr>
+      <td>DPZ</td>
+      <td>Domino's Pizza, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>15,396,091,904</td>
+    </tr>
+    <tr>
+      <td>ISRG</td>
+      <td>Intuitive Surgical, Inc.</td>
+      <td>Healthcare</td>
+      <td>196,119,281,664</td>
+    </tr>
+    <tr>
+      <td>OKE</td>
+      <td>ONEOK, Inc.</td>
+      <td>Energy</td>
+      <td>68,203,483,136</td>
+    </tr>
+    <tr>
+      <td>KEYS</td>
+      <td>Keysight Technologies, Inc.</td>
+      <td>Technology</td>
+      <td>29,415,022,592</td>
+    </tr>
+    <tr>
+      <td>BRO</td>
+      <td>Brown &amp; Brown, Inc.</td>
+      <td>Financial Services</td>
+      <td>31,669,850,112</td>
+    </tr>
+    <tr>
+      <td>AOS</td>
+      <td>A. O. Smith Corporation</td>
+      <td>Industrials</td>
+      <td>10,580,285,440</td>
+    </tr>
+    <tr>
+      <td>DBK.DE</td>
+      <td>Deutsche Bank Aktiengesellschaft</td>
+      <td>Financial Services</td>
+      <td>29,955,500,032</td>
+    </tr>
+    <tr>
+      <td>AXON</td>
+      <td>Axon Enterprise, Inc.</td>
+      <td>Industrials</td>
+      <td>48,137,367,552</td>
+    </tr>
+    <tr>
+      <td>PKG</td>
+      <td>Packaging Corporation of America</td>
+      <td>Consumer Cyclical</td>
+      <td>22,029,142,016</td>
+    </tr>
+    <tr>
+      <td>RI.PA</td>
+      <td>Pernod Ricard SA</td>
+      <td>Consumer Defensive</td>
+      <td>26,752,161,792</td>
+    </tr>
+    <tr>
+      <td>BLK</td>
+      <td>BlackRock, Inc.</td>
+      <td>Financial Services</td>
+      <td>152,275,582,976</td>
+    </tr>
+    <tr>
+      <td>HSY</td>
+      <td>The Hershey Company</td>
+      <td>Consumer Defensive</td>
+      <td>35,402,006,528</td>
+    </tr>
+    <tr>
+      <td>SWKS</td>
+      <td>Skyworks Solutions, Inc.</td>
+      <td>Technology</td>
+      <td>13,601,281,024</td>
+    </tr>
+    <tr>
+      <td>WST</td>
+      <td>West Pharmaceutical Services, Inc.</td>
+      <td>Healthcare</td>
+      <td>23,238,899,712</td>
+    </tr>
+    <tr>
+      <td>SREN.SW</td>
+      <td>Swiss Re AG</td>
+      <td>Financial Services</td>
+      <td>37,041,156,096</td>
+    </tr>
+    <tr>
+      <td>SIKA.SW</td>
+      <td>Sika AG</td>
+      <td>Basic Materials</td>
+      <td>36,851,003,392</td>
+    </tr>
+    <tr>
+      <td>ODFL</td>
+      <td>Old Dominion Freight Line, Inc.</td>
+      <td>Industrials</td>
+      <td>46,625,828,864</td>
+    </tr>
+    <tr>
+      <td>JKHY</td>
+      <td>Jack Henry &amp; Associates, Inc.</td>
+      <td>Technology</td>
+      <td>12,585,478,144</td>
+    </tr>
+    <tr>
+      <td>MS</td>
+      <td>Morgan Stanley</td>
+      <td>Financial Services</td>
+      <td>217,474,301,952</td>
+    </tr>
+    <tr>
+      <td>CE</td>
+      <td>Celanese Corporation</td>
+      <td>Basic Materials</td>
+      <td>8,198,400,000</td>
+    </tr>
+    <tr>
+      <td>ITW</td>
+      <td>Illinois Tool Works Inc.</td>
+      <td>Industrials</td>
+      <td>79,686,705,152</td>
+    </tr>
+    <tr>
+      <td>ADI</td>
+      <td>Analog Devices, Inc.</td>
+      <td>Technology</td>
+      <td>106,229,645,312</td>
+    </tr>
+    <tr>
+      <td>JBL</td>
+      <td>Jabil Inc.</td>
+      <td>Technology</td>
+      <td>14,741,809,152</td>
+    </tr>
+    <tr>
+      <td>ZAL.DE</td>
+      <td>Zalando SE</td>
+      <td>Consumer Cyclical</td>
+      <td>7,442,370,560</td>
+    </tr>
+    <tr>
+      <td>FICO</td>
+      <td>Fair Isaac Corporation</td>
+      <td>Technology</td>
+      <td>56,921,251,840</td>
+    </tr>
+    <tr>
+      <td>MCHP</td>
+      <td>Microchip Technology Incorporated</td>
+      <td>Technology</td>
+      <td>35,716,534,272</td>
+    </tr>
+    <tr>
+      <td>JD</td>
+      <td>JD.com, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>57,089,875,968</td>
+    </tr>
+    <tr>
+      <td>IBM</td>
+      <td>International Business Machines Corporation</td>
+      <td>Technology</td>
+      <td>205,641,039,872</td>
+    </tr>
+    <tr>
+      <td>IFF</td>
+      <td>International Flavors &amp; Fragrances Inc.</td>
+      <td>Basic Materials</td>
+      <td>22,955,128,832</td>
+    </tr>
+    <tr>
+      <td>PAYX</td>
+      <td>Paychex, Inc.</td>
+      <td>Technology</td>
+      <td>51,857,698,816</td>
+    </tr>
+    <tr>
+      <td>CVS</td>
+      <td>CVS Health Corporation</td>
+      <td>Healthcare</td>
+      <td>71,855,210,496</td>
+    </tr>
+    <tr>
+      <td>K</td>
+      <td>Kellanova</td>
+      <td>Consumer Defensive</td>
+      <td>27,927,429,120</td>
+    </tr>
+    <tr>
+      <td>ZTS</td>
+      <td>Zoetis Inc.</td>
+      <td>Healthcare</td>
+      <td>79,725,371,392</td>
+    </tr>
+    <tr>
+      <td>PWR</td>
+      <td>Quanta Services, Inc.</td>
+      <td>Industrials</td>
+      <td>50,189,557,760</td>
+    </tr>
+    <tr>
+      <td>WELL</td>
+      <td>Welltower Inc.</td>
+      <td>Real Estate</td>
+      <td>85,856,501,760</td>
+    </tr>
+    <tr>
+      <td>DUK</td>
+      <td>Duke Energy Corporation</td>
+      <td>Utilities</td>
+      <td>88,727,281,664</td>
+    </tr>
+    <tr>
+      <td>FDS</td>
+      <td>FactSet Research Systems Inc.</td>
+      <td>Financial Services</td>
+      <td>18,453,819,392</td>
+    </tr>
+    <tr>
+      <td>MAS</td>
+      <td>Masco Corporation</td>
+      <td>Industrials</td>
+      <td>16,899,618,816</td>
+    </tr>
+    <tr>
+      <td>TAP</td>
+      <td>Molson Coors Beverage Company</td>
+      <td>Consumer Defensive</td>
+      <td>12,456,396,800</td>
+    </tr>
+    <tr>
+      <td>CL</td>
+      <td>Colgate-Palmolive Company</td>
+      <td>Consumer Defensive</td>
+      <td>77,003,284,480</td>
+    </tr>
+    <tr>
+      <td>PYPL</td>
+      <td>PayPal Holdings, Inc.</td>
+      <td>Financial Services</td>
+      <td>85,035,442,176</td>
+    </tr>
+    <tr>
+      <td>TECH</td>
+      <td>Bio-Techne Corporation</td>
+      <td>Healthcare</td>
+      <td>11,289,277,440</td>
+    </tr>
+    <tr>
+      <td>DAL</td>
+      <td>Delta Air Lines, Inc.</td>
+      <td>Industrials</td>
+      <td>40,872,099,840</td>
+    </tr>
+    <tr>
+      <td>UNH</td>
+      <td>UnitedHealth Group Incorporated</td>
+      <td>Healthcare</td>
+      <td>549,860,474,880</td>
+    </tr>
+    <tr>
+      <td>DE</td>
+      <td>Deere &amp; Company</td>
+      <td>Industrials</td>
+      <td>119,710,949,376</td>
+    </tr>
+    <tr>
+      <td>NCLH</td>
+      <td>Norwegian Cruise Line Holdings Ltd.</td>
+      <td>Consumer Cyclical</td>
+      <td>11,766,586,368</td>
+    </tr>
+    <tr>
+      <td>TTE.PA</td>
+      <td>TotalEnergies SE</td>
+      <td>Energy</td>
+      <td>128,098,254,848</td>
+    </tr>
+    <tr>
+      <td>ATO</td>
+      <td>Atmos Energy Corporation</td>
+      <td>Utilities</td>
+      <td>23,350,403,072</td>
+    </tr>
+    <tr>
+      <td>INTC</td>
+      <td>Intel Corporation</td>
+      <td>Technology</td>
+      <td>105,409,724,416</td>
+    </tr>
+    <tr>
+      <td>BG</td>
+      <td>Bunge Global SA</td>
+      <td>Consumer Defensive</td>
+      <td>12,338,839,552</td>
+    </tr>
+    <tr>
+      <td>EXC</td>
+      <td>Exelon Corporation</td>
+      <td>Utilities</td>
+      <td>39,499,870,208</td>
+    </tr>
+    <tr>
+      <td>MCO</td>
+      <td>Moody's Corporation</td>
+      <td>Financial Services</td>
+      <td>86,613,925,888</td>
+    </tr>
+    <tr>
+      <td>STLD</td>
+      <td>Steel Dynamics, Inc.</td>
+      <td>Basic Materials</td>
+      <td>22,069,434,368</td>
+    </tr>
+    <tr>
+      <td>PNC</td>
+      <td>The PNC Financial Services Group, Inc.</td>
+      <td>Financial Services</td>
+      <td>81,638,105,088</td>
+    </tr>
+    <tr>
+      <td>EL.PA</td>
+      <td>EssilorLuxottica Société anonyme</td>
+      <td>Healthcare</td>
+      <td>107,065,245,696</td>
+    </tr>
+    <tr>
+      <td>OMC</td>
+      <td>Omnicom Group Inc.</td>
+      <td>Communication Services</td>
+      <td>19,887,779,840</td>
+    </tr>
+    <tr>
+      <td>BMW.DE</td>
+      <td>Bayerische Motoren Werke Aktiengesellschaft</td>
+      <td>Consumer Cyclical</td>
+      <td>41,904,619,520</td>
+    </tr>
+    <tr>
+      <td>MO</td>
+      <td>Altria Group, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>94,960,197,632</td>
+    </tr>
+    <tr>
+      <td>TSN</td>
+      <td>Tyson Foods, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>22,693,447,680</td>
+    </tr>
+    <tr>
+      <td>AAL</td>
+      <td>American Airlines Group Inc.</td>
+      <td>Industrials</td>
+      <td>9,331,260,416</td>
+    </tr>
+    <tr>
+      <td>FOX</td>
+      <td>Fox Corporation</td>
+      <td>Communication Services</td>
+      <td>20,708,515,840</td>
+    </tr>
+    <tr>
+      <td>NTAP</td>
+      <td>NetApp, Inc.</td>
+      <td>Technology</td>
+      <td>25,941,911,552</td>
+    </tr>
+    <tr>
+      <td>NVR</td>
+      <td>NVR, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>27,411,095,552</td>
+    </tr>
+    <tr>
+      <td>CDNS</td>
+      <td>Cadence Design Systems, Inc.</td>
+      <td>Technology</td>
+      <td>84,064,354,304</td>
+    </tr>
+    <tr>
+      <td>CBRE</td>
+      <td>CBRE Group, Inc.</td>
+      <td>Real Estate</td>
+      <td>40,287,264,768</td>
+    </tr>
+    <tr>
+      <td>GIS</td>
+      <td>General Mills, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>35,596,795,904</td>
+    </tr>
+    <tr>
+      <td>RMD</td>
+      <td>ResMed Inc.</td>
+      <td>Healthcare</td>
+      <td>35,759,505,408</td>
+    </tr>
+    <tr>
+      <td>FTV</td>
+      <td>Fortive Corporation</td>
+      <td>Technology</td>
+      <td>26,697,723,904</td>
+    </tr>
+    <tr>
+      <td>FIS</td>
+      <td>Fidelity National Information Services, Inc.</td>
+      <td>Technology</td>
+      <td>46,029,266,944</td>
+    </tr>
+    <tr>
+      <td>KMB</td>
+      <td>Kimberly-Clark Corporation</td>
+      <td>Consumer Defensive</td>
+      <td>45,697,449,984</td>
+    </tr>
+    <tr>
+      <td>ROG.SW</td>
+      <td>Roche Holding AG</td>
+      <td>Healthcare</td>
+      <td>203,729,977,344</td>
+    </tr>
+    <tr>
+      <td>SHEL</td>
+      <td>Shell plc</td>
+      <td>Energy</td>
+      <td>203,054,579,712</td>
+    </tr>
+    <tr>
+      <td>CDW</td>
+      <td>CDW Corporation</td>
+      <td>Technology</td>
+      <td>23,743,645,696</td>
+    </tr>
+    <tr>
+      <td>FRE.DE</td>
+      <td>Fresenius SE &amp; Co. KGaA</td>
+      <td>Healthcare</td>
+      <td>18,564,290,560</td>
+    </tr>
+    <tr>
+      <td>ROP</td>
+      <td>Roper Technologies, Inc.</td>
+      <td>Technology</td>
+      <td>59,432,747,008</td>
+    </tr>
+    <tr>
+      <td>AMAT</td>
+      <td>Applied Materials, Inc.</td>
+      <td>Technology</td>
+      <td>144,889,004,032</td>
+    </tr>
+    <tr>
+      <td>PAYC</td>
+      <td>Paycom Software, Inc.</td>
+      <td>Technology</td>
+      <td>13,090,427,904</td>
+    </tr>
+    <tr>
+      <td>EXR</td>
+      <td>Extra Space Storage Inc.</td>
+      <td>Real Estate</td>
+      <td>36,807,221,248</td>
+    </tr>
+    <tr>
+      <td>CPAY</td>
+      <td>Corpay, Inc.</td>
+      <td>Technology</td>
+      <td>26,173,691,904</td>
+    </tr>
+    <tr>
+      <td>TT</td>
+      <td>Trane Technologies plc</td>
+      <td>Industrials</td>
+      <td>93,472,718,848</td>
+    </tr>
+    <tr>
+      <td>TDG</td>
+      <td>TransDigm Group Incorporated</td>
+      <td>Industrials</td>
+      <td>69,733,007,360</td>
+    </tr>
+    <tr>
+      <td>INGA.AS</td>
+      <td>ING Groep N.V.</td>
+      <td>Financial Services</td>
+      <td>45,359,411,200</td>
+    </tr>
+    <tr>
+      <td>CSCO</td>
+      <td>Cisco Systems, Inc.</td>
+      <td>Technology</td>
+      <td>229,247,664,128</td>
+    </tr>
+    <tr>
+      <td>BME</td>
+      <td>BlackRock Health Sciences Trust</td>
+      <td>Financial Services</td>
+      <td>528,045,344</td>
+    </tr>
+    <tr>
+      <td>LRCX</td>
+      <td>Lam Research Corporation</td>
+      <td>Technology</td>
+      <td>94,095,638,528</td>
+    </tr>
+    <tr>
+      <td>PG</td>
+      <td>The Procter &amp; Gamble Company</td>
+      <td>Consumer Defensive</td>
+      <td>406,833,168,384</td>
+    </tr>
+    <tr>
+      <td>CMG</td>
+      <td>Chipotle Mexican Grill, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>81,728,143,360</td>
+    </tr>
+    <tr>
+      <td>REG</td>
+      <td>Regency Centers Corporation</td>
+      <td>Real Estate</td>
+      <td>13,596,545,024</td>
+    </tr>
+    <tr>
+      <td>TMO</td>
+      <td>Thermo Fisher Scientific Inc.</td>
+      <td>Healthcare</td>
+      <td>197,408,243,712</td>
+    </tr>
+    <tr>
+      <td>CMI</td>
+      <td>Cummins Inc.</td>
+      <td>Industrials</td>
+      <td>50,600,951,808</td>
+    </tr>
+    <tr>
+      <td>MSCI</td>
+      <td>MSCI Inc.</td>
+      <td>Financial Services</td>
+      <td>45,560,373,248</td>
+    </tr>
+    <tr>
+      <td>CI</td>
+      <td>The Cigna Group</td>
+      <td>Healthcare</td>
+      <td>91,809,964,032</td>
+    </tr>
+    <tr>
+      <td>DOW</td>
+      <td>Dow Inc.</td>
+      <td>Basic Materials</td>
+      <td>31,371,124,736</td>
+    </tr>
+    <tr>
+      <td>BAX</td>
+      <td>Baxter International Inc.</td>
+      <td>Healthcare</td>
+      <td>16,844,299,264</td>
+    </tr>
+    <tr>
+      <td>ULTA</td>
+      <td>Ulta Beauty, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>15,961,518,080</td>
+    </tr>
+    <tr>
+      <td>FOXA</td>
+      <td>Fox Corporation</td>
+      <td>Communication Services</td>
+      <td>20,708,532,224</td>
+    </tr>
+    <tr>
+      <td>COO</td>
+      <td>The Cooper Companies, Inc.</td>
+      <td>Healthcare</td>
+      <td>19,897,675,776</td>
+    </tr>
+    <tr>
+      <td>SN</td>
+      <td>SharkNinja, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>14,083,696,640</td>
+    </tr>
+    <tr>
+      <td>STX</td>
+      <td>Seagate Technology Holdings plc</td>
+      <td>Technology</td>
+      <td>21,136,076,800</td>
+    </tr>
+    <tr>
+      <td>NESN.SW</td>
+      <td>Nestlé S.A.</td>
+      <td>Consumer Defensive</td>
+      <td>195,522,428,928</td>
+    </tr>
+    <tr>
+      <td>TROW</td>
+      <td>T. Rowe Price Group, Inc.</td>
+      <td>Financial Services</td>
+      <td>26,254,751,744</td>
+    </tr>
+    <tr>
+      <td>MOH</td>
+      <td>Molina Healthcare, Inc.</td>
+      <td>Healthcare</td>
+      <td>16,935,204,864</td>
+    </tr>
+    <tr>
+      <td>PM</td>
+      <td>Philip Morris International Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>204,009,242,624</td>
+    </tr>
+    <tr>
+      <td>FLTR.L</td>
+      <td>Flutter Entertainment plc</td>
+      <td>Consumer Cyclical</td>
+      <td>38,409,916,416</td>
+    </tr>
+    <tr>
+      <td>TXN</td>
+      <td>Texas Instruments Incorporated</td>
+      <td>Technology</td>
+      <td>180,801,404,928</td>
+    </tr>
+    <tr>
+      <td>SIE.DE</td>
+      <td>Siemens Aktiengesellschaft</td>
+      <td>Industrials</td>
+      <td>137,310,674,944</td>
+    </tr>
+    <tr>
+      <td>SHW</td>
+      <td>The Sherwin-Williams Company</td>
+      <td>Basic Materials</td>
+      <td>96,540,286,976</td>
+    </tr>
+    <tr>
+      <td>GRMN</td>
+      <td>Garmin Ltd.</td>
+      <td>Technology</td>
+      <td>40,154,345,472</td>
+    </tr>
+    <tr>
+      <td>CLX</td>
+      <td>The Clorox Company</td>
+      <td>Consumer Defensive</td>
+      <td>20,937,555,968</td>
+    </tr>
+    <tr>
+      <td>BDX</td>
+      <td>Becton, Dickinson and Company</td>
+      <td>Healthcare</td>
+      <td>65,164,513,280</td>
+    </tr>
+    <tr>
+      <td>NEE</td>
+      <td>NextEra Energy, Inc.</td>
+      <td>Utilities</td>
+      <td>159,083,102,208</td>
+    </tr>
+    <tr>
+      <td>BKR</td>
+      <td>Baker Hughes Company</td>
+      <td>Energy</td>
+      <td>44,409,929,728</td>
+    </tr>
+    <tr>
+      <td>GEV</td>
+      <td>GE Vernova Inc.</td>
+      <td>Utilities</td>
+      <td>93,680,672,768</td>
+    </tr>
+    <tr>
+      <td>HON</td>
+      <td>Honeywell International Inc.</td>
+      <td>Industrials</td>
+      <td>147,014,336,512</td>
+    </tr>
+    <tr>
+      <td>AVY</td>
+      <td>Avery Dennison Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>16,036,337,664</td>
+    </tr>
+    <tr>
+      <td>RWE.DE</td>
+      <td>RWE Aktiengesellschaft</td>
+      <td>Utilities</td>
+      <td>23,388,805,120</td>
+    </tr>
+    <tr>
+      <td>WM</td>
+      <td>Waste Management, Inc.</td>
+      <td>Industrials</td>
+      <td>88,914,616,320</td>
+    </tr>
+    <tr>
+      <td>BBY</td>
+      <td>Best Buy Co., Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>18,575,859,712</td>
+    </tr>
+    <tr>
+      <td>EQR</td>
+      <td>Equity Residential</td>
+      <td>Real Estate</td>
+      <td>29,351,530,496</td>
+    </tr>
+    <tr>
+      <td>DVN</td>
+      <td>Devon Energy Corporation</td>
+      <td>Energy</td>
+      <td>25,422,028,800</td>
+    </tr>
+    <tr>
+      <td>FANG</td>
+      <td>Diamondback Energy, Inc.</td>
+      <td>Energy</td>
+      <td>53,346,385,920</td>
+    </tr>
+    <tr>
+      <td>MRK.DE</td>
+      <td>Merck KGaA</td>
+      <td>Healthcare</td>
+      <td>60,498,665,472</td>
+    </tr>
+    <tr>
+      <td>ORLY</td>
+      <td>O'Reilly Automotive, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>69,550,481,408</td>
+    </tr>
+    <tr>
+      <td>ICG</td>
+      <td>Intchains Group Limited</td>
+      <td>Technology</td>
+      <td>247,847,504</td>
+    </tr>
+    <tr>
+      <td>F</td>
+      <td>Ford Motor Company</td>
+      <td>Consumer Cyclical</td>
+      <td>42,922,332,160</td>
+    </tr>
+    <tr>
+      <td>BAYN.DE</td>
+      <td>Bayer Aktiengesellschaft</td>
+      <td>Healthcare</td>
+      <td>19,169,021,952</td>
+    </tr>
+    <tr>
+      <td>VOD</td>
+      <td>Vodafone Group Public Limited Company</td>
+      <td>Communication Services</td>
+      <td>23,470,731,264</td>
+    </tr>
+    <tr>
+      <td>AEP</td>
+      <td>American Electric Power Company, Inc.</td>
+      <td>Utilities</td>
+      <td>52,233,973,760</td>
+    </tr>
+    <tr>
+      <td>IBE.MC</td>
+      <td>Iberdrola, S.A.</td>
+      <td>Utilities</td>
+      <td>85,983,240,192</td>
+    </tr>
+    <tr>
+      <td>KMX</td>
+      <td>CarMax, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>12,491,522,048</td>
+    </tr>
+    <tr>
+      <td>ALV.DE</td>
+      <td>Allianz SE</td>
+      <td>Financial Services</td>
+      <td>111,537,733,632</td>
+    </tr>
+    <tr>
+      <td>LYV</td>
+      <td>Live Nation Entertainment, Inc.</td>
+      <td>Communication Services</td>
+      <td>31,954,106,368</td>
+    </tr>
+    <tr>
+      <td>O</td>
+      <td>Realty Income Corporation</td>
+      <td>Real Estate</td>
+      <td>50,228,359,168</td>
+    </tr>
+    <tr>
+      <td>REGN</td>
+      <td>Regeneron Pharmaceuticals, Inc.</td>
+      <td>Healthcare</td>
+      <td>81,813,102,592</td>
+    </tr>
+    <tr>
+      <td>WPP</td>
+      <td>WPP plc</td>
+      <td>Communication Services</td>
+      <td>11,099,756,544</td>
+    </tr>
+    <tr>
+      <td>ED</td>
+      <td>Consolidated Edison, Inc.</td>
+      <td>Utilities</td>
+      <td>34,190,862,336</td>
+    </tr>
+    <tr>
+      <td>PSN</td>
+      <td>Parsons Corporation</td>
+      <td>Technology</td>
+      <td>10,554,223,616</td>
+    </tr>
+    <tr>
+      <td>MLM</td>
+      <td>Martin Marietta Materials, Inc.</td>
+      <td>Basic Materials</td>
+      <td>36,096,348,160</td>
+    </tr>
+    <tr>
+      <td>NWS</td>
+      <td>News Corporation</td>
+      <td>Communication Services</td>
+      <td>17,279,451,136</td>
+    </tr>
+    <tr>
+      <td>AMZN</td>
+      <td>Amazon.com, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>2,085,965,791,232</td>
+    </tr>
+    <tr>
+      <td>DOV</td>
+      <td>Dover Corporation</td>
+      <td>Industrials</td>
+      <td>27,780,007,936</td>
+    </tr>
+    <tr>
+      <td>BKNG</td>
+      <td>Booking Holdings Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>172,464,259,072</td>
+    </tr>
+    <tr>
+      <td>NOKIA.HE</td>
+      <td>Nokia Oyj</td>
+      <td>Technology</td>
+      <td>21,343,809,536</td>
+    </tr>
+    <tr>
+      <td>QCOM</td>
+      <td>QUALCOMM Incorporated</td>
+      <td>Technology</td>
+      <td>172,716,081,152</td>
+    </tr>
+    <tr>
+      <td>EZJ</td>
+      <td>ProShares Ultra MSCI Japan</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>HBAN</td>
+      <td>Huntington Bancshares Incorporated</td>
+      <td>Financial Services</td>
+      <td>25,598,513,152</td>
+    </tr>
+    <tr>
+      <td>PHM</td>
+      <td>PulteGroup, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>26,275,104,768</td>
+    </tr>
+    <tr>
+      <td>SAN.MC</td>
+      <td>Banco Santander, S.A.</td>
+      <td>Financial Services</td>
+      <td>65,553,395,712</td>
+    </tr>
+    <tr>
+      <td>HCA</td>
+      <td>HCA Healthcare, Inc.</td>
+      <td>Healthcare</td>
+      <td>84,155,392,000</td>
+    </tr>
+    <tr>
+      <td>TXT</td>
+      <td>Textron Inc.</td>
+      <td>Industrials</td>
+      <td>15,575,587,840</td>
+    </tr>
+    <tr>
+      <td>CEG</td>
+      <td>Constellation Energy Corporation</td>
+      <td>Utilities</td>
+      <td>78,767,243,264</td>
+    </tr>
+    <tr>
+      <td>EQIX</td>
+      <td>Equinix, Inc.</td>
+      <td>Real Estate</td>
+      <td>89,116,499,968</td>
+    </tr>
+    <tr>
+      <td>WYNN</td>
+      <td>Wynn Resorts, Limited</td>
+      <td>Consumer Cyclical</td>
+      <td>10,074,427,392</td>
+    </tr>
+    <tr>
+      <td>RTO</td>
+      <td>Rentokil Initial plc</td>
+      <td>Industrials</td>
+      <td>12,869,131,264</td>
+    </tr>
+    <tr>
+      <td>ROL</td>
+      <td>Rollins, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>24,036,057,088</td>
+    </tr>
+    <tr>
+      <td>SMIN</td>
+      <td>iShares MSCI India Small-Cap ETF</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>INCY</td>
+      <td>Incyte Corporation</td>
+      <td>Healthcare</td>
+      <td>13,560,633,344</td>
+    </tr>
+    <tr>
+      <td>APTV</td>
+      <td>Aptiv PLC</td>
+      <td>Consumer Cyclical</td>
+      <td>12,541,520,896</td>
+    </tr>
+    <tr>
+      <td>RVTY</td>
+      <td>Revvity, Inc.</td>
+      <td>Healthcare</td>
+      <td>13,522,309,120</td>
+    </tr>
+    <tr>
+      <td>ISP.MI</td>
+      <td>Intesa Sanpaolo S.p.A.</td>
+      <td>Financial Services</td>
+      <td>63,418,056,704</td>
+    </tr>
+    <tr>
+      <td>HES</td>
+      <td>Hess Corporation</td>
+      <td>Energy</td>
+      <td>45,595,303,936</td>
+    </tr>
+    <tr>
+      <td>HPE</td>
+      <td>Hewlett Packard Enterprise Company</td>
+      <td>Technology</td>
+      <td>28,233,084,928</td>
+    </tr>
+    <tr>
+      <td>GL</td>
+      <td>Globe Life Inc.</td>
+      <td>Financial Services</td>
+      <td>9,149,176,832</td>
+    </tr>
+    <tr>
+      <td>GWW</td>
+      <td>W.W. Grainger, Inc.</td>
+      <td>Industrials</td>
+      <td>58,168,008,704</td>
+    </tr>
+    <tr>
+      <td>PFE</td>
+      <td>Pfizer Inc.</td>
+      <td>Healthcare</td>
+      <td>142,411,448,320</td>
+    </tr>
+    <tr>
+      <td>PRU</td>
+      <td>Prudential Financial, Inc.</td>
+      <td>Financial Services</td>
+      <td>44,939,849,728</td>
+    </tr>
+    <tr>
+      <td>AI.PA</td>
+      <td>L'Air Liquide S.A.</td>
+      <td>Basic Materials</td>
+      <td>91,526,619,136</td>
+    </tr>
+    <tr>
+      <td>EDV</td>
+      <td>Vanguard Extended Duration Treasury Index Fund ETF Shares</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>BBVA.MC</td>
+      <td>Banco Bilbao Vizcaya Argentaria, S.A.</td>
+      <td>Financial Services</td>
+      <td>51,839,635,456</td>
+    </tr>
+    <tr>
+      <td>VRSN</td>
+      <td>VeriSign, Inc.</td>
+      <td>Technology</td>
+      <td>17,768,890,368</td>
+    </tr>
+    <tr>
+      <td>JNJ</td>
+      <td>Johnson &amp; Johnson</td>
+      <td>Healthcare</td>
+      <td>374,384,918,528</td>
+    </tr>
+    <tr>
+      <td>AKAM</td>
+      <td>Akamai Technologies, Inc.</td>
+      <td>Technology</td>
+      <td>13,682,675,712</td>
+    </tr>
+    <tr>
+      <td>BP</td>
+      <td>BP p.l.c.</td>
+      <td>Energy</td>
+      <td>77,282,181,120</td>
+    </tr>
+    <tr>
+      <td>ECL</td>
+      <td>Ecolab Inc.</td>
+      <td>Basic Materials</td>
+      <td>68,927,291,392</td>
+    </tr>
+    <tr>
+      <td>LEN</td>
+      <td>Lennar Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>45,299,404,800</td>
+    </tr>
+    <tr>
+      <td>MRNA</td>
+      <td>Moderna, Inc.</td>
+      <td>Healthcare</td>
+      <td>14,719,288,320</td>
+    </tr>
+    <tr>
+      <td>ESS</td>
+      <td>Essex Property Trust, Inc.</td>
+      <td>Real Estate</td>
+      <td>20,269,012,992</td>
+    </tr>
+    <tr>
+      <td>DG</td>
+      <td>Dollar General Corporation</td>
+      <td>Consumer Defensive</td>
+      <td>16,256,116,736</td>
+    </tr>
+    <tr>
+      <td>WTW</td>
+      <td>Willis Towers Watson Public Limited Company</td>
+      <td>Financial Services</td>
+      <td>31,643,766,784</td>
+    </tr>
+    <tr>
+      <td>PNW</td>
+      <td>Pinnacle West Capital Corporation</td>
+      <td>Utilities</td>
+      <td>10,644,594,688</td>
+    </tr>
+    <tr>
+      <td>PNR</td>
+      <td>Pentair plc</td>
+      <td>Industrials</td>
+      <td>17,522,749,440</td>
+    </tr>
+    <tr>
+      <td>NKE</td>
+      <td>NIKE, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>111,786,344,448</td>
+    </tr>
+    <tr>
+      <td>HOLN.SW</td>
+      <td>Holcim AG</td>
+      <td>Basic Materials</td>
+      <td>50,788,798,464</td>
+    </tr>
+    <tr>
+      <td>OR.PA</td>
+      <td>L'Oréal S.A.</td>
+      <td>Consumer Defensive</td>
+      <td>173,624,000,512</td>
+    </tr>
+    <tr>
+      <td>IHG</td>
+      <td>InterContinental Hotels Group PLC</td>
+      <td>Consumer Cyclical</td>
+      <td>19,570,556,928</td>
+    </tr>
+    <tr>
+      <td>T</td>
+      <td>AT&amp;T Inc.</td>
+      <td>Communication Services</td>
+      <td>164,888,150,016</td>
+    </tr>
+    <tr>
+      <td>MTD</td>
+      <td>Mettler-Toledo International Inc.</td>
+      <td>Healthcare</td>
+      <td>25,256,132,608</td>
+    </tr>
+    <tr>
+      <td>CTAS</td>
+      <td>Cintas Corporation</td>
+      <td>Industrials</td>
+      <td>89,326,698,496</td>
+    </tr>
+    <tr>
+      <td>ADBE</td>
+      <td>Adobe Inc.</td>
+      <td>Technology</td>
+      <td>222,054,481,920</td>
+    </tr>
+    <tr>
+      <td>PPL</td>
+      <td>PPL Corporation</td>
+      <td>Utilities</td>
+      <td>25,718,253,568</td>
+    </tr>
+    <tr>
+      <td>TSCO</td>
+      <td>Tractor Supply Company</td>
+      <td>Consumer Cyclical</td>
+      <td>29,234,356,224</td>
+    </tr>
+    <tr>
+      <td>AHT</td>
+      <td>Ashford Hospitality Trust, Inc.</td>
+      <td>Real Estate</td>
+      <td>59,279,872</td>
+    </tr>
+    <tr>
+      <td>STLAM.MI</td>
+      <td>Stellantis N.V.</td>
+      <td>Consumer Cyclical</td>
+      <td>34,733,518,848</td>
+    </tr>
+    <tr>
+      <td>RHM.DE</td>
+      <td>Rheinmetall AG</td>
+      <td>Industrials</td>
+      <td>26,554,142,720</td>
+    </tr>
+    <tr>
+      <td>SRE</td>
+      <td>Sempra</td>
+      <td>Utilities</td>
+      <td>59,976,552,448</td>
+    </tr>
+    <tr>
+      <td>NDSN</td>
+      <td>Nordson Corporation</td>
+      <td>Industrials</td>
+      <td>14,671,628,288</td>
+    </tr>
+    <tr>
+      <td>NOC</td>
+      <td>Northrop Grumman Corporation</td>
+      <td>Industrials</td>
+      <td>72,324,456,448</td>
+    </tr>
+    <tr>
+      <td>XYL</td>
+      <td>Xylem Inc.</td>
+      <td>Industrials</td>
+      <td>30,455,584,768</td>
+    </tr>
+    <tr>
+      <td>FCX</td>
+      <td>Freeport-McMoRan Inc.</td>
+      <td>Basic Materials</td>
+      <td>62,880,055,296</td>
+    </tr>
+    <tr>
+      <td>UPS</td>
+      <td>United Parcel Service, Inc.</td>
+      <td>Industrials</td>
+      <td>112,107,208,704</td>
+    </tr>
+    <tr>
+      <td>AIG</td>
+      <td>American International Group, Inc.</td>
+      <td>Financial Services</td>
+      <td>47,393,972,224</td>
+    </tr>
+    <tr>
+      <td>SAN.PA</td>
+      <td>Sanofi</td>
+      <td>Healthcare</td>
+      <td>115,079,569,408</td>
+    </tr>
+    <tr>
+      <td>FTNT</td>
+      <td>Fortinet, Inc.</td>
+      <td>Technology</td>
+      <td>72,061,911,040</td>
+    </tr>
+    <tr>
+      <td>VRTX</td>
+      <td>Vertex Pharmaceuticals Incorporated</td>
+      <td>Healthcare</td>
+      <td>115,983,327,232</td>
+    </tr>
+    <tr>
+      <td>NFLX</td>
+      <td>Netflix, Inc.</td>
+      <td>Communication Services</td>
+      <td>383,634,997,248</td>
+    </tr>
+    <tr>
+      <td>ANSS</td>
+      <td>ANSYS, Inc.</td>
+      <td>Technology</td>
+      <td>30,514,802,688</td>
+    </tr>
+    <tr>
+      <td>MDT</td>
+      <td>Medtronic plc</td>
+      <td>Healthcare</td>
+      <td>108,683,288,576</td>
+    </tr>
+    <tr>
+      <td>AON</td>
+      <td>Aon plc</td>
+      <td>Financial Services</td>
+      <td>82,747,695,104</td>
+    </tr>
+    <tr>
+      <td>TJX</td>
+      <td>The TJX Companies, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>135,084,982,272</td>
+    </tr>
+    <tr>
+      <td>HD</td>
+      <td>The Home Depot, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>407,725,867,008</td>
+    </tr>
+    <tr>
+      <td>NOW</td>
+      <td>ServiceNow, Inc.</td>
+      <td>Technology</td>
+      <td>216,024,219,648</td>
+    </tr>
+    <tr>
+      <td>LH</td>
+      <td>Labcorp Holdings Inc.</td>
+      <td>Healthcare</td>
+      <td>20,087,650,304</td>
+    </tr>
+    <tr>
+      <td>MTCH</td>
+      <td>Match Group, Inc.</td>
+      <td>Communication Services</td>
+      <td>7,909,366,784</td>
+    </tr>
+    <tr>
+      <td>PCAR</td>
+      <td>PACCAR Inc</td>
+      <td>Industrials</td>
+      <td>59,796,529,152</td>
+    </tr>
+    <tr>
+      <td>VLO</td>
+      <td>Valero Energy Corporation</td>
+      <td>Energy</td>
+      <td>44,673,306,624</td>
+    </tr>
+    <tr>
+      <td>TEL</td>
+      <td>TE Connectivity plc</td>
+      <td>Technology</td>
+      <td>45,029,863,424</td>
+    </tr>
+    <tr>
+      <td>ERIE</td>
+      <td>Erie Indemnity Company</td>
+      <td>Financial Services</td>
+      <td>22,224,775,168</td>
+    </tr>
+    <tr>
+      <td>DRI</td>
+      <td>Darden Restaurants, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>19,335,798,784</td>
+    </tr>
+    <tr>
+      <td>RKT</td>
+      <td>Rocket Companies, Inc.</td>
+      <td>Financial Services</td>
+      <td>27,047,151,616</td>
+    </tr>
+    <tr>
+      <td>ADM</td>
+      <td>Archer-Daniels-Midland Company</td>
+      <td>Consumer Defensive</td>
+      <td>25,453,223,936</td>
+    </tr>
+    <tr>
+      <td>CPRT</td>
+      <td>Copart, Inc.</td>
+      <td>Industrials</td>
+      <td>54,816,038,912</td>
+    </tr>
+    <tr>
+      <td>FAST</td>
+      <td>Fastenal Company</td>
+      <td>Industrials</td>
+      <td>47,182,893,056</td>
+    </tr>
+    <tr>
+      <td>INTU</td>
+      <td>Intuit Inc.</td>
+      <td>Technology</td>
+      <td>190,234,181,632</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>Loews Corporation</td>
+      <td>Financial Services</td>
+      <td>18,445,862,912</td>
+    </tr>
+    <tr>
+      <td>PH</td>
+      <td>Parker-Hannifin Corporation</td>
+      <td>Industrials</td>
+      <td>90,448,969,728</td>
+    </tr>
+    <tr>
+      <td>TW</td>
+      <td>Tradeweb Markets Inc.</td>
+      <td>Financial Services</td>
+      <td>29,477,138,432</td>
+    </tr>
+    <tr>
+      <td>EQT</td>
+      <td>EQT Corporation</td>
+      <td>Energy</td>
+      <td>27,978,514,432</td>
+    </tr>
+    <tr>
+      <td>UBER</td>
+      <td>Uber Technologies, Inc.</td>
+      <td>Technology</td>
+      <td>146,641,633,280</td>
+    </tr>
+    <tr>
+      <td>CS.PA</td>
+      <td>AXA SA</td>
+      <td>Financial Services</td>
+      <td>73,654,091,776</td>
+    </tr>
+    <tr>
+      <td>NXPI</td>
+      <td>NXP Semiconductors N.V.</td>
+      <td>Technology</td>
+      <td>57,075,814,400</td>
+    </tr>
+    <tr>
+      <td>PLTR</td>
+      <td>Palantir Technologies Inc.</td>
+      <td>Technology</td>
+      <td>139,779,309,568</td>
+    </tr>
+    <tr>
+      <td>DHL.DE</td>
+      <td>Deutsche Post AG</td>
+      <td>Industrials</td>
+      <td>40,802,754,560</td>
+    </tr>
+    <tr>
+      <td>AMP</td>
+      <td>Ameriprise Financial, Inc.</td>
+      <td>Financial Services</td>
+      <td>55,318,695,936</td>
+    </tr>
+    <tr>
+      <td>CHD</td>
+      <td>Church &amp; Dwight Co., Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>27,501,025,280</td>
+    </tr>
+    <tr>
+      <td>HL</td>
+      <td>Hecla Mining Company</td>
+      <td>Basic Materials</td>
+      <td>3,624,615,168</td>
+    </tr>
+    <tr>
+      <td>IMB</td>
+      <td>NaN</td>
+      <td>Unknown</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>URI</td>
+      <td>United Rentals, Inc.</td>
+      <td>Industrials</td>
+      <td>55,171,375,104</td>
+    </tr>
+    <tr>
+      <td>DOC</td>
+      <td>Healthpeak Properties, Inc.</td>
+      <td>Real Estate</td>
+      <td>15,184,907,264</td>
+    </tr>
+    <tr>
+      <td>CPT</td>
+      <td>Camden Property Trust</td>
+      <td>Real Estate</td>
+      <td>13,014,014,976</td>
+    </tr>
+    <tr>
+      <td>MAR</td>
+      <td>Marriott International, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>78,765,989,888</td>
+    </tr>
+    <tr>
+      <td>ACGL</td>
+      <td>Arch Capital Group Ltd.</td>
+      <td>Financial Services</td>
+      <td>37,093,695,488</td>
+    </tr>
+    <tr>
+      <td>KIM</td>
+      <td>Kimco Realty Corporation</td>
+      <td>Real Estate</td>
+      <td>17,060,989,952</td>
+    </tr>
+    <tr>
+      <td>EOAN.DE</td>
+      <td>E.ON SE</td>
+      <td>Utilities</td>
+      <td>31,196,278,784</td>
+    </tr>
+    <tr>
+      <td>SRT3.DE</td>
+      <td>Sartorius Aktiengesellschaft</td>
+      <td>Healthcare</td>
+      <td>13,494,332,416</td>
+    </tr>
+    <tr>
+      <td>DLTR</td>
+      <td>Dollar Tree, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>14,137,874,432</td>
+    </tr>
+    <tr>
+      <td>UAL</td>
+      <td>United Airlines Holdings, Inc.</td>
+      <td>Industrials</td>
+      <td>31,045,894,144</td>
+    </tr>
+    <tr>
+      <td>RR</td>
+      <td>Richtech Robotics Inc.</td>
+      <td>Industrials</td>
+      <td>54,621,136</td>
+    </tr>
+    <tr>
+      <td>PSX</td>
+      <td>Phillips 66</td>
+      <td>Energy</td>
+      <td>54,270,885,888</td>
+    </tr>
+    <tr>
+      <td>GEHC</td>
+      <td>GE HealthCare Technologies Inc.</td>
+      <td>Healthcare</td>
+      <td>37,463,584,768</td>
+    </tr>
+    <tr>
+      <td>PEG</td>
+      <td>Public Service Enterprise Group Incorporated</td>
+      <td>Utilities</td>
+      <td>46,011,076,608</td>
+    </tr>
+    <tr>
+      <td>CTLT</td>
+      <td>Catalent, Inc.</td>
+      <td>Healthcare</td>
+      <td>10,829,005,824</td>
+    </tr>
+    <tr>
+      <td>AMTM</td>
+      <td>Amentum Holdings, Inc.</td>
+      <td>Industrials</td>
+      <td>6,024,157,696</td>
+    </tr>
+    <tr>
+      <td>GPC</td>
+      <td>Genuine Parts Company</td>
+      <td>Consumer Cyclical</td>
+      <td>17,058,327,552</td>
+    </tr>
+    <tr>
+      <td>CMS</td>
+      <td>CMS Energy Corporation</td>
+      <td>Utilities</td>
+      <td>20,678,909,952</td>
+    </tr>
+    <tr>
+      <td>ABBN.SW</td>
+      <td>ABB Ltd</td>
+      <td>Industrials</td>
+      <td>91,483,299,840</td>
+    </tr>
+    <tr>
+      <td>HAL</td>
+      <td>Halliburton Company</td>
+      <td>Energy</td>
+      <td>27,997,859,840</td>
+    </tr>
+    <tr>
+      <td>PODD</td>
+      <td>Insulet Corporation</td>
+      <td>Healthcare</td>
+      <td>18,377,936,896</td>
+    </tr>
+    <tr>
+      <td>APA</td>
+      <td>APA Corporation</td>
+      <td>Energy</td>
+      <td>8,301,611,008</td>
+    </tr>
+    <tr>
+      <td>FRES</td>
+      <td>Fresh2 Group Limited</td>
+      <td>Healthcare</td>
+      <td>3,106,648</td>
+    </tr>
+    <tr>
+      <td>MCD</td>
+      <td>McDonald's Corporation</td>
+      <td>Consumer Cyclical</td>
+      <td>206,723,383,296</td>
+    </tr>
+    <tr>
+      <td>SGE</td>
+      <td>Strong Global Entertainment, Inc.</td>
+      <td>Technology</td>
+      <td>12,273,334</td>
+    </tr>
+    <tr>
+      <td>RSG</td>
+      <td>Republic Services, Inc.</td>
+      <td>Industrials</td>
+      <td>67,033,317,376</td>
+    </tr>
+    <tr>
+      <td>SVT</td>
+      <td>Servotronics, Inc.</td>
+      <td>Industrials</td>
+      <td>29,243,494</td>
+    </tr>
+    <tr>
+      <td>CRWD</td>
+      <td>CrowdStrike Holdings, Inc.</td>
+      <td>Technology</td>
+      <td>87,644,798,976</td>
+    </tr>
+    <tr>
+      <td>EA</td>
+      <td>Electronic Arts Inc.</td>
+      <td>Communication Services</td>
+      <td>44,053,995,520</td>
+    </tr>
+    <tr>
+      <td>TTWO</td>
+      <td>Take-Two Interactive Software, Inc.</td>
+      <td>Communication Services</td>
+      <td>32,768,487,424</td>
+    </tr>
+    <tr>
+      <td>MOS</td>
+      <td>The Mosaic Company</td>
+      <td>Basic Materials</td>
+      <td>8,274,651,648</td>
+    </tr>
+    <tr>
+      <td>WBD</td>
+      <td>Warner Bros. Discovery, Inc.</td>
+      <td>Communication Services</td>
+      <td>25,095,927,808</td>
+    </tr>
+    <tr>
+      <td>EW</td>
+      <td>Edwards Lifesciences Corporation</td>
+      <td>Healthcare</td>
+      <td>41,510,121,472</td>
+    </tr>
+    <tr>
+      <td>GPN</td>
+      <td>Global Payments Inc.</td>
+      <td>Industrials</td>
+      <td>29,605,404,672</td>
+    </tr>
+    <tr>
+      <td>V</td>
+      <td>Visa Inc.</td>
+      <td>Financial Services</td>
+      <td>599,709,188,096</td>
+    </tr>
+    <tr>
+      <td>MGM</td>
+      <td>MGM Resorts International</td>
+      <td>Consumer Cyclical</td>
+      <td>11,317,096,448</td>
+    </tr>
+    <tr>
+      <td>SWK</td>
+      <td>Stanley Black &amp; Decker, Inc.</td>
+      <td>Industrials</td>
+      <td>13,515,557,888</td>
+    </tr>
+    <tr>
+      <td>GILD</td>
+      <td>Gilead Sciences, Inc.</td>
+      <td>Healthcare</td>
+      <td>111,865,192,448</td>
+    </tr>
+    <tr>
+      <td>AIR.PA</td>
+      <td>Airbus SE</td>
+      <td>Industrials</td>
+      <td>108,848,676,864</td>
+    </tr>
+    <tr>
+      <td>KKR</td>
+      <td>KKR &amp; Co. Inc.</td>
+      <td>Financial Services</td>
+      <td>145,497,554,944</td>
+    </tr>
+    <tr>
+      <td>AIZ</td>
+      <td>Assurant, Inc.</td>
+      <td>Financial Services</td>
+      <td>11,550,948,352</td>
+    </tr>
+    <tr>
+      <td>TER</td>
+      <td>Teradyne, Inc.</td>
+      <td>Technology</td>
+      <td>17,185,091,584</td>
+    </tr>
+    <tr>
+      <td>TRMB</td>
+      <td>Trimble Inc.</td>
+      <td>Technology</td>
+      <td>17,443,776,512</td>
+    </tr>
+    <tr>
+      <td>BLDR</td>
+      <td>Builders FirstSource, Inc.</td>
+      <td>Industrials</td>
+      <td>20,244,602,880</td>
+    </tr>
+    <tr>
+      <td>WBA</td>
+      <td>Walgreens Boots Alliance, Inc.</td>
+      <td>Healthcare</td>
+      <td>7,176,321,536</td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>Citigroup Inc.</td>
+      <td>Financial Services</td>
+      <td>130,402,369,536</td>
+    </tr>
+    <tr>
+      <td>PSA</td>
+      <td>Public Storage</td>
+      <td>Real Estate</td>
+      <td>58,810,355,712</td>
+    </tr>
+    <tr>
+      <td>QIA.DE</td>
+      <td>Qiagen N.V.</td>
+      <td>Healthcare</td>
+      <td>9,084,754,944</td>
+    </tr>
+    <tr>
+      <td>EVRG</td>
+      <td>Evergy, Inc.</td>
+      <td>Utilities</td>
+      <td>14,847,250,432</td>
+    </tr>
+    <tr>
+      <td>ABBV</td>
+      <td>AbbVie Inc.</td>
+      <td>Healthcare</td>
+      <td>303,470,936,064</td>
+    </tr>
+    <tr>
+      <td>IRM</td>
+      <td>Iron Mountain Incorporated</td>
+      <td>Real Estate</td>
+      <td>34,842,505,216</td>
+    </tr>
+    <tr>
+      <td>AZN</td>
+      <td>AstraZeneca PLC</td>
+      <td>Healthcare</td>
+      <td>199,245,201,408</td>
+    </tr>
+    <tr>
+      <td>EL</td>
+      <td>The Estée Lauder Companies Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>23,994,087,424</td>
+    </tr>
+    <tr>
+      <td>NWG</td>
+      <td>NatWest Group plc</td>
+      <td>Financial Services</td>
+      <td>42,507,292,672</td>
+    </tr>
+    <tr>
+      <td>MU</td>
+      <td>Micron Technology, Inc.</td>
+      <td>Technology</td>
+      <td>113,934,123,008</td>
+    </tr>
+    <tr>
+      <td>DTE.DE</td>
+      <td>Deutsche Telekom AG</td>
+      <td>Communication Services</td>
+      <td>144,628,908,032</td>
+    </tr>
+    <tr>
+      <td>KER.PA</td>
+      <td>Kering SA</td>
+      <td>Consumer Cyclical</td>
+      <td>25,593,167,872</td>
+    </tr>
+    <tr>
+      <td>HII</td>
+      <td>Huntington Ingalls Industries, Inc.</td>
+      <td>Industrials</td>
+      <td>7,641,952,256</td>
+    </tr>
+    <tr>
+      <td>ALLE</td>
+      <td>Allegion plc</td>
+      <td>Industrials</td>
+      <td>12,292,672,512</td>
+    </tr>
+    <tr>
+      <td>GLW</td>
+      <td>Corning Incorporated</td>
+      <td>Technology</td>
+      <td>40,961,040,384</td>
+    </tr>
+    <tr>
+      <td>CCI</td>
+      <td>Crown Castle Inc.</td>
+      <td>Real Estate</td>
+      <td>45,415,493,632</td>
+    </tr>
+    <tr>
+      <td>AFL</td>
+      <td>Aflac Incorporated</td>
+      <td>Financial Services</td>
+      <td>62,069,145,600</td>
+    </tr>
+    <tr>
+      <td>MSFT</td>
+      <td>Microsoft Corporation</td>
+      <td>Technology</td>
+      <td>3,069,638,868,992</td>
+    </tr>
+    <tr>
+      <td>CMCSA</td>
+      <td>Comcast Corporation</td>
+      <td>Communication Services</td>
+      <td>166,454,493,184</td>
+    </tr>
+    <tr>
+      <td>CARR</td>
+      <td>Carrier Global Corporation</td>
+      <td>Industrials</td>
+      <td>68,198,227,968</td>
+    </tr>
+    <tr>
+      <td>AVGO</td>
+      <td>Broadcom Inc.</td>
+      <td>Technology</td>
+      <td>765,694,902,272</td>
+    </tr>
+    <tr>
+      <td>COR</td>
+      <td>Cencora, Inc.</td>
+      <td>Healthcare</td>
+      <td>48,157,204,480</td>
+    </tr>
+    <tr>
+      <td>VZ</td>
+      <td>Verizon Communications Inc.</td>
+      <td>Communication Services</td>
+      <td>178,909,265,920</td>
+    </tr>
+    <tr>
+      <td>BIIB</td>
+      <td>Biogen Inc.</td>
+      <td>Healthcare</td>
+      <td>23,025,059,840</td>
+    </tr>
+    <tr>
+      <td>FDX</td>
+      <td>FedEx Corporation</td>
+      <td>Industrials</td>
+      <td>72,114,380,800</td>
+    </tr>
+    <tr>
+      <td>SHL.DE</td>
+      <td>Siemens Healthineers AG</td>
+      <td>Healthcare</td>
+      <td>56,056,987,648</td>
+    </tr>
+    <tr>
+      <td>AZO</td>
+      <td>AutoZone, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>51,874,054,144</td>
+    </tr>
+    <tr>
+      <td>PTC</td>
+      <td>PTC Inc.</td>
+      <td>Technology</td>
+      <td>23,154,864,128</td>
+    </tr>
+    <tr>
+      <td>HLN</td>
+      <td>Haleon plc</td>
+      <td>Healthcare</td>
+      <td>43,180,138,496</td>
+    </tr>
+    <tr>
+      <td>MCK</td>
+      <td>McKesson Corporation</td>
+      <td>Healthcare</td>
+      <td>79,752,593,408</td>
+    </tr>
+    <tr>
+      <td>EFX</td>
+      <td>Equifax Inc.</td>
+      <td>Industrials</td>
+      <td>31,347,460,096</td>
+    </tr>
+    <tr>
+      <td>KHC</td>
+      <td>The Kraft Heinz Company</td>
+      <td>Consumer Defensive</td>
+      <td>37,593,096,192</td>
+    </tr>
+    <tr>
+      <td>MPWR</td>
+      <td>Monolithic Power Systems, Inc.</td>
+      <td>Technology</td>
+      <td>27,925,084,160</td>
+    </tr>
+    <tr>
+      <td>NDAQ</td>
+      <td>Nasdaq, Inc.</td>
+      <td>Financial Services</td>
+      <td>46,486,425,600</td>
+    </tr>
+    <tr>
+      <td>KVUE</td>
+      <td>Kenvue Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>46,186,795,008</td>
+    </tr>
+    <tr>
+      <td>BXP</td>
+      <td>BXP, Inc.</td>
+      <td>Real Estate</td>
+      <td>14,245,727,232</td>
+    </tr>
+    <tr>
+      <td>ADSK</td>
+      <td>Autodesk, Inc.</td>
+      <td>Technology</td>
+      <td>67,973,693,440</td>
+    </tr>
+    <tr>
+      <td>SCMN.SW</td>
+      <td>Swisscom AG</td>
+      <td>Communication Services</td>
+      <td>26,315,364,352</td>
+    </tr>
+    <tr>
+      <td>HOLX</td>
+      <td>Hologic, Inc.</td>
+      <td>Healthcare</td>
+      <td>18,284,451,840</td>
+    </tr>
+    <tr>
+      <td>WEC</td>
+      <td>WEC Energy Group, Inc.</td>
+      <td>Utilities</td>
+      <td>31,939,098,624</td>
+    </tr>
+    <tr>
+      <td>NWSA</td>
+      <td>News Corporation</td>
+      <td>Communication Services</td>
+      <td>17,279,453,184</td>
+    </tr>
+    <tr>
+      <td>BNP.PA</td>
+      <td>BNP Paribas SA</td>
+      <td>Financial Services</td>
+      <td>63,692,464,128</td>
+    </tr>
+    <tr>
+      <td>DVA</td>
+      <td>DaVita Inc.</td>
+      <td>Healthcare</td>
+      <td>13,463,418,880</td>
+    </tr>
+    <tr>
+      <td>IAG</td>
+      <td>IAMGOLD Corporation</td>
+      <td>Basic Materials</td>
+      <td>3,255,840,000</td>
+    </tr>
+    <tr>
+      <td>OTIS</td>
+      <td>Otis Worldwide Corporation</td>
+      <td>Industrials</td>
+      <td>39,926,124,544</td>
+    </tr>
+    <tr>
+      <td>NRG</td>
+      <td>NRG Energy, Inc.</td>
+      <td>Utilities</td>
+      <td>19,626,618,880</td>
+    </tr>
+    <tr>
+      <td>HEN3.DE</td>
+      <td>Henkel AG &amp; Co. KGaA</td>
+      <td>Consumer Defensive</td>
+      <td>30,653,224,960</td>
+    </tr>
+    <tr>
+      <td>KO</td>
+      <td>The Coca-Cola Company</td>
+      <td>Consumer Defensive</td>
+      <td>274,665,324,544</td>
+    </tr>
+    <tr>
+      <td>RMS.PA</td>
+      <td>Hermès International Société en commandite par actions</td>
+      <td>Consumer Cyclical</td>
+      <td>208,359,555,072</td>
+    </tr>
+    <tr>
+      <td>P911.DE</td>
+      <td>Dr. Ing. h.c. F. Porsche AG</td>
+      <td>Consumer Cyclical</td>
+      <td>51,690,139,648</td>
+    </tr>
+    <tr>
+      <td>BSX</td>
+      <td>Boston Scientific Corporation</td>
+      <td>Healthcare</td>
+      <td>134,855,442,432</td>
+    </tr>
+    <tr>
+      <td>SYY</td>
+      <td>Sysco Corporation</td>
+      <td>Consumer Defensive</td>
+      <td>36,881,248,256</td>
+    </tr>
+    <tr>
+      <td>BK</td>
+      <td>The Bank of New York Mellon Corporation</td>
+      <td>Financial Services</td>
+      <td>57,351,913,472</td>
+    </tr>
+    <tr>
+      <td>IFX.DE</td>
+      <td>Infineon Technologies AG</td>
+      <td>Technology</td>
+      <td>37,862,297,600</td>
+    </tr>
+    <tr>
+      <td>DG.PA</td>
+      <td>Vinci SA</td>
+      <td>Industrials</td>
+      <td>56,745,394,176</td>
+    </tr>
+    <tr>
+      <td>NG</td>
+      <td>NovaGold Resources Inc.</td>
+      <td>Basic Materials</td>
+      <td>1,209,052,800</td>
+    </tr>
+    <tr>
+      <td>HIG</td>
+      <td>The Hartford Financial Services Group, Inc.</td>
+      <td>Financial Services</td>
+      <td>34,682,560,512</td>
+    </tr>
+    <tr>
+      <td>HAS</td>
+      <td>Hasbro, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>8,636,506,112</td>
+    </tr>
+    <tr>
+      <td>ORCL</td>
+      <td>Oracle Corporation</td>
+      <td>Technology</td>
+      <td>533,235,040,256</td>
+    </tr>
+    <tr>
+      <td>BAS.DE</td>
+      <td>BASF SE</td>
+      <td>Basic Materials</td>
+      <td>37,753,307,136</td>
+    </tr>
+    <tr>
+      <td>LDOS</td>
+      <td>Leidos Holdings, Inc.</td>
+      <td>Technology</td>
+      <td>21,975,080,960</td>
+    </tr>
+    <tr>
+      <td>ADS.DE</td>
+      <td>adidas AG</td>
+      <td>Consumer Cyclical</td>
+      <td>37,849,362,432</td>
+    </tr>
+    <tr>
+      <td>LOW</td>
+      <td>Lowe's Companies, Inc.</td>
+      <td>Consumer Cyclical</td>
+      <td>149,849,292,800</td>
+    </tr>
+    <tr>
+      <td>ALL</td>
+      <td>The Allstate Corporation</td>
+      <td>Financial Services</td>
+      <td>53,882,114,048</td>
+    </tr>
+    <tr>
+      <td>FITB</td>
+      <td>Fifth Third Bancorp</td>
+      <td>Financial Services</td>
+      <td>31,595,984,896</td>
+    </tr>
+    <tr>
+      <td>SOLV</td>
+      <td>Solventum Corporation</td>
+      <td>Healthcare</td>
+      <td>12,029,069,312</td>
+    </tr>
+    <tr>
+      <td>PRX.AS</td>
+      <td>Prosus N.V.</td>
+      <td>Communication Services</td>
+      <td>90,414,694,400</td>
+    </tr>
+    <tr>
+      <td>A</td>
+      <td>Agilent Technologies, Inc.</td>
+      <td>Healthcare</td>
+      <td>37,944,532,992</td>
+    </tr>
+    <tr>
+      <td>STZ</td>
+      <td>Constellation Brands, Inc.</td>
+      <td>Consumer Defensive</td>
+      <td>43,718,885,376</td>
+    </tr>
+    <tr>
+      <td>CINF</td>
+      <td>Cincinnati Financial Corporation</td>
+      <td>Financial Services</td>
+      <td>24,205,379,584</td>
+    </tr>
+    <tr>
+      <td>SY1.DE</td>
+      <td>Symrise AG</td>
+      <td>Basic Materials</td>
+      <td>14,836,798,464</td>
+    </tr>
+    <tr>
+      <td>JCI</td>
+      <td>Johnson Controls International plc</td>
+      <td>Industrials</td>
+      <td>55,616,917,504</td>
+    </tr>
+  </tbody>
+</table>
+        
+        </div>
+    </body>
+    </html>
+    
