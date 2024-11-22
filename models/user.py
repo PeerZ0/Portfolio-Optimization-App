@@ -5,21 +5,13 @@
 class User:
     def __init__(self):
         self.data = {
-            "new_portfolio": None,
             "age": None,
-            "investment_style": None,
             "preferred_stocks": [],
-            "interested_sectors": [],
             "sectors_to_avoid": [],
-            "geographical_preference": None,
-            "invest_in_crypto": {
-                "invest": False,
-                "percentage": 0
-            },
+            "risk_tolerance": 0,
             "invest_in_penny_stocks": False,
-            "number_of_equities": 0,
-            "invest_in_commodities": False,
             "max_equity_investment": 0,
+            "min_equity_investment": 0,
             "existing_assets_info": [],
             "asset_expectations": []
         }

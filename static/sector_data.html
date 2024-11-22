@@ -1,0 +1,165 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Sector Overview</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                margin: 2rem;
+                background-color: #f5f5f5;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background-color: white;
+                padding: 2rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 1rem 0;
+            }
+            .table th, .table td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            .table th {
+                background-color: #f8f9fa;
+                font-weight: 600;
+            }
+            .table-striped tr:nth-child(even) {
+                background-color: #f8f9fa;
+            }
+            .table tr:hover {
+                background-color: #f2f2f2;
+            }
+            .metadata {
+                color: #666;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+            .search {
+                width: 100%;
+                padding: 8px;
+                margin: 1rem 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+        </style>
+        <script>
+            function searchTable(inputId, tableId) {
+                const input = document.getElementById(inputId);
+                const filter = input.value.toUpperCase();
+                const table = document.getElementById(tableId);
+                const rows = table.getElementsByTagName('tr');
+
+                for (let i = 1; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let found = false;
+                    for (let j = 0; j < cells.length; j++) {
+                        const cell = cells[j];
+                        if (cell) {
+                            const text = cell.textContent || cell.innerText;
+                            if (text.toUpperCase().indexOf(filter) > -1) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    rows[i].style.display = found ? '' : 'none';
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="metadata">
+                Last updated: 2024-11-22 15:51:54
+            </div>
+            
+            <h1>Sector Overview</h1>
+            <input type="text" id="sectorSearch" class="search" 
+                    onkeyup="searchTable('sectorSearch', 'sectorTable')" 
+                    placeholder="Search for sectors...">
+            <table border="1" class="dataframe table table-striped" id="sectorTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>sector</th>
+      <th>Ticker</th>
+      <th>marketCap</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Technology</td>
+      <td>94</td>
+      <td>17,599,711,321,158</td>
+    </tr>
+    <tr>
+      <td>Communication Services</td>
+      <td>27</td>
+      <td>7,526,351,510,528</td>
+    </tr>
+    <tr>
+      <td>Financial Services</td>
+      <td>91</td>
+      <td>7,456,391,381,280</td>
+    </tr>
+    <tr>
+      <td>Consumer Cyclical</td>
+      <td>75</td>
+      <td>7,171,583,427,584</td>
+    </tr>
+    <tr>
+      <td>Healthcare</td>
+      <td>80</td>
+      <td>6,668,418,737,496</td>
+    </tr>
+    <tr>
+      <td>Industrials</td>
+      <td>88</td>
+      <td>4,840,695,450,166</td>
+    </tr>
+    <tr>
+      <td>Consumer Defensive</td>
+      <td>44</td>
+      <td>3,893,204,164,608</td>
+    </tr>
+    <tr>
+      <td>Energy</td>
+      <td>26</td>
+      <td>2,260,267,252,736</td>
+    </tr>
+    <tr>
+      <td>Utilities</td>
+      <td>36</td>
+      <td>1,561,322,578,944</td>
+    </tr>
+    <tr>
+      <td>Basic Materials</td>
+      <td>35</td>
+      <td>1,367,495,847,040</td>
+    </tr>
+    <tr>
+      <td>Real Estate</td>
+      <td>34</td>
+      <td>1,190,040,698,208</td>
+    </tr>
+    <tr>
+      <td>Unknown</td>
+      <td>15</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+        
+        </div>
+    </body>
+    </html>
+    
