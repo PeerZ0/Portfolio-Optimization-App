@@ -362,20 +362,45 @@ class TerminalUI:
             self.user_data["data_updated"] = "static"
         
         self.update_user_data()  # Update user data immediately
+        self.stdscr.clear()
+
         
     def optimize_portfolio(self, available_tickers):
         self.stdscr.clear()
-        self.stdscr.refresh()
         self.stdscr.addstr(1, 2, "Portfolio Optimization", curses.A_BOLD)
         self.stdscr.addstr(3, 2, "Pulling necessary data...", curses.A_NORMAL)
-        self.stdscr.refresh()
-        # surpress logs
+        
+        # Suppress logs
         with open(os.devnull, 'w') as fnull, redirect_stdout(fnull), redirect_stderr(fnull):
             portfolio = Portfolio(self.user, available_tickers)
-        self.stdscr.refresh()
-        self.stdscr.addstr(3, 2, "Finished...", curses.A_NORMAL)
+        
+        self.stdscr.addstr(5, 2, "Finished pulling data...", curses.A_NORMAL)
         self.stdscr.refresh()
         curses.napms(1000)
+        
         self.stdscr.clear()
         self.stdscr.addstr(1, 2, "Portfolio Optimization", curses.A_BOLD)
         self.stdscr.addstr(3, 2, "Please Select:", curses.A_NORMAL)
+        self.stdscr.addstr(4, 2, "1. Equal Weight Portfolio", curses.A_NORMAL)
+        self.stdscr.addstr(5, 2, "2. Minimum Variance Portfolio", curses.A_NORMAL)
+        self.stdscr.addstr(6, 2, "3. Maximize Sharpe Ratio", curses.A_NORMAL)
+        
+        response = self.show_prompt("Enter your choice: ", 7)
+        
+        # Handle user response
+        if response == '1':
+            port = portfolio.choose_best_return_portfolio()
+            portfolio.plot_cumulative_returns(port)
+        elif response == '2':
+            portfolio.min_variance_portfolio()
+        elif response == '3':
+            portfolio.max_sharpe_ratio_portfolio
+        else:
+            self.stdscr.addstr(9, 2, "Invalid choice. Please try again.", self.RED)
+            self.stdscr.refresh()
+            self.stdscr.getch()
+            return self.optimize_portfolio(available_tickers)
+        
+        self.stdscr.addstr(9, 2, "Optimization complete. Press any key to continue.", self.GREEN)
+        self.stdscr.refresh()
+        self.stdscr.getch()

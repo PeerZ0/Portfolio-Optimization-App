@@ -75,11 +75,6 @@ def build_available_tickers(user: User) -> List[Dict]:
         # Convert the filtered DataFrame to a list of dictionaries
         result = final_df.to_dict('records')
         
-        # Display the number of tickers found that match the user's criteria
-        print(f"Found {len(result)} available tickers matching your criteria")
-        if len(result) == 0:
-            print("Warning: No tickers match your criteria. Consider relaxing some constraints.")
-        
         # Return a list of tickers
         result = [ticker['Ticker'] for ticker in result]
         return result
