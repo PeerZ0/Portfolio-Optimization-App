@@ -9,7 +9,6 @@ def main():
     update_data()
     gather_information(user)
     available_tickers = build_available_tickers(user)
-    print(available_tickers)
     optimize_portfolio(available_tickers, user)
         
 if __name__ == "__main__":
