@@ -34,4 +34,6 @@ class User:
             "invest_in_penny_stocks": False,  # Indicates if the user is willing to invest in penny stocks, default is False
             "max_equity_investment": None,  # Maximum allowable investment in a single equity (in percentage), default is None
             "min_equity_investment": None,  # Minimum allowable investment in a single equity (in percentage), default is None
+            "available_capital": 1000,  # Total available capital for investment
+            "data_updated": None  # Flag to indicate if the user data has been updated
         }

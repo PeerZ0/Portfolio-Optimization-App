@@ -1,12 +1,9 @@
 from models.user import User
-from services.gather_information import gather_information
-from services.update_data import update_data
+from models.terminal import TerminalUI
 from services.build_list import build_available_tickers
-from services.optimize_portfolio import optimize_portfolio
-from services.build_overview import build_overview
-from services.terminal_gather_information import gather_information_terminal
+import curses
 
-def main():
+def terminal(user: User):
     """
     Main function to execute the portfolio optimization application.
 
@@ -21,38 +18,24 @@ def main():
     4. Optimize the portfolio and display the results.
     5. Allow the user to retry with a different optimization method.
     """
-    # Create a new User instance to store user preferences and constraints
-    user = User()
-    
-    # Update the ticker data to make sure the latest data is used
-    update_data()
-    
-    # Gather user preferences, such as age, risk tolerance, and preferred sectors or stocks
-    # gather_information(user)
-    gather_information_terminal(user)
-    
-    # Build a list of available tickers based on the user's preferences
-    available_tickers = build_available_tickers(user)
-    
-    print(f"{len(available_tickers)} tickers available based on your preferences.")
-    
-    while True:
-        # Optimize the portfolio based on available tickers and user preferences
-        weights = optimize_portfolio(available_tickers, user)
+    def main(stdscr):
+        # Start the terminal UI
+        ui = TerminalUI(stdscr, user)
         
-        # Generate and display a detailed overview of the portfolio
-        build_overview(weights)
+        # Gather user information
+        ui.get_update_data()
+        ui.get_stocks()
+        ui.get_sectors()
+        ui.get_risk_info()
+        ui.get_constraints()
         
-        # Ask the user if they want to try a different optimization method
-        retry = input("Would you like to try a different optimization method? (yes/no): ").strip().lower()
+        # Build and filter the list of available tickers based on user preferences
+        available_tickers = build_available_tickers(user)
         
-        # Handle user input for retrying optimization
-        if retry not in ('yes', 'y', 'no', 'n'):
-            print("Invalid input. Please enter 'yes' or 'no'.")
-        elif retry in ('no', 'n'):
-            # Exit the loop and end the program if the user does not want to retry
-            print("Exiting the application. Goodbye!")
-            break
+        ui.optimize_portfolio(available_tickers)
+    
+    curses.wrapper(main)
 
 if __name__ == "__main__":
-    main()
+    user = User()
+    terminal(user)

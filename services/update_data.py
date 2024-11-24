@@ -252,49 +252,35 @@ def static_data():
         print("Error: ticker_data.csv not found. Please run a full update first.")
         return
 
-def update_data():
+def update_data(response: str = "no"):
     """
     Update stock data by fetching ticker symbols and company information from Wikipedia.
     Saves the data in CSV and HTML formats for offline viewing.
     """
     try:
-        while True:
-            # Prompt user input for updating data
-            user_input = input("Do you want to update the data? (yes/no/static): ").strip().lower()
-            
-            if user_input == "static":
-                # Generate static data if user selects 'static'
-                static_data()
-                break
-                            
-            elif user_input == "yes":
-                # Create a directory for storing static files if it doesn't exist
-                os.makedirs('static', exist_ok=True)
+        if response == "static":
+            # Generate static data if user selects 'static'
+            static_data()
+                                    
+        if response == "yes":
+            # Create a directory for storing static files if it doesn't exist
+            os.makedirs('static', exist_ok=True)
 
-                # Fetch and process data
-                print("Fetching tickers from Wikipedia...")
-                wikipedia_tickers = get_wikipedia_tickers()
-                ticker_data = fetch_ticker_data(wikipedia_tickers)
-                df = pd.DataFrame(ticker_data)
-                # Drop rows where 'longName' or 'sector' is missing
-                df = df.dropna(subset=['longName']) 
-                df = df.dropna(subset=['sector']) 
+            # Fetch and process data
+            print("Fetching tickers from Wikipedia...")
+            wikipedia_tickers = get_wikipedia_tickers()
+            ticker_data = fetch_ticker_data(wikipedia_tickers)
+            df = pd.DataFrame(ticker_data)
+            # Drop rows where 'longName' or 'sector' is missing
+            df = df.dropna(subset=['longName']) 
+            df = df.dropna(subset=['sector']) 
 
-                # Save raw data to CSV
-                df.to_csv('static/ticker_data.csv', index=False)
-                print("Data successfully saved to 'ticker_data.csv'")
+            # Save raw data to CSV
+            df.to_csv('static/ticker_data.csv', index=False)
+            print("Data successfully saved to 'ticker_data.csv'")
 
-                # Generate static HTML files
-                static_data()
-                break
-
-            elif user_input == "no":
-                # Exit if user selects 'no'
-                break
-
-            else:
-                # Handle invalid input
-                print("Invalid input. Please enter 'yes', 'no', or 'static'.")
+            # Generate static HTML files
+            static_data()
             
     except Exception as e:
         # Print any unexpected errors that occur during the update process

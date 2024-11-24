@@ -54,11 +54,13 @@
         </style>
         <script>
             function searchTable(inputId, tableId) {
+                // Function to search through the HTML table based on user input
                 const input = document.getElementById(inputId);
                 const filter = input.value.toUpperCase();
                 const table = document.getElementById(tableId);
                 const rows = table.getElementsByTagName('tr');
 
+                // Loop through all table rows, and hide those that don't match the search query
                 for (let i = 1; i < rows.length; i++) {
                     const cells = rows[i].getElementsByTagName('td');
                     let found = false;
@@ -80,7 +82,7 @@
     <body>
         <div class="container">
             <div class="metadata">
-                Last updated: 2024-11-22 19:01:38
+                Last updated: 2024-11-24 14:46:25
             </div>
             
             <h1>Sector Overview</h1>
@@ -98,58 +100,58 @@
   <tbody>
     <tr>
       <td>Technology</td>
-      <td>88</td>
-      <td>17,107,129,921,510</td>
-    </tr>
-    <tr>
-      <td>Communication Services</td>
-      <td>25</td>
-      <td>7,244,906,598,912</td>
-    </tr>
-    <tr>
-      <td>Consumer Cyclical</td>
-      <td>68</td>
-      <td>6,888,916,162,560</td>
-    </tr>
-    <tr>
-      <td>Healthcare</td>
-      <td>74</td>
-      <td>6,453,367,864,313</td>
+      <td>94</td>
+      <td>17,582,309,408,822</td>
     </tr>
     <tr>
       <td>Financial Services</td>
-      <td>83</td>
-      <td>6,447,885,578,976</td>
+      <td>91</td>
+      <td>7,541,006,340,992</td>
+    </tr>
+    <tr>
+      <td>Communication Services</td>
+      <td>27</td>
+      <td>7,459,029,971,968</td>
+    </tr>
+    <tr>
+      <td>Consumer Cyclical</td>
+      <td>75</td>
+      <td>7,255,185,823,232</td>
+    </tr>
+    <tr>
+      <td>Healthcare</td>
+      <td>80</td>
+      <td>6,645,841,459,239</td>
     </tr>
     <tr>
       <td>Industrials</td>
-      <td>83</td>
-      <td>4,641,780,820,880</td>
+      <td>88</td>
+      <td>4,901,224,663,724</td>
     </tr>
     <tr>
       <td>Consumer Defensive</td>
-      <td>43</td>
-      <td>3,727,732,212,736</td>
+      <td>44</td>
+      <td>3,933,008,812,032</td>
     </tr>
     <tr>
       <td>Energy</td>
-      <td>23</td>
-      <td>1,834,175,687,680</td>
+      <td>26</td>
+      <td>2,264,043,280,384</td>
     </tr>
     <tr>
       <td>Utilities</td>
-      <td>30</td>
-      <td>1,337,368,024,064</td>
+      <td>36</td>
+      <td>1,556,705,592,320</td>
     </tr>
     <tr>
       <td>Basic Materials</td>
-      <td>33</td>
-      <td>1,302,873,496,064</td>
+      <td>35</td>
+      <td>1,373,389,957,120</td>
     </tr>
     <tr>
       <td>Real Estate</td>
-      <td>30</td>
-      <td>1,003,731,961,656</td>
+      <td>34</td>
+      <td>1,199,735,526,952</td>
     </tr>
   </tbody>
 </table>
