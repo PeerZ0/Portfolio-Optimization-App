@@ -6,7 +6,16 @@ from datetime import datetime
 import os
 
 def generate_html_wrapper(content, title):
-    """Generate styled HTML with consistent layout"""
+    """
+    Generate styled HTML content with a consistent layout for display.
+
+    Parameters:
+    content (str): The HTML content to embed within the wrapper.
+    title (str): The title of the HTML document.
+
+    Returns:
+    str: A complete HTML document with specified content and title.
+    """
     return f"""
     <!DOCTYPE html>
     <html>
@@ -63,11 +72,13 @@ def generate_html_wrapper(content, title):
         </style>
         <script>
             function searchTable(inputId, tableId) {{
+                // Function to search through the HTML table based on user input
                 const input = document.getElementById(inputId);
                 const filter = input.value.toUpperCase();
                 const table = document.getElementById(tableId);
                 const rows = table.getElementsByTagName('tr');
 
+                // Loop through all table rows, and hide those that don't match the search query
                 for (let i = 1; i < rows.length; i++) {{
                     const cells = rows[i].getElementsByTagName('td');
                     let found = false;
@@ -99,8 +110,10 @@ def generate_html_wrapper(content, title):
 
 def get_wikipedia_tickers():
     """
-    Scrapes Wikipedia pages for lists of major indices and gathers ticker symbols.
-    Returns a list of dictionaries with stock data.
+    Scrape Wikipedia pages for lists of major stock indices and gather ticker symbols.
+
+    Returns:
+    list: A list of dictionaries, each containing stock ticker data.
     """
     tickers = []
     urls = [
@@ -114,11 +127,15 @@ def get_wikipedia_tickers():
     
     for url in urls:
         try:
+            # Request the page content
             response = requests.get(url)
             if response.status_code == 200:
+                # Parse the page content using BeautifulSoup
                 soup = BeautifulSoup(response.text, 'html.parser')
+                # Extract tables using pandas read_html
                 tables = pd.read_html(response.text)
                 
+                # Loop through tables to find relevant columns containing ticker symbols
                 for table in tables:
                     if "Symbol" in table.columns:
                         tickers += table["Symbol"].to_list()
@@ -127,40 +144,60 @@ def get_wikipedia_tickers():
                     elif "Code" in table.columns:
                         tickers += table["Code"].to_list()
         except Exception as e:
+            # Print any error that occurs while scraping a particular URL
             print(f"Error scraping {url}: {e}")
     
+    # Clean up the ticker list by stripping whitespace and converting to uppercase
     tickers = [ticker.strip().upper() for ticker in tickers if isinstance(ticker, str)]
-    tickers = list(set(tickers))  # Remove duplicates
+    # Remove duplicate tickers
+    tickers = list(set(tickers))
     return [{'ticker': ticker} for ticker in tickers]
 
 def fetch_ticker_data(tickers):
     """
-    Fetches detailed information for each ticker using yfinance.
+    Fetch detailed information for each ticker using the yfinance API.
+
+    Parameters:
+    tickers (list): A list of ticker symbols to fetch data for.
+
+    Returns:
+    list: A list of dictionaries containing ticker data, including company information and market details.
     """
     data = []
     for ticker in tickers:
         try:
+            # Use yfinance to get the stock information
             stock = yf.Ticker(ticker['ticker'])
             info = stock.info
+            # Append the fetched data to the data list
             data.append({
                 'Ticker': ticker['ticker'],
                 **info
             })
         except Exception as e:
+            # Print any error that occurs while fetching data for a particular ticker
             print(f"Error fetching data for {ticker['ticker']}: {e}")
     return data
 
 def static_data():
+    """
+    Generate static HTML and CSV files using the previously saved stock data.
+    Generates a sector overview and a detailed stock list as HTML tables.
+    """
     try:
+        # Read the CSV file containing ticker data
         df = pd.read_csv('static/ticker_data.csv')
-        # Generate sector overview
+        # Fill missing sectors with 'Unknown' and convert to string type
         df['sector'] = df['sector'].fillna('Unknown').astype(str)
+        # Group by sector to get count of tickers and sum of market cap
         sector_groups = df.groupby('sector').agg({
             'Ticker': 'count',
             'marketCap': 'sum'
         }).reset_index()
+        # Sort by market cap in descending order
         sector_groups = sector_groups.sort_values('marketCap', ascending=False)
         
+        # Generate HTML for sector overview
         sector_html = f"""
             <h1>Sector Overview</h1>
             <input type="text" id="sectorSearch" class="search" 
@@ -174,10 +211,11 @@ def static_data():
             )}
         """
         
+        # Save the sector overview HTML file
         with open('static/sector_data.html', 'w') as f:
             f.write(generate_html_wrapper(sector_html, "Sector Overview"))
 
-        # Generate stock list
+        # Generate HTML for stock list
         stocks_html = f"""
             <h1>Stock List</h1>
             <input type="text" id="stockSearch" class="search" 
@@ -191,6 +229,7 @@ def static_data():
             )}
         """
         
+        # Save the stock list HTML file
         with open('static/ticker_data.html', 'w') as f:
             f.write(generate_html_wrapper(stocks_html, "Stock List"))
 
@@ -198,23 +237,27 @@ def static_data():
         return
         
     except FileNotFoundError:
+        # Handle the case where the CSV file is not found
         print("Error: ticker_data.csv not found. Please run a full update first.")
         return
 
-
 def update_data():
     """
-    Fetches stock symbols and company names using Wikipedia indices, then stores it in CSV and HTML files.
+    Update stock data by fetching ticker symbols and company information from Wikipedia.
+    Saves the data in CSV and HTML formats for offline viewing.
     """
     try:
         while True:
+            # Prompt user input for updating data
             user_input = input("Do you want to update the data? (yes/no/static): ").strip().lower()
             
             if user_input == "static":
+                # Generate static data if user selects 'static'
                 static_data()
                 break
                             
             elif user_input == "yes":
+                # Create a directory for storing static files if it doesn't exist
                 os.makedirs('static', exist_ok=True)
 
                 # Fetch and process data
@@ -222,6 +265,7 @@ def update_data():
                 wikipedia_tickers = get_wikipedia_tickers()
                 ticker_data = fetch_ticker_data(wikipedia_tickers)
                 df = pd.DataFrame(ticker_data)
+                # Drop rows where 'longName' or 'sector' is missing
                 df = df.dropna(subset=['longName']) 
                 df = df.dropna(subset=['sector']) 
 
@@ -234,14 +278,18 @@ def update_data():
                 break
 
             elif user_input == "no":
+                # Exit if user selects 'no'
                 break
 
             else:
+                # Handle invalid input
                 print("Invalid input. Please enter 'yes', 'no', or 'static'.")
             
     except Exception as e:
+        # Print any unexpected errors that occur during the update process
         print(f"An error occurred: {str(e)}")
         raise
 
 if __name__ == "__main__":
+    # Start the data update process when the script is executed
     update_data()
