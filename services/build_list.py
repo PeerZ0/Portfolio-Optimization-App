@@ -7,12 +7,17 @@ def filter_by_user_preferences(df: pd.DataFrame, user: User) -> pd.DataFrame:
     """
     Filter a DataFrame of tickers based on user preferences, including sectors to avoid and risk tolerance.
 
-    Parameters:
-    df (pd.DataFrame): The DataFrame containing stock information.
-    user (User): The user object containing preferences such as sectors to avoid and risk tolerance.
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing stock information.
+    user : User
+        The user object containing preferences such as sectors to avoid and risk tolerance.
 
-    Returns:
-    pd.DataFrame: A filtered DataFrame that meets the user's preferences.
+    Returns
+    -------
+    pd.DataFrame
+        A filtered DataFrame that meets the user's preferences.
     """
     # Remove sectors user wants to avoid
     if user.data["sectors_to_avoid"]:
@@ -34,11 +39,15 @@ def build_available_tickers(user: User) -> List[Dict]:
     """
     Build a list of available tickers based on user preferences, including filtering by sectors and risk tolerance.
 
-    Parameters:
-    user (User): The user object containing preferences such as sectors to avoid, preferred stocks, and risk tolerance.
+    Parameters
+    ----------
+    user : User
+        The user object containing preferences such as sectors to avoid, preferred stocks, and risk tolerance.
 
-    Returns:
-    List[Dict]: A list of tickers available to the user based on their preferences.
+    Returns
+    -------
+    list of dict
+        A list of tickers available to the user based on their preferences.
     """
     try:
         # Read ticker data from the CSV file

@@ -4,6 +4,7 @@ from services.update_data import update_data
 from services.build_list import build_available_tickers
 from services.optimize_portfolio import optimize_portfolio
 from services.build_overview import build_overview
+from services.terminal_gather_information import gather_information_terminal
 
 def main():
     """
@@ -12,7 +13,8 @@ def main():
     This function runs a loop that gathers user information, builds a list of available tickers, optimizes the portfolio,
     and provides an overview of the portfolio. Users have the option to retry different optimization methods if desired.
     
-    Steps:
+    Steps
+    -----
     1. Create a user instance and gather user preferences and constraints.
     2. Update available data, such as ticker information.
     3. Filter available tickers based on user preferences.
@@ -26,7 +28,8 @@ def main():
     update_data()
     
     # Gather user preferences, such as age, risk tolerance, and preferred sectors or stocks
-    gather_information(user)
+    # gather_information(user)
+    gather_information_terminal(user)
     
     # Build a list of available tickers based on the user's preferences
     available_tickers = build_available_tickers(user)

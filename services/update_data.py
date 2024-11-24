@@ -9,12 +9,17 @@ def generate_html_wrapper(content, title):
     """
     Generate styled HTML content with a consistent layout for display.
 
-    Parameters:
-    content (str): The HTML content to embed within the wrapper.
-    title (str): The title of the HTML document.
+    Parameters
+    ----------
+    content : str
+        The HTML content to embed within the wrapper.
+    title : str
+        The title of the HTML document.
 
-    Returns:
-    str: A complete HTML document with specified content and title.
+    Returns
+    -------
+    str
+        A complete HTML document with specified content and title.
     """
     return f"""
     <!DOCTYPE html>
@@ -112,8 +117,10 @@ def get_wikipedia_tickers():
     """
     Scrape Wikipedia pages for lists of major stock indices and gather ticker symbols.
 
-    Returns:
-    list: A list of dictionaries, each containing stock ticker data.
+    Returns
+    -------
+    list of dict
+        A list of dictionaries, each containing stock ticker data.
     """
     tickers = []
     urls = [
@@ -157,11 +164,15 @@ def fetch_ticker_data(tickers):
     """
     Fetch detailed information for each ticker using the yfinance API.
 
-    Parameters:
-    tickers (list): A list of ticker symbols to fetch data for.
+    Parameters
+    ----------
+    tickers : list of dict
+        A list of ticker symbols to fetch data for.
 
-    Returns:
-    list: A list of dictionaries containing ticker data, including company information and market details.
+    Returns
+    -------
+    list of dict
+        A list of dictionaries containing ticker data, including company information and market details.
     """
     data = []
     for ticker in tickers:

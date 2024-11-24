@@ -1,16 +1,19 @@
 from typing import Set, List
 import pandas as pd
 
-
 def validate_percentage(value: float) -> bool:
     """
     Validate that the provided value is a percentage between 0 and 100.
 
-    Parameters:
-    value (float): The percentage value to validate.
+    Parameters
+    ----------
+    value : float
+        The percentage value to validate.
 
-    Returns:
-    bool: True if the value is between 0 and 100, inclusive. False otherwise.
+    Returns
+    -------
+    bool
+        True if the value is between 0 and 100, inclusive. False otherwise.
     """
     # Ensure the percentage value is between 0 and 100 (inclusive)
     return 0 <= value <= 100
@@ -19,13 +22,19 @@ def get_input(prompt: str, validation_func=None, error_message: str = "Invalid i
     """
     Continuously prompt the user for input until valid input is provided.
 
-    Parameters:
-    prompt (str): The message displayed to the user for input.
-    validation_func (callable, optional): A function that validates the user input.
-    error_message (str): The message displayed when the user input is invalid.
+    Parameters
+    ----------
+    prompt : str
+        The message displayed to the user for input.
+    validation_func : callable, optional
+        A function that validates the user input.
+    error_message : str
+        The message displayed when the user input is invalid.
 
-    Returns:
-    str: The valid user input.
+    Returns
+    -------
+    str
+        The valid user input.
     """
     while True:
         try:
@@ -41,13 +50,17 @@ def get_input(prompt: str, validation_func=None, error_message: str = "Invalid i
 
 def get_basic_info(user) -> None:
     """
-    Get basic information from the user, including age and risk tolerance.
+    Get basic information from the user, including risk tolerance.
 
-    Parameters:
-    user: An object that stores user information.
+    Parameters
+    ----------
+    user : object
+        An object that stores user information.
 
-    Modifies:
-    user.data: Updates the user's data dictionary with age and risk tolerance.
+    Modifies
+    --------
+    user.data : dict
+        Updates the user's data dictionary with risk tolerance.
     """
     # Get user's risk tolerance level    
     risk_tolerance = int(get_input("On a scale of 1-10, what is your risk tolerance? (1=low, 10=high): ",
@@ -58,12 +71,17 @@ def get_preferred_stocks(available_tickers: Set[str], max_attempts: int = 3) -> 
     """
     Allow the user to specify preferred stocks to include in their portfolio, with a limited number of attempts.
 
-    Parameters:
-    available_tickers (Set[str]): A set of valid ticker symbols that the user can choose from.
-    max_attempts (int): The maximum number of attempts allowed to input valid tickers.
+    Parameters
+    ----------
+    available_tickers : set of str
+        A set of valid ticker symbols that the user can choose from.
+    max_attempts : int
+        The maximum number of attempts allowed to input valid tickers.
 
-    Returns:
-    List[str]: A list of valid tickers specified by the user.
+    Returns
+    -------
+    list of str
+        A list of valid tickers specified by the user.
     """
     # Allow the user to specify preferred stocks within a limited number of attempts
     for attempt in range(max_attempts):
@@ -107,12 +125,17 @@ def get_sector_preferences(user, df) -> None:
     """
     Ask the user if they want to avoid investing in any specific sectors and update user preferences accordingly.
 
-    Parameters:
-    user: An object that stores user information.
-    df (DataFrame): A dataframe containing available sectors.
+    Parameters
+    ----------
+    user : object
+        An object that stores user information.
+    df : DataFrame
+        A dataframe containing available sectors.
 
-    Modifies:
-    user.data: Updates the user's data dictionary with sectors to avoid.
+    Modifies
+    --------
+    user.data : dict
+        Updates the user's data dictionary with sectors to avoid.
     """
     # Ask the user if they want to avoid investing in specific sectors
     sector_avoid = get_input("Do you want to avoid investing in any specific sectors? (yes/no): ", lambda x: x.lower() in ["yes", "no"], "Please enter 'yes' or 'no'.").lower()
@@ -143,11 +166,15 @@ def get_portfolio_constraints(user) -> None:
     """
     Ask the user if they want to set minimum and maximum weights for individual equities in the portfolio.
 
-    Parameters:
-    user: An object that stores user information.
+    Parameters
+    ----------
+    user : object
+        An object that stores user information.
 
-    Modifies:
-    user.data: Updates the user's data dictionary with equity investment constraints.
+    Modifies
+    --------
+    user.data : dict
+        Updates the user's data dictionary with equity investment constraints.
     """
     # Ask the user if they want to set constraints on individual equity weights
     set_constraints = get_input("Do you want to set minimum and maximum weights for individual equities? (yes/no): ", lambda x: x.lower() in ["yes", "no"], "Please enter 'yes' or 'no'.").lower()
@@ -177,11 +204,15 @@ def gather_information(user) -> None:
     """
     Gather all necessary information from the user, including basic info, preferred stocks, sector preferences, and portfolio constraints.
 
-    Parameters:
-    user: An object that stores user information.
+    Parameters
+    ----------
+    user : object
+        An object that stores user information.
 
-    Modifies:
-    user.data: Updates the user's data dictionary with all collected information.
+    Modifies
+    --------
+    user.data : dict
+        Updates the user's data dictionary with all collected information.
     """
     try:
         # Collect basic user information like age and risk tolerance

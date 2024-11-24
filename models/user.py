@@ -5,17 +5,25 @@ class User:
     """
     User class to store and manage user-specific data for portfolio optimization.
 
-    Attributes:
-    data (dict): A dictionary containing user preferences and constraints, including:
-        - preferred_stocks (list): A list of tickers the user prefers to include in their portfolio.
-        - sectors_to_avoid (list): A list of sectors that the user wishes to avoid investing in.
-        - risk_tolerance (int): The user's risk tolerance level on a scale from 1 to 10, where 1 is low risk and 10 is high risk.
-                               Defaults to 5 if not provided.
-        - invest_in_penny_stocks (bool): A flag indicating whether the user is willing to invest in penny stocks. Defaults to False.
-        - max_equity_investment (float, optional): The maximum percentage of the total portfolio that the user is willing to invest in a single equity.
-                                                   Defaults to None until specified.
-        - min_equity_investment (float, optional): The minimum percentage of the total portfolio that the user wants to invest in a single equity.
-                                                   Defaults to None until specified.
+    Attributes
+    ----------
+    data : dict
+        A dictionary containing user preferences and constraints, including:
+        - preferred_stocks : list of str
+            A list of tickers the user prefers to include in their portfolio.
+        - sectors_to_avoid : list of str
+            A list of sectors that the user wishes to avoid investing in.
+        - risk_tolerance : int
+            The user's risk tolerance level on a scale from 1 to 10, where 1 is low risk and 10 is high risk.
+            Defaults to 5 if not provided.
+        - invest_in_penny_stocks : bool
+            A flag indicating whether the user is willing to invest in penny stocks. Defaults to False.
+        - max_equity_investment : float, optional
+            The maximum percentage of the total portfolio that the user is willing to invest in a single equity.
+            Defaults to None until specified.
+        - min_equity_investment : float, optional
+            The minimum percentage of the total portfolio that the user wants to invest in a single equity.
+            Defaults to None until specified.
     """
     def __init__(self):
         # Initialize user preferences and constraints in a dictionary
