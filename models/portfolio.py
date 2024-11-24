@@ -6,10 +6,10 @@ import yfinance as yf
 import datetime
 import plotly.graph_objs as go
 import plotly.subplots as sp
-from models.user import User
+
 
 class Portfolio:
-    def __init__(self, User, tickers: list, min_weight: float = 0.0, start_date = '2020-01-01', end_date = datetime.date.today()):
+    def __init__(self, user, tickers: list, min_weight: float = 0.0, start_date = '2023-01-01', end_date = datetime.date.today()):
         """
         Initialize the MinVariancePortfolio with stock ticker data and calculate mean returns and covariance matrix.
         
@@ -25,8 +25,8 @@ class Portfolio:
         self.returns = self.calculate_returns()
         self.mean_returns = self.returns.mean()
         self.cov_matrix = self.returns.cov()
-        self.bounds = tuple((0.05,0.4) for _ in range(len(self.tickers)))
-        self.bounds = tuple((User.data['min_equity_investment'], User.data['max_equity_investment']) for _ in range(len(tickers)))
+        #self.bounds = tuple((0.05,0.4) for _ in range(len(self.tickers)))
+        self.bounds = tuple((user.data['min_equity_investment'], user.data['max_equity_investment']) for _ in range(len(tickers)))
         self.constraints = [{'type': 'eq', 'fun': lambda x: np.sum(x) - 1}, {'type': 'ineq', 'fun': lambda x: np.sum(x) - len(self.tickers) * min_weight}]
         self.sp500 = yf.download('^GSPC', start=start_date, end=end_date)['Adj Close']
 
@@ -37,25 +37,29 @@ class Portfolio:
         Returns:
         pd.DataFrame: A DataFrame containing historical stock prices of the assets.
         """
-        data_dict = {}
+        data_list = []
         for ticker in self.tickers:
             try:
-                df = yf.download(ticker, self.start_date, self.end_date, progress = False)['Adj Close']
-                data_dict[ticker] = df
+                df = yf.download(ticker, self.start_date, self.end_date, progress=False)['Adj Close']
+                data_list.append(df)
             except KeyError as e:
-                print("1")
-        data = pd.DataFrame(data_dict)
+                print(f"Error fetching data for {ticker}: {e}")
+        
+        data = pd.concat(data_list, axis=1)
         data = data.sort_index()
-        data = data.dropna(axis = 1, how = 'all')
-        data = data.ffill()
+        data = data.dropna(axis=1, how='all')
+        data.ffill(inplace=True)
+        
         for column in data.columns:
-            max_nan_streak = (data[column].isna().groupby(data[column].notna().cumsum()).cumsum()).max()
+            max_nan_streak = (data[column].isna().groupby((~data[column].isna()).cumsum()).cumsum()).max()
             if max_nan_streak >= 4:
-                data = data.drop(columns=[column])
+                data.drop(columns=[column], inplace=True)
             else:
-                data[column] = data[column].fillna(method='ffill')
-        if pd.isna(data[column].iloc[0]) and len(data[column]) > 1:
-            data[column].iloc[0] = data[column].iloc[1]
+                data[column].fillna(method='ffill', inplace=True)
+        
+        if pd.isna(data.iloc[0]).any() and len(data) > 1:
+            data.iloc[0] = data.iloc[1]
+        
         self.tickers = list(data.columns)
         return data
         
@@ -365,4 +369,6 @@ class Portfolio:
         fig.show()
 
 
+port = Portfolio(tickers=['DOC', 'EOAN.DE', 'MBG.DE', 'RWE.DE', 'BKNG', 'AD.AS', 'MGM', 'LYB', 'ENI.MI', 'HOLN.SW', 'SIKA.SW', 'CL', 'SLB', 'ENEL.MI', 'REG', 'CMS', 'TSCO', 'AMT', 'WY', 'CVX', 'VZ', 'SBUX', 'BBY', 'LNT', 'OMC', 'EIX', 'EXC', 'SO', 'T', 'BWA'])
 
+# %%
