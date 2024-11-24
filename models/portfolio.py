@@ -369,6 +369,4 @@ class Portfolio:
         fig.show()
 
 
-port = Portfolio(tickers=['DOC', 'EOAN.DE', 'MBG.DE', 'RWE.DE', 'BKNG', 'AD.AS', 'MGM', 'LYB', 'ENI.MI', 'HOLN.SW', 'SIKA.SW', 'CL', 'SLB', 'ENEL.MI', 'REG', 'CMS', 'TSCO', 'AMT', 'WY', 'CVX', 'VZ', 'SBUX', 'BBY', 'LNT', 'OMC', 'EIX', 'EXC', 'SO', 'T', 'BWA'])
-
 # %%
