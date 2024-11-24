@@ -373,7 +373,7 @@ class TerminalUI:
         with open(os.devnull, 'w') as fnull, redirect_stdout(fnull), redirect_stderr(fnull):
             portfolio = Portfolio(self.user, available_tickers)
         self.stdscr.refresh()
-        self.stdscr.addstr(3, 2, "Finished...", curses.A_GREEN)
+        self.stdscr.addstr(3, 2, "Finished...", curses.A_NORMAL)
         self.stdscr.refresh()
         curses.napms(1000)
         self.stdscr.clear()
