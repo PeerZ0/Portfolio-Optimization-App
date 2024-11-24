@@ -254,8 +254,8 @@ class TerminalUI:
             # Show current constraints if any
             y_pos = 5
             if self.user.data.get('min_equity_investment') is not None:
-                self.stdscr.addstr(y_pos, 2, f"Current minimum: {self.user.data['min_equity_investment']}%", curses.A_NORMAL)
-                self.stdscr.addstr(y_pos + 1, 2, f"Current maximum: {self.user.data['max_equity_investment']}%", curses.A_NORMAL)
+                self.stdscr.addstr(y_pos, 2, f"Current minimum: {self.user.data['min_equity_investment']*100}%", curses.A_NORMAL)
+                self.stdscr.addstr(y_pos + 1, 2, f"Current maximum: {self.user.data['max_equity_investment']*100}%", curses.A_NORMAL)
                 y_pos += 3
 
             # Input prompts
@@ -279,8 +279,8 @@ class TerminalUI:
 
             # Validate inputs
             try:
-                min_equity = float(min_response)
-                max_equity = float(max_response)
+                min_equity = float(min_response)/100
+                max_equity = float(max_response)/100
 
                 result_pos = y_pos + 4
                 
@@ -365,7 +365,17 @@ class TerminalUI:
         
     def optimize_portfolio(self, available_tickers):
         self.stdscr.clear()
+        self.stdscr.refresh()
         self.stdscr.addstr(1, 2, "Portfolio Optimization", curses.A_BOLD)
         self.stdscr.addstr(3, 2, "Pulling necessary data...", curses.A_NORMAL)
         self.stdscr.refresh()
+        #with open(os.devnull, 'w') as fnull, redirect_stdout(fnull), redirect_stderr(fnull):
+        #    update_data("yes")
+        portfolio = Portfolio(self.user, available_tickers)
+        self.stdscr.refresh()
+        self.stdscr.addstr(3, 2, "Finished...", curses.A_GREEN)
+        self.stdscr.refresh()
         curses.napms(1000)
+        self.stdscr.clear()
+        self.stdscr.addstr(1, 2, "Portfolio Optimization", curses.A_BOLD)
+        self.stdscr.addstr(3, 2, "Please Select:", curses.A_NORMAL)
