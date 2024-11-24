@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
@@ -24,7 +25,7 @@ class Portfolio:
         self.returns = self.calculate_returns()
         self.mean_returns = self.returns.mean()
         self.cov_matrix = self.returns.cov()
-        #self.bounds = tuple((0.05,0.4) for _ in range(len(self.tickers)))
+        self.bounds = tuple((0.05,0.4) for _ in range(len(self.tickers)))
         self.bounds = tuple((User.data['min_equity_investment'], User.data['max_equity_investment']) for _ in range(len(tickers)))
         self.constraints = [{'type': 'eq', 'fun': lambda x: np.sum(x) - 1}, {'type': 'ineq', 'fun': lambda x: np.sum(x) - len(self.tickers) * min_weight}]
         self.sp500 = yf.download('^GSPC', start=start_date, end=end_date)['Adj Close']
@@ -39,7 +40,7 @@ class Portfolio:
         data_dict = {}
         for ticker in self.tickers:
             try:
-                df = yf.download(ticker, self.start_date, self.end_date)['Adj Close']
+                df = yf.download(ticker, self.start_date, self.end_date, progress = False)['Adj Close']
                 data_dict[ticker] = df
             except KeyError as e:
                 print("1")
@@ -362,4 +363,6 @@ class Portfolio:
             template='plotly_white'
         )
         fig.show()
+
+
 
