@@ -32,8 +32,8 @@ class User:
             "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
             "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
             "invest_in_penny_stocks": False,  # Indicates if the user is willing to invest in penny stocks, default is False
-            "max_equity_investment": None,  # Maximum allowable investment in a single equity (in percentage), default is None
-            "min_equity_investment": None,  # Minimum allowable investment in a single equity (in percentage), default is None
+            "max_equity_investment": 5,  # Maximum allowable investment in a single equity (in percentage), default is None
+            "min_equity_investment": 30,  # Minimum allowable investment in a single equity (in percentage), default is None
             "available_capital": 1000,  # Total available capital for investment
             "data_updated": None  # Flag to indicate if the user data has been updated
         }

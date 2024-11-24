@@ -369,9 +369,9 @@ class TerminalUI:
         self.stdscr.addstr(1, 2, "Portfolio Optimization", curses.A_BOLD)
         self.stdscr.addstr(3, 2, "Pulling necessary data...", curses.A_NORMAL)
         self.stdscr.refresh()
-        #with open(os.devnull, 'w') as fnull, redirect_stdout(fnull), redirect_stderr(fnull):
-        #    update_data("yes")
-        portfolio = Portfolio(self.user, available_tickers)
+        # surpress logs
+        with open(os.devnull, 'w') as fnull, redirect_stdout(fnull), redirect_stderr(fnull):
+            portfolio = Portfolio(self.user, available_tickers)
         self.stdscr.refresh()
         self.stdscr.addstr(3, 2, "Finished...", curses.A_GREEN)
         self.stdscr.refresh()
