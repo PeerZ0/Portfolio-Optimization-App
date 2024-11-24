@@ -1,5 +1,6 @@
 from models.user import User
 from models.terminal import TerminalUI
+from models.portfolio import Portfolio
 from services.build_list import build_available_tickers
 import curses
 
@@ -31,6 +32,7 @@ def terminal(user: User):
         
         # Build and filter the list of available tickers based on user preferences
         available_tickers = build_available_tickers(user)
+        portfolio = Portfolio(user, available_tickers)
         print(available_tickers)
         ui.optimize_portfolio(available_tickers)
     

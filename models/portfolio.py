@@ -38,14 +38,27 @@ class Portfolio:
         pd.DataFrame: A DataFrame containing historical stock prices of the assets.
         """
         data_dict = {}
+        dates_set = set()  # To collect all available dates
+        
+        # First pass: collect data and all available dates
         for ticker in self.tickers:
             try:
-                df = yf.download(ticker, self.start_date, self.end_date, progress = False)['Adj Close']
-                data_dict[ticker] = df
-            except KeyError as e:
-                print("1")
-        data = pd.DataFrame(data_dict)
-        data = data.sort_index()
+                df = yf.download(ticker, self.start_date, self.end_date, progress=False)['Adj Close']
+                if not df.empty:  # Only add if we got data
+                    data_dict[ticker] = df
+                    dates_set.update(df.index)
+            except Exception as e:
+                print(f"Error fetching data for {ticker}: {e}")
+                continue
+
+        if not data_dict:
+            raise ValueError("No valid data could be fetched for any of the tickers")
+
+        # Create a complete date index
+        all_dates = pd.Index(sorted(dates_set))
+
+        # Create DataFrame with the complete date index
+        data = pd.DataFrame(index=all_dates)
         data = data.dropna(axis = 1, how = 'all')
         data = data.ffill()
         for column in data.columns:
