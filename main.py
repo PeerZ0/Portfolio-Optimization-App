@@ -10,7 +10,7 @@ def terminal(user: User):
 
     This function runs a loop that gathers user information, builds a list of available tickers, optimizes the portfolio,
     and provides an overview of the portfolio. Users have the option to retry different optimization methods if desired.
-    
+     
     Steps
     -----
     1. Create a user instance and gather user preferences and constraints.
