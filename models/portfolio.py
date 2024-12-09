@@ -252,7 +252,6 @@ class Portfolio:
 
         # Calculate SP500 benchmark cumulative returns
         cumulative_sp500_returns = (1 + sp500_returns).cumprod() * 1
-        cumulative_sp500_returns.index = cumulative_returns.index
 
         # Create the plot
         fig = go.Figure()
