@@ -21,6 +21,7 @@ class Portfolio:
         self.tickers = tickers
         self.start_date = start_date
         self.end_date = end_date
+        self.data_retrieval_success = False
         self.data = self._get_data()
         self.returns = self.calculate_returns()
         self.mean_returns = self.returns.mean()
@@ -44,7 +45,7 @@ class Portfolio:
                 data_list.append(df)
             except KeyError as e:
                 print(f"Error fetching data for {ticker}: {e}")
-        
+        self.data_retrieval_success = True
         data = pd.concat(data_list, axis=1)
         data = data.sort_index()
         data = data.dropna(axis=1, how='all')
@@ -252,7 +253,6 @@ class Portfolio:
 
         # Calculate SP500 benchmark cumulative returns
         cumulative_sp500_returns = (1 + sp500_returns).cumprod() * 1
-        cumulative_sp500_returns.index = cumulative_returns.index
 
         # Create the plot
         fig = go.Figure()
