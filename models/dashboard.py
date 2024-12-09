@@ -9,7 +9,7 @@ app = dash.Dash(__name__)
 app.title = "Portfolio Optimization Dashboard"
 
 # Initialize the portfolio object with example tickers
-portfolio = Portfolio(tickers=['AAPL', 'MSFT', 'GOOGL'], min_weight=0.05)
+portfolio = Portfolio(tickers=['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA'], min_weight=0.05)
 
 # Example portfolio weights
 min_variance_weights = portfolio.min_variance_portfolio()
@@ -129,5 +129,5 @@ def update_dashboard(selected_strategy):
 # Run the app
 if __name__ == '__main__':
     app.run_server(debug=False)
-    #portfolio.plot_portfolio_allocation(min_variance_weights)
+    
 

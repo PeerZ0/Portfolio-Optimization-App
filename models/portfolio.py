@@ -265,7 +265,7 @@ class Portfolio:
             yaxis_title='Cumulative Return',
             template='plotly_white'
         )
-        fig.show()
+        return fig
 
     def get_summary_statistics(self, portfolio_weights, risk_free_rate=0.01):
         """
@@ -322,18 +322,6 @@ class Portfolio:
         summary_df = pd.DataFrame(list(summary_stats.items()), columns=['Metric', 'Value'])
         return summary_df
 
-    def plot_portfolio_allocation(self, portfolio_weights):
-        """
-        Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
-        
-        Parameters:
-        portfolio_weights (dict): A dictionary containing the weights of each ticker in the portfolio.
-        """
-        labels = list(portfolio_weights.keys())
-        values = list(portfolio_weights.values())
-        fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-        fig.update_layout(title_text='Portfolio Allocation', template='plotly_white')
-        fig.show()
 
 
     def plot_portfolio_allocation(self, portfolio_weights):
@@ -347,7 +335,7 @@ class Portfolio:
         values = list(portfolio_weights.values())
         fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
         fig.update_layout(title_text='Portfolio Allocation', template='plotly_white')
-        fig.show()
+        return fig
 
     def plot_annualized_returns(self, portfolio_weights):
         """
@@ -367,8 +355,6 @@ class Portfolio:
             yaxis_title='Annualized Return',
             template='plotly_white'
         )
-        fig.show()
+        return fig
 
 
-if __name__ == "__main__":
-    cl = Portf
