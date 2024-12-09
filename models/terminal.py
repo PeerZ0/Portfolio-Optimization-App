@@ -2,41 +2,77 @@ from textual.app import App, ComposeResult
 from textual.containers import Container, Vertical, Horizontal
 from textual.widgets import Button, Header, Footer, Input, Label, Select, Static
 from textual.screen import Screen
-from textual.message import Message
 import pandas as pd
 import os
 import asyncio
-from typing import List
 from models.portfolio import Portfolio
+from services.build_list import build_available_tickers
+from textual.app import ComposeResult
+from textual.widgets import Label, Static, Button
+from textual.containers import Horizontal
+from textual.screen import Screen
+
 
 class BaseScreen(Screen):
-    """Base screen class with common functionality"""
+    """
+    BaseScreen class that inherits from Screen and provides common functionality
+    for terminal-based screens.
+
+    Methods
+    -------
+    compose() -> ComposeResult
+        Generates and yields the header and footer components for the screen.
+    """
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
 
 class UpdateDataScreen(BaseScreen):
-    """Screen for updating market data"""
+    """
+    Screen for updating market data.
+
+    Methods
+    -------
+    compose() -> ComposeResult
+        Composes the UI elements for the screen.
+    on_button_pressed(event: Button.Pressed) -> None
+        Handles button press events.
+    async_update_data(mode: str, status: Label) -> None
+        Asynchronously updates the market data.
+    update_data(mode: str) -> None
+        Updates the market data in a blocking manner.
+
+    Attributes
+    ----------
+    app : App
+        The application instance.
+    user : User
+        The user instance containing user data.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Update Market Data", classes="heading")
             yield Label("Do you want to update the market data?", classes="subtitle")
             yield Label("", id="status")
             with Horizontal(classes="button-group"):
-                yield Button("Yes", id="yes", variant="primary")
-                yield Button("No", id="no")
-                yield Button("Static", id="static")
+                yield Button("Yes", id="yes")
+                yield Button("No", id="no", variant="primary")
             yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         status = self.query_one("#status")
-        if event.button.id in ["yes", "no", "static"]:
+        if event.button.id in ["yes", "no"]:
             self.app.user.data["data_updated"] = event.button.id
             if event.button.id in ["yes", "static"]:
-                status.update("Updating data...")
-                self.update_data(event.button.id)
-                status.update("Data updated successfully!")
-            self.app.push_screen("stocks")
+                status.update("Updating data... (This may take a few minutes)")
+                asyncio.create_task(self.async_update_data(event.button.id, status))
+            else:
+                self.app.push_screen("stocks")
+
+    async def async_update_data(self, mode: str, status: Label) -> None:
+        await asyncio.to_thread(self.update_data, mode)
+        status.update("Data updated successfully!")
+        self.app.push_screen("stocks")
 
     def update_data(self, mode: str) -> None:
         from services.update_data import update_data
@@ -44,6 +80,17 @@ class UpdateDataScreen(BaseScreen):
             update_data(mode)
 
 class StocksScreen(BaseScreen):
+    """
+    A screen for selecting preferred stocks.
+    Methods
+    -------
+    compose() -> ComposeResult
+        Composes the UI elements for the stocks selection screen.
+    on_input_changed(event: Input.Changed) -> None
+        Handles changes to the input field for stock tickers.
+    on_button_pressed(event: Button.Pressed) -> None
+        Handles button press events for the "Continue" and "Back" buttons.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Select Preferred Stocks", classes="heading")
@@ -89,6 +136,35 @@ class StocksScreen(BaseScreen):
             self.app.pop_screen()
 
 class SectorsScreen(BaseScreen):
+    """
+    A screen that allows users to select or deselect sectors to exclude from analysis.
+    Methods
+    -------
+    compose() -> ComposeResult
+        Composes the UI elements for the screen.
+    on_select_changed(event: Select.Changed) -> None
+        Handles changes in the sector selection.
+    on_button_pressed(event: Button.Pressed) -> None
+        Handles button press events.
+    compose()
+        Composes the UI elements for the screen.
+        Returns
+        -------
+        ComposeResult
+            The result of the composition, including labels, select dropdown, static texts, and buttons.
+    on_select_changed(event: Select.Changed) -> None
+        Handles changes in the sector selection.
+        Parameters
+        ----------
+        event : Select.Changed
+            The event object containing information about the selection change.
+    on_button_pressed(event: Button.Pressed) -> None
+        Handles button press events.
+        Parameters
+        ----------
+        event : Button.Pressed
+            The event object containing information about the button press.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Exclude Sectors", classes="heading")
@@ -215,65 +291,47 @@ class ConstraintsScreen(BaseScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "continue" and self.validate_constraints():
-            self.app.push_screen("data_pulling")  # Changed from OptimizationScreen
+            self.app.pop_screen()  # Remove current screen
+            self.app.push_screen("data_pulling")  # Push new screen
         elif event.button.id == "back":
             self.app.pop_screen()
 
 class DataPullingScreen(BaseScreen):
-    """Screen for data pulling and portfolio initialization"""
+    """Screen for data pulling and portfolio initialization."""
 
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
-            yield Label("Initializing Portfolio", classes="heading")
-            yield Static("Starting data collection...", id="status")
-            yield Static("", id="progress", classes="progress")
-            with Horizontal(classes="button-group"):
-                yield Button("Continue", id="continue", variant="primary")
-                yield Button("Back", id="back")
+            yield Label("Initializing Portfolio...", classes="heading")
+            yield Static("Please wait while we prepare your portfolio.", id="status")
+            yield Static("This may take a few seconds... (data is pulled from YahooFinance)", id="loading")
+            yield Button("Exit", id="exit", variant="error")
             yield Footer()
 
     async def on_mount(self) -> None:
-        """Start data collection when screen mounts"""
-        self.initialize_portfolio()
+        """Start the initialization process immediately after mounting the screen."""
+        await asyncio.sleep(0.1)  # Yield to allow the screen to render
+        asyncio.create_task(self.initialize_and_redirect())
 
-    async def initialize_portfolio(self) -> None:
-        status = self.query_one("#status")
-        progress = self.query_one("#progress")
-        back_button = self.query_one("#back")
-        
+    async def initialize_and_redirect(self) -> None:
+        """Perform initialization and redirect to the next screen."""
         try:
-            # Build ticker list
-            status.update("Building available tickers list...")
-            from services.build_list import build_available_tickers
-            available_tickers = build_available_tickers(self.app.user)
-            
-            if not available_tickers:
-                status.update("[red]No tickers match your criteria[/red]")
-                back_button.remove_class("hidden")
-                return
-            
-            # Initialize portfolio
-            total_tickers = len(available_tickers)
-            status.update(f"Initializing portfolio with {total_tickers} tickers...")
-            progress.update("Fetching market data (this may take a few minutes)...")
-            
-            # Store portfolio in app for access across screens
-            self.app.portfolio = Portfolio(available_tickers, self.app.user)
-            
-            # Success - proceed to optimization
-            await asyncio.sleep(1)  # Brief pause to show success
-            status.update("[green]Portfolio initialized successfully![/green]")
-            await asyncio.sleep(1)  # Brief pause before transition
+            # Perform portfolio initialization
+            await asyncio.to_thread(self.perform_initialization)
+            # Redirect to the next screen after successful initialization
             self.app.push_screen("optimization")
-            
         except Exception as e:
-            status.update(f"[red]Error initializing portfolio: {str(e)}[/red]")
-            progress.update("Please try again or adjust your preferences")
-            back_button.remove_class("hidden")
+            # If an error occurs, display it on the screen
+            self.query_one("#status").update(f"[red]Error: {str(e)}[/red]")
 
+    def perform_initialization(self) -> None:
+        """Blocking initialization logic moved to a thread."""
+        available_tickers = build_available_tickers(self.app.user)
+        if not available_tickers:
+            raise ValueError("No tickers match your criteria")
+        self.app.portfolio = Portfolio(self.app.user, available_tickers)
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "back":
-            self.app.pop_screen()
+        if event.button.id == "exit":
+            self.app.exit()
 
 class PortfolioOptimizationScreen(BaseScreen):
     """Screen for selecting and running optimizations"""
