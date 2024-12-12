@@ -128,6 +128,5 @@ def update_dashboard(selected_strategy):
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=False, port=8050)
     
-

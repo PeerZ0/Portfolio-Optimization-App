@@ -11,6 +11,9 @@ from textual.app import ComposeResult
 from textual.widgets import Label, Static, Button
 from textual.containers import Horizontal
 from textual.screen import Screen
+import subprocess
+import webbrowser
+import time
 
 
 class BaseScreen(Screen):
@@ -328,7 +331,7 @@ class DataPullingScreen(BaseScreen):
         available_tickers = build_available_tickers(self.app.user)
         if not available_tickers:
             raise ValueError("No tickers match your criteria")
-        self.app.portfolio = Portfolio(self.app.user, available_tickers)
+        self.app.portfolio = Portfolio(available_tickers)
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "exit":
             self.app.exit()
@@ -339,13 +342,7 @@ class PortfolioOptimizationScreen(BaseScreen):
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Portfolio Optimization", classes="heading")
-            yield Static("Select optimization method:", classes="subtitle")
-            with Vertical():
-                yield Button("Minimum Variance Portfolio", id="min_var")
-                yield Button("Maximum Sharpe Ratio", id="max_sharpe")
-                yield Button("Black-Litterman Model", id="black_litterman")
-                yield Button("Auto-Optimize", id="auto")
-            yield Static("", id="results", classes="results")
+            yield Button("Open Dashboard", id="dashboard")
             with Horizontal(classes="button-group"):
                 yield Button("Continue", id="continue", variant="primary")
                 yield Button("Back", id="back")
@@ -355,34 +352,13 @@ class PortfolioOptimizationScreen(BaseScreen):
         if event.button.id == "back":
             self.app.pop_screen()
             return
+        
+        if event.button.id == "dashboard":
+            # Suppress logs and open browser
+            subprocess.Popen(["python", "models/dashboard.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(2)
+            webbrowser.open("http://127.0.0.1:8050")
             
-        results = self.query_one("#results")
-        try:
-            results.update("Optimizing portfolio...")
-            weights = None
-            
-            if event.button.id == "min_var":
-                weights = self.app.portfolio.min_variance_portfolio()
-                method = "Minimum Variance"
-            elif event.button.id == "max_sharpe":
-                weights = self.app.portfolio.max_sharpe_ratio_portfolio()
-                method = "Maximum Sharpe Ratio"
-            elif event.button.id == "black_litterman":
-                weights = self.app.portfolio.black_litterman_model()
-                method = "Black-Litterman"
-            elif event.button.id == "auto":
-                weights = self.app.portfolio.auto_optimize()
-                method = "Auto-Optimize"
-            
-            if weights is not None:
-                result_text = f"\n{method} Portfolio Weights:\n"
-                for ticker, weight in zip(self.app.portfolio.tickers, weights):
-                    result_text += f"{ticker}: {weight:.2%}\n"
-                results.update(result_text)
-            
-        except Exception as e:
-            results.update(f"[red]Optimization failed: {str(e)}[/red]")
-
 class PortfolioApp(App):
     CSS = """
     Screen {
