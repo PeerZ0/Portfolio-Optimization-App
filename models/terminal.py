@@ -282,13 +282,16 @@ class PortfolioOptimizationScreen(BaseScreen):
             yield Button("Exit", id="exit", variant="error")
             yield Footer()
     
+    def perform_initialization(self) -> None:
+        PortfolioOptimizationDashboard(self.app.portfolio).run()
+    
     def on_button_pressed(self, event: Button.Pressed) -> None:
         
         if event.button.id == "dashboard":
-            # Suppress logs and open browser
-            PortfolioOptimizationDashboard(self.app.portfolio).run()
-            time.sleep(2)
-            webbrowser.open("http://127.0.0.1:8059")
+            # subprorcess to run the dashboard class
+            asyncio.to_thread(self.perform_initialization)
+            time.sleep(4)
+            webbrowser.open("http://127.0.0.1:8509")
 
         if event.button.id == "exit":
             self.app.exit()
