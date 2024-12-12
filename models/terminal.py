@@ -289,7 +289,8 @@ class PortfolioOptimizationScreen(BaseScreen):
         
         if event.button.id == "dashboard":
             # subprorcess to run the dashboard class
-            asyncio.to_thread(self.perform_initialization)
+            # asyncio.to_thread(self.perform_initialization)
+            PortfolioOptimizationDashboard(self.app.portfolio).run()
             time.sleep(4)
             webbrowser.open("http://127.0.0.1:8509")
 
