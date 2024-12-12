@@ -16,8 +16,6 @@ class User:
         - risk_tolerance : int
             The user's risk tolerance level on a scale from 1 to 10, where 1 is low risk and 10 is high risk.
             Defaults to 5 if not provided.
-        - invest_in_penny_stocks : bool
-            A flag indicating whether the user is willing to invest in penny stocks. Defaults to False.
         - max_equity_investment : float, optional
             The maximum percentage of the total portfolio that the user is willing to invest in a single equity.
             Defaults to None until specified.
@@ -29,11 +27,9 @@ class User:
         # Initialize user preferences and constraints in a dictionary
         self.data = {
             "preferred_stocks": [],  # List of stock tickers the user wants in their portfolio
+            "available_stocks": [],  # List of stock tickers available for investment
             "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
             "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
-            "invest_in_penny_stocks": False,  # Indicates if the user is willing to invest in penny stocks, default is False
             "max_equity_investment": 5,  # Maximum allowable investment in a single equity (in percentage), default is None
             "min_equity_investment": 30,  # Minimum allowable investment in a single equity (in percentage), default is None
-            "available_capital": 1000,  # Total available capital for investment
-            "data_updated": None  # Flag to indicate if the user data has been updated
         }

@@ -1,3 +1,6 @@
+# models/terminal.py
+# Terminal-based application for portfolio optimization
+
 from textual.app import App, ComposeResult
 from textual.containers import Container, Vertical, Horizontal
 from textual.widgets import Button, Header, Footer, Input, Label, Select, Static
@@ -6,6 +9,7 @@ import pandas as pd
 import os
 import asyncio
 from models.portfolio import Portfolio
+from models.user import User
 from services.build_list import build_available_tickers
 from textual.app import ComposeResult
 from textual.widgets import Label, Static, Button
@@ -17,41 +21,11 @@ import time
 
 
 class BaseScreen(Screen):
-    """
-    BaseScreen class that inherits from Screen and provides common functionality
-    for terminal-based screens.
-
-    Methods
-    -------
-    compose() -> ComposeResult
-        Generates and yields the header and footer components for the screen.
-    """
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
 
 class UpdateDataScreen(BaseScreen):
-    """
-    Screen for updating market data.
-
-    Methods
-    -------
-    compose() -> ComposeResult
-        Composes the UI elements for the screen.
-    on_button_pressed(event: Button.Pressed) -> None
-        Handles button press events.
-    async_update_data(mode: str, status: Label) -> None
-        Asynchronously updates the market data.
-    update_data(mode: str) -> None
-        Updates the market data in a blocking manner.
-
-    Attributes
-    ----------
-    app : App
-        The application instance.
-    user : User
-        The user instance containing user data.
-    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Update Market Data", classes="heading")
@@ -83,17 +57,6 @@ class UpdateDataScreen(BaseScreen):
             update_data(mode)
 
 class StocksScreen(BaseScreen):
-    """
-    A screen for selecting preferred stocks.
-    Methods
-    -------
-    compose() -> ComposeResult
-        Composes the UI elements for the stocks selection screen.
-    on_input_changed(event: Input.Changed) -> None
-        Handles changes to the input field for stock tickers.
-    on_button_pressed(event: Button.Pressed) -> None
-        Handles button press events for the "Continue" and "Back" buttons.
-    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Select Preferred Stocks", classes="heading")
@@ -106,8 +69,8 @@ class StocksScreen(BaseScreen):
                 yield Input(placeholder="Enter stock tickers (comma-separated)", id="stocks")
                 yield Label("", id="status")
                 with Horizontal(classes="button-group"):
-                    yield Button("Continue", id="continue", variant="primary")
                     yield Button("Back", id="back")
+                    yield Button("Continue", id="continue", variant="primary")
             except FileNotFoundError:
                 yield Label("Stock data not found. Please update data first.", classes="error")
                 with Horizontal(classes="button-group"):
@@ -131,6 +94,8 @@ class StocksScreen(BaseScreen):
                 status.remove_class("success")
                 status.add_class("error")
                 status.update(f"Invalid tickers: {', '.join(invalid_stocks)}")
+            # save the valid stocks to the user data
+            self.app.user.data["preferred_stocks"] = valid_stocks
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "continue":
@@ -139,35 +104,6 @@ class StocksScreen(BaseScreen):
             self.app.pop_screen()
 
 class SectorsScreen(BaseScreen):
-    """
-    A screen that allows users to select or deselect sectors to exclude from analysis.
-    Methods
-    -------
-    compose() -> ComposeResult
-        Composes the UI elements for the screen.
-    on_select_changed(event: Select.Changed) -> None
-        Handles changes in the sector selection.
-    on_button_pressed(event: Button.Pressed) -> None
-        Handles button press events.
-    compose()
-        Composes the UI elements for the screen.
-        Returns
-        -------
-        ComposeResult
-            The result of the composition, including labels, select dropdown, static texts, and buttons.
-    on_select_changed(event: Select.Changed) -> None
-        Handles changes in the sector selection.
-        Parameters
-        ----------
-        event : Select.Changed
-            The event object containing information about the selection change.
-    on_button_pressed(event: Button.Pressed) -> None
-        Handles button press events.
-        Parameters
-        ----------
-        event : Button.Pressed
-            The event object containing information about the button press.
-    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Exclude Sectors", classes="heading")
@@ -184,8 +120,8 @@ class SectorsScreen(BaseScreen):
                 yield Static("Selected sectors to exclude:", classes="label")
                 yield Static("None", id="selected_sectors", classes="selected-sectors")
                 with Horizontal(classes="button-group"):
-                    yield Button("Continue", id="continue", variant="primary")
                     yield Button("Back", id="back")
+                    yield Button("Continue", id="continue", variant="primary")
             except FileNotFoundError:
                 yield Label("Sector data not found. Please update data first.", classes="error")
                 with Horizontal(classes="button-group"):
@@ -225,8 +161,8 @@ class RiskScreen(BaseScreen):
             yield Input(placeholder="Enter risk level", id="risk")
             yield Label("", id="status")
             with Horizontal(classes="button-group"):
-                yield Button("Continue", id="continue")
                 yield Button("Back", id="back")
+                yield Button("Continue", id="continue")
             yield Footer()
 
     def on_input_changed(self, event: Input.Changed) -> None:
@@ -259,8 +195,8 @@ class ConstraintsScreen(BaseScreen):
             yield Input(placeholder="Maximum investment %", id="max")
             yield Label("", id="status")
             with Horizontal(classes="button-group"):
-                yield Button("Continue", id="continue")
                 yield Button("Back", id="back")
+                yield Button("Continue", id="continue")
             yield Footer()
 
     def validate_constraints(self) -> bool:
@@ -329,9 +265,11 @@ class DataPullingScreen(BaseScreen):
     def perform_initialization(self) -> None:
         """Blocking initialization logic moved to a thread."""
         available_tickers = build_available_tickers(self.app.user)
+        # save the available tickers to the user data
+        self.app.user.data["available_tickers"] = available_tickers
         if not available_tickers:
             raise ValueError("No tickers match your criteria")
-        self.app.portfolio = Portfolio(available_tickers)
+        self.app.portfolio = Portfolio(self.app.user.data["available_tickers"])
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "exit":
             self.app.exit()
@@ -343,9 +281,7 @@ class PortfolioOptimizationScreen(BaseScreen):
         with Container(classes="container"):
             yield Label("Portfolio Optimization", classes="heading")
             yield Button("Open Dashboard", id="dashboard")
-            with Horizontal(classes="button-group"):
-                yield Button("Continue", id="continue", variant="primary")
-                yield Button("Back", id="back")
+            yield Button("Exit", id="exit", variant="error")
             yield Footer()
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -358,6 +294,9 @@ class PortfolioOptimizationScreen(BaseScreen):
             subprocess.Popen(["python", "models/dashboard.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             time.sleep(2)
             webbrowser.open("http://127.0.0.1:8050")
+
+        if event.button.id == "exit":
+            self.app.exit()
             
 class PortfolioApp(App):
     CSS = """
@@ -447,9 +386,9 @@ class PortfolioApp(App):
         "optimization": PortfolioOptimizationScreen
     }
 
-    def __init__(self, user):
+    def __init__(self):
         super().__init__()
-        self.user = user
+        self.user = User()
 
     def on_mount(self) -> None:
         """Called when app starts"""

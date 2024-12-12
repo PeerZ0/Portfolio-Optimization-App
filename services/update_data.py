@@ -1,3 +1,6 @@
+# services/update_data.py
+# Update stock data by fetching ticker symbols and company information from Wikipedia and yfinance.
+
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup

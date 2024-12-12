@@ -1,8 +1,10 @@
+# services/build_list.py
+# Build a list of available tickers based on user preferences.
+
 import pandas as pd
 from typing import List, Dict
-from models.user import User
 
-def filter_by_user_preferences(df: pd.DataFrame, user: User) -> pd.DataFrame:
+def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
     """
     (No changes needed to this helper function.)
     """
@@ -15,7 +17,7 @@ def filter_by_user_preferences(df: pd.DataFrame, user: User) -> pd.DataFrame:
         df = df[(df['overallRisk'] >= min_risk) & (df['overallRisk'] <= max_risk)]
     return df
 
-def build_available_tickers(user: User) -> List[Dict]:
+def build_available_tickers(user) -> List[Dict]:
     """
     Build a list of available tickers based on user preferences.
 
