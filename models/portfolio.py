@@ -9,7 +9,7 @@ import plotly.subplots as sp
 
 
 class Portfolio:
-    def __init__(self, user, tickers: list, min_weight: float = 0.0, start_date = '2023-01-01', end_date = datetime.date.today()):
+    def __init__(self, user, min_weight: float = 0.0, start_date = '2023-01-01', end_date = datetime.date.today()):
         """
         Initialize the MinVariancePortfolio with stock ticker data and calculate mean returns and covariance matrix.
         
@@ -18,7 +18,7 @@ class Portfolio:
         start_date (str): The start date for fetching historical data in 'YYYY-MM-DD' format.
         end_date (str): The end date for fetching historical data in 'YYYY-MM-DD' format.
         """
-        self.tickers = tickers
+        self.tickers = user.data['available_stocks']
         self.start_date = start_date
         self.end_date = end_date
         self.data_retrieval_success = False
