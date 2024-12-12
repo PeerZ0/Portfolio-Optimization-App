@@ -2,14 +2,22 @@ import dash
 from dash import dcc, html, Input, Output
 import pandas as pd
 import numpy as np
-from portfolio import Portfolio  # Assuming the Portfolio class is correctly implemented
+from portfolio import Portfolio  
+from flask_caching import Cache
 
 # Create the app
 app = dash.Dash(__name__)
 app.title = "Portfolio Optimization Dashboard"
 
+# Initialize cache
+cache = Cache(app.server, config={
+    'CACHE_TYPE': 'simple'
+})
+
+# Clear cache (useful during development to reset cached data)
+cache.clear()
 # Initialize the portfolio object with example tickers
-portfolio = Portfolio(tickers=['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA'], min_weight=0.05)
+portfolio = Portfolio(tickers=['AAPL', 'MSFT', 'NVDA'], min_weight=0.05)
 
 # Example portfolio weights
 min_variance_weights = portfolio.min_variance_portfolio()
@@ -128,5 +136,5 @@ def update_dashboard(selected_strategy):
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=False, port=8050)
+    app.run_server(debug=False, port = 8509)
     
