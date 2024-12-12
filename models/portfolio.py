@@ -123,32 +123,6 @@ class Portfolio:
         result = minimize(negative_sharpe_ratio, initial_weights, method='SLSQP', bounds=self.bounds, constraints=self.constraints)
         return dict(zip(self.tickers, result.x))
 
-    def black_litterman_model(self, P, Q, omega=None, tau=0.025):
-        """
-        Black-Litterman model for portfolio optimization.
-        
-        Parameters:
-        P (np.array): The matrix representing the views.
-        Q (np.array): The vector representing the expected returns based on the views.
-        omega (np.array or None): The uncertainty matrix for the views. If None, defaults to a diagonal matrix.
-        tau (float): Scalar representing the uncertainty of the prior.
-        
-        Returns:
-        pd.Series: The adjusted expected returns.
-        """
-        # Calculate the equilibrium excess returns (pi)
-        pi = tau * np.dot(self.cov_matrix, self.mean_returns)
-        
-        # If omega is not provided, use a diagonal matrix with small uncertainty
-        if omega is None:
-            omega = np.diag(np.diag(np.dot(np.dot(P, self.cov_matrix), P.T)))
-        
-        # Calculate Black-Litterman expected returns
-        M_inverse = np.linalg.inv(np.dot(np.dot(P, tau * self.cov_matrix), P.T) + omega)
-        adjusted_returns = self.mean_returns + np.dot(np.dot(tau * self.cov_matrix, P.T), np.dot(M_inverse, (Q - np.dot(P, pi))))
-        
-        return pd.Series(adjusted_returns, index=self.tickers)
-    
 
     def choose_best_return_portfolio(self, yearly_rebalance='no'):
         """
@@ -202,23 +176,6 @@ class Portfolio:
         
         return best_portfolio
     
-    def yearly_rebalance(self, portfolio_weights):
-        """
-        Rebalance the portfolio weights annually.
-        
-        Parameters:
-        portfolio_weights (dict): A dictionary containing the initial weights of each ticker in the portfolio.
-        
-        Returns:
-        dict: A dictionary containing the rebalanced weights for each year.
-        """
-        rebalance_dates = pd.date_range(start=self.start_date, end=self.end_date, freq='Y')
-        rebalanced_weights = {}
-
-        for date in rebalance_dates:
-            rebalanced_weights[date.year] = dict(zip(self.tickers, portfolio_weights.values()))
-        return rebalanced_weights
-        
 
     def calculate_max_drawdowns(self, returns):
         """
