@@ -27,7 +27,7 @@ class Portfolio:
         self.mean_returns = self.returns.mean()
         self.cov_matrix = self.returns.cov()
         #self.bounds = tuple((0.05,0.4) for _ in range(len(self.tickers)))
-        self.bounds = tuple((user.data['min_equity_investment'], user.data['max_equity_investment']) for _ in range(len(tickers)))
+        self.bounds = tuple((user.data['min_equity_investment'], user.data['max_equity_investment']) for _ in range(len(self.tickers)))
         self.constraints = [{'type': 'eq', 'fun': lambda x: np.sum(x) - 1}, {'type': 'ineq', 'fun': lambda x: np.sum(x) - len(self.tickers) * min_weight}]
         self.sp500 = yf.download('^GSPC', start=start_date, end=end_date)['Adj Close']
 
