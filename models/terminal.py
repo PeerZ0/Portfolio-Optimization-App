@@ -15,6 +15,7 @@ import time
 from models.portfolio import Portfolio
 from models.user import User
 from services.build_list import build_available_tickers
+from models.dashboard2 import PortfolioOptimizationDashboard
 
 class BaseScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -285,9 +286,9 @@ class PortfolioOptimizationScreen(BaseScreen):
         
         if event.button.id == "dashboard":
             # Suppress logs and open browser
-            subprocess.Popen(["python", "models/dashboard.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            PortfolioOptimizationDashboard(self.app.portfolio).run()
             time.sleep(2)
-            webbrowser.open("http://127.0.0.1:8050")
+            webbrowser.open("http://127.0.0.1:8059")
 
         if event.button.id == "exit":
             self.app.exit()
