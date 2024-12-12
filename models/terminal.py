@@ -2,23 +2,19 @@
 # Terminal-based application for portfolio optimization
 
 from textual.app import App, ComposeResult
-from textual.containers import Container, Vertical, Horizontal
+from textual.containers import Container, Horizontal
 from textual.widgets import Button, Header, Footer, Input, Label, Select, Static
 from textual.screen import Screen
 import pandas as pd
 import os
 import asyncio
-from models.portfolio import Portfolio
-from models.user import User
-from services.build_list import build_available_tickers
-from textual.app import ComposeResult
-from textual.widgets import Label, Static, Button
-from textual.containers import Horizontal
-from textual.screen import Screen
 import subprocess
 import webbrowser
 import time
 
+from models.portfolio import Portfolio
+from models.user import User
+from services.build_list import build_available_tickers
 
 class BaseScreen(Screen):
     def compose(self) -> ComposeResult:
@@ -269,7 +265,7 @@ class DataPullingScreen(BaseScreen):
         self.app.user.data["available_tickers"] = available_tickers
         if not available_tickers:
             raise ValueError("No tickers match your criteria")
-        self.app.portfolio = Portfolio(self.app.user.data["available_tickers"])
+        self.app.portfolio = Portfolio(self.app.user.data["available_tickers"], self.app.user)
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "exit":
             self.app.exit()
@@ -285,9 +281,6 @@ class PortfolioOptimizationScreen(BaseScreen):
             yield Footer()
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "back":
-            self.app.pop_screen()
-            return
         
         if event.button.id == "dashboard":
             # Suppress logs and open browser
@@ -326,7 +319,7 @@ class PortfolioApp(App):
 
     .subtitle {
         text-align: center;
-        margin: 1;
+        margin: 1 0 0 2;
     }
 
     .button-group {
@@ -365,8 +358,21 @@ class PortfolioApp(App):
         margin: 1;
     }
 
+    Input {
+        width: 100%;
+        margin: 1;
+    }
+    
+    Label {
+        margin: 0 0 0 2;
+    }
+    
+    Static {
+        margin: 0 0 0 2;
+    }
+    
     .label {
-        margin-top: 1;
+        margin: 1 0 0 2;
         text-align: left;
     }
     """

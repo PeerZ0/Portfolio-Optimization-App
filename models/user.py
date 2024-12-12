@@ -11,6 +11,8 @@ class User:
         A dictionary containing user preferences and constraints, including:
         - preferred_stocks : list of str
             A list of tickers the user prefers to include in their portfolio.
+        - available_stocks : list of str
+            A list of stock tickers available for investment.
         - sectors_to_avoid : list of str
             A list of sectors that the user wishes to avoid investing in.
         - risk_tolerance : int

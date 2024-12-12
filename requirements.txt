@@ -6,3 +6,4 @@ Requests==2.32.3
 scipy==1.14.1
 textual==0.89.1
 yfinance==0.2.50
+flask_caching

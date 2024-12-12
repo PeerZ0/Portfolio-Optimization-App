@@ -6,7 +6,19 @@ from typing import List, Dict
 
 def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
     """
-    (No changes needed to this helper function.)
+    Filter the DataFrame based on user preferences.
+    
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing ticker data.
+    user : User
+        The user object containing preferences such as sectors to avoid and risk tolerance.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The filtered DataFrame based on user preferences.
     """
     if user.data["sectors_to_avoid"]:
         df = df[~df['sector'].isin(user.data["sectors_to_avoid"])]

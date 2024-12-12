@@ -1,6 +1,6 @@
 # Portfolio Optimization
 
-A Python-based portfolio optimization system with a terminal user interface and interactive dashboard visualization.
+A simple Python-based terminal app that runs several optimization algorithms to find the best investment portfolio allocation based on the user's preferences and then visualizes the results in a dashboard.
 
 ## How to use
 1. Run the main.py file
@@ -33,18 +33,15 @@ pip install -r requirements.txt
 python main.py
 ````
 
-## Features
-- 
-
 ## Project Structure
 
 ```plaintext
 .
-├── main.py          # Application entry point
+├── main.py           # Application entry point
 ├── models/           # Core classes and data structures
 ├── services/         # Data retrieval and processing services
 ├── static/           # Stock data storage
-└── requirements.txt # Project dependencies
+└── requirements.txt  # Project dependencies
 ```
 
 ## Dependencies
