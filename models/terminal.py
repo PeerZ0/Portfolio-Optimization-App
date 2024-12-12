@@ -8,9 +8,9 @@ from textual.screen import Screen
 import pandas as pd
 import os
 import asyncio
-import subprocess
 import webbrowser
 import time
+import threading
 
 from models.portfolio import Portfolio
 from models.user import User
@@ -288,10 +288,18 @@ class PortfolioOptimizationScreen(BaseScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         
         if event.button.id == "dashboard":
-            # subprorcess to run the dashboard class
-            # asyncio.to_thread(self.perform_initialization)
-            PortfolioOptimizationDashboard(self.app.portfolio).run()
-            time.sleep(4)
+            def run_dashboard():
+                PortfolioOptimizationDashboard(self.app.portfolio).run()
+
+            # Start dashboard in separate thread
+            dashboard_thread = threading.Thread(target=run_dashboard)
+            dashboard_thread.daemon = True  # Thread will be terminated when main program exits
+            dashboard_thread.start()
+
+            # Wait briefly for server to start
+            time.sleep(2)
+            
+            # Open browser
             webbrowser.open("http://127.0.0.1:8509")
 
         if event.button.id == "exit":

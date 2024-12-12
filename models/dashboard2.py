@@ -3,6 +3,8 @@ from importlib import import_module
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 from flask_caching import Cache
+import subprocess
+
 
 class PortfolioOptimizationDashboard:
     def __init__(self, portfolio):
