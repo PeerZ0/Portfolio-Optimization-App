@@ -239,7 +239,8 @@ class DataPullingScreen(BaseScreen):
             yield Label("Initializing Portfolio...", classes="heading")
             yield Static("Please wait while we prepare your portfolio.", id="status")
             yield Static("This may take a few seconds... (data is pulled from YahooFinance)", id="loading")
-            yield Button("Exit", id="exit", variant="error")
+            with Horizontal(classes="button-group"):
+                yield Button("Exit", id="exit", variant="error")
             yield Footer()
 
     async def on_mount(self) -> None:
@@ -262,10 +263,10 @@ class DataPullingScreen(BaseScreen):
         """Blocking initialization logic moved to a thread."""
         available_tickers = build_available_tickers(self.app.user)
         # save the available tickers to the user data
-        self.app.user.data["available_tickers"] = available_tickers
+        self.app.user.data["available_stocks"] = available_tickers
         if not available_tickers:
             raise ValueError("No tickers match your criteria")
-        self.app.portfolio = Portfolio(self.app.user.data["available_tickers"], self.app.user)
+        self.app.portfolio = Portfolio(self.app.user)
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "exit":
             self.app.exit()

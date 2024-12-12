@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import yfinance as yf
 import os
 
-def get_wikipedia_tickers() -> List[Dict]:
+def get_wikipedia_tickers():
     """
     Scrape Wikipedia pages for lists of major stock indices and gather ticker symbols.
 
@@ -47,7 +47,7 @@ def get_wikipedia_tickers() -> List[Dict]:
     tickers = list(set(tickers))
     return [{'ticker': ticker} for ticker in tickers]
 
-def fetch_ticker_data(tickers) -> List[Dict]:
+def fetch_ticker_data(tickers):
     """
     Fetch detailed information for each ticker using the yfinance API.
 
