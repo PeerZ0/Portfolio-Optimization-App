@@ -3,7 +3,6 @@ from importlib import import_module
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 from flask_caching import Cache
-from user import User
 
 class PortfolioOptimizationDashboard:
     def __init__(self, portfolio):
@@ -155,6 +154,7 @@ if __name__ == '__main__':
     from portfolio import Portfolio  # Replace with the actual module containing the Portfolio class
 
     # Initialize Portfolio object
+    from user import User
     user = User()
     user.data = {
             "preferred_stocks": ['AAPL', 'MSFT'], 
