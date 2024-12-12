@@ -32,6 +32,6 @@ class User:
             "available_stocks": [],  # List of stock tickers available for investment
             "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
             "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
-            "max_equity_investment": 5,  # Maximum allowable investment in a single equity (in percentage), default is None
-            "min_equity_investment": 30,  # Minimum allowable investment in a single equity (in percentage), default is None
+            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is None
+            "min_equity_investment": 5,  # Minimum allowable investment in a single equity (in percentage), default is None
         }

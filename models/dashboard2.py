@@ -3,6 +3,7 @@ from importlib import import_module
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 from flask_caching import Cache
+from user import User
 
 class PortfolioOptimizationDashboard:
     def __init__(self, portfolio):
@@ -154,7 +155,16 @@ if __name__ == '__main__':
     from portfolio import Portfolio  # Replace with the actual module containing the Portfolio class
 
     # Initialize Portfolio object
-    portfolio = Portfolio(tickers=['AAPL', 'MSFT'], min_weight=0.05)
+    user = User()
+    user.data = {
+            "preferred_stocks": ['AAPL', 'MSFT'], 
+            "available_stocks": ['AAPL', 'MSFT'],  # List of stock tickers available for investment
+            "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
+            "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
+            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is None
+            "min_equity_investment": 5,  # Minimum allowable investment in a single equity (in percentage), default is None
+        }
+    portfolio = Portfolio(user)
 
     # Initialize and run the dashboard
     dashboard = PortfolioOptimizationDashboard(portfolio)
