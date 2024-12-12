@@ -159,8 +159,8 @@ if __name__ == '__main__':
     from user import User
     user = User()
     user.data = {
-            "preferred_stocks": ['AAPL', 'MSFT'], 
-            "available_stocks": ['AAPL', 'MSFT'],  # List of stock tickers available for investment
+            "preferred_stocks": ['AAPL', 'MSFT', "TSLA", "NVDA", "AMZN", "GOOGL", "FB", "NFLX", "INTC", "AMD"], 
+            "available_stocks": ['AAPL', 'MSFT', "TSLA", "NVDA", "AMZN", "GOOGL", "FB", "NFLX", "INTC", "AMD"],  # List of stock tickers available for investment
             "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
             "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
             "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is None
