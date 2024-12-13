@@ -275,7 +275,7 @@ class PortfolioOptimizationScreen(BaseScreen):
         with Container(classes="container"):
             yield Label("Portfolio Optimization", classes="header centered")
             yield Static("Please click 'Open Dashboard' to see the optimized portfolios", id="status")
-            with Horizontal(classes="button-group-center"):
+            with Horizontal(classes="button-group"):
                 yield Button("Open Dashboard", id="dashboard", variant="primary")
                 yield Button("Exit", id="exit", variant="error")
             yield Footer()
