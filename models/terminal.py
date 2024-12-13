@@ -188,8 +188,7 @@ class ConstraintsScreen(BaseScreen):
         with Container(classes="container"):
             yield Label("Investment Constraints", classes="heading")
             yield Label("Enter investment constraints (0-100%):")
-            yield Input(placeholder="Minimum investment %", id="min")
-            yield Input(placeholder="Maximum investment %", id="max")
+            yield Input(placeholder="Maximum investment per stock in %", id="max")
             yield Label("", id="status")
             with Horizontal(classes="button-group"):
                 yield Button("Back", id="back")
@@ -197,17 +196,14 @@ class ConstraintsScreen(BaseScreen):
             yield Footer()
 
     def validate_constraints(self) -> bool:
-        min_input = self.query_one("#min").value
         max_input = self.query_one("#max").value
         status = self.query_one("#status")
 
         try:
-            min_equity = float(min_input) / 100
             max_equity = float(max_input) / 100
 
-            if 0 <= min_equity <= max_equity <= 1:
+            if 0 < max_equity <= 1:
                 self.app.user.data.update({
-                    "min_equity_investment": min_equity,
                     "max_equity_investment": max_equity
                 })
                 status.remove_class("error")
