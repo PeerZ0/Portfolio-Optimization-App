@@ -159,15 +159,14 @@ if __name__ == '__main__':
     from user import User
     user = User()
     user.data = {
-            "preferred_stocks": ['AAPL', 'MSFT', "TSLA", "NVDA", "AMZN", "GOOGL", "FB", "NFLX", "INTC", "AMD"], 
-            "available_stocks": ['AAPL', 'MSFT', "TSLA", "NVDA", "AMZN", "GOOGL", "FB", "NFLX", "INTC", "AMD"],  # List of stock tickers available for investment
+            "preferred_stocks": ['SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE', 'PPL', 'SOON.SW', 'FRE.DE', 'EVRG', 'CS.PA', 'ZURN.SW', 'MMC', 'C', 'UNP', 'PNC', 'AIR.PA', 'MA', 'NI', 'ZAL.DE', 'XEL', 'AI.PA', 'RSG', 'URI', 'SLB', 'PCG', 'BBVA.MC', 'GD', 'OTIS', 'SBUX', 'NOVN.SW', 'BBY', 'EXC', 'LONN.SW', 'IAG', 'BK', 'CL', 'ABBN.SW', 'UCG.MI', 'ENR.DE', 'UNH', 'DTG.DE', 'BWA', 'NEM', 'NDAQ', 'AWK', 'AMGN', 'INGA.AS', 'MGM', 'CBOE', 'ELV', 'ZBH', 'CNC', 'MKTX', 'GILD', 'SO', 'RWE.DE', 'MBG.DE', 'ISP.MI', 'KO', 'SIE.DE', 'OXY', 'CAH', 'NESN.SW', 'ALL', 'YUM', 'HOLN.SW', 'SIKA.SW', 'COST', 'TGT', 'D', '1COV.DE', 'DG.PA', 'EOAN.DE', 'LYB', 'LNT', 'EOG', 'DUK', 'MO', 'SREN.SW', 'USB', 'DLTR', 'LW'], 
+            "available_stocks": ['SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE', 'PPL', 'SOON.SW', 'FRE.DE', 'EVRG', 'CS.PA', 'ZURN.SW', 'MMC', 'C', 'UNP', 'PNC', 'AIR.PA', 'MA', 'NI', 'ZAL.DE', 'XEL', 'AI.PA', 'RSG', 'URI', 'SLB', 'PCG', 'BBVA.MC', 'GD', 'OTIS', 'SBUX', 'NOVN.SW', 'BBY', 'EXC', 'LONN.SW', 'IAG', 'BK', 'CL', 'ABBN.SW', 'UCG.MI', 'ENR.DE', 'UNH', 'DTG.DE', 'BWA', 'NEM', 'NDAQ', 'AWK', 'AMGN', 'INGA.AS', 'MGM', 'CBOE', 'ELV', 'ZBH', 'CNC', 'MKTX', 'GILD', 'SO', 'RWE.DE', 'MBG.DE', 'ISP.MI', 'KO', 'SIE.DE', 'OXY', 'CAH', 'NESN.SW', 'ALL', 'YUM', 'HOLN.SW', 'SIKA.SW', 'COST', 'TGT', 'D', '1COV.DE', 'DG.PA', 'EOAN.DE', 'LYB', 'LNT', 'EOG', 'DUK', 'MO', 'SREN.SW', 'USB', 'DLTR', 'LW'],  # List of stock tickers available for investment
             "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
-            "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
+            "risk_tolerance": 1,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
             "max_equity_investment": 10,  # Maximum allowable investment in a single equity (in percentage), default is None
               # Minimum allowable investment in a single equity (in percentage), default is None
         }
     portfolio = Portfolio(user)
-
     # Initialize and run the dashboard
     dashboard = PortfolioOptimizationDashboard(portfolio)
     dashboard.run()
