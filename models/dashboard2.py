@@ -164,7 +164,7 @@ if __name__ == '__main__':
             "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
             "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
             "max_equity_investment": 90,  # Maximum allowable investment in a single equity (in percentage), default is None
-            "min_equity_investment": 80,  # Minimum allowable investment in a single equity (in percentage), default is None
+              # Minimum allowable investment in a single equity (in percentage), default is None
         }
     portfolio = Portfolio(user)
 
