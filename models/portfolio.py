@@ -259,7 +259,7 @@ class Portfolio:
             'Annualized Return': annualized_return,
             'Annualized Volatility': annualized_volatility,
             'Sharpe Ratio': sharpe_ratio,
-            'Maximum Drawdown': max_drawdown
+            'Maximum Drawdown': max_drawdown,
         }
         
         return summary_stats

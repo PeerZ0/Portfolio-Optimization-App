@@ -200,9 +200,9 @@ class ConstraintsScreen(BaseScreen):
         status = self.query_one("#status")
 
         try:
-            max_equity = float(max_input) / 100
+            max_equity = float(max_input)
 
-            if 0 < max_equity <= 1:
+            if 0 < max_equity <= 100:
                 self.app.user.data.update({
                     "max_equity_investment": max_equity
                 })
@@ -295,7 +295,7 @@ class PortfolioOptimizationScreen(BaseScreen):
             dashboard_thread.start()
 
             # Wait briefly for server to start
-            time.sleep(2)
+            time.sleep(4)
             
             # Open browser
             webbrowser.open("http://127.0.0.1:8509")
