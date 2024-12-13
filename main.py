@@ -1,5 +1,5 @@
 # main.py
-# Main file to run the applicationpip 
+# Main file to run the application
 
 from models.terminal import PortfolioApp
 

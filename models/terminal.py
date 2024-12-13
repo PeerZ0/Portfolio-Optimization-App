@@ -277,9 +277,11 @@ class PortfolioOptimizationScreen(BaseScreen):
     
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
-            yield Label("Portfolio Optimization", classes="heading2")
-            yield Button("Open Dashboard", id="dashboard")
-            yield Button("Exit", id="exit", variant="error")
+            yield Label("Portfolio Optimization", classes="header centered")
+            yield Static("Please click 'Open Dashboard' to see the optimized portfolios", id="status")
+            with Horizontal(classes="button-group-center"):
+                yield Button("Open Dashboard", id="dashboard", variant="primary")
+                yield Button("Exit", id="exit", variant="error")
             yield Footer()
     
     def perform_initialization(self) -> None:
@@ -329,7 +331,19 @@ class PortfolioApp(App):
         padding: 2;
         margin-bottom: 1;
         color: #69db7c;
+    }
+    
+    .header {
+        text-align: center !important;
+        text-style: bold;
+        padding: 2;
+        margin-bottom: 1;
+        color: #69db7c;
     }   
+
+    .centered {
+        align: center middle;
+    }
 
     .subtitle {
         text-align: center;
