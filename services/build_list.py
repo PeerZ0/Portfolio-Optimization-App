@@ -23,10 +23,8 @@ def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
     if user.data["sectors_to_avoid"]:
         df = df[~df['sector'].isin(user.data["sectors_to_avoid"])]
     if user.data["risk_tolerance"]:
-        risk_tolerance = user.data["risk_tolerance"]
-        min_risk = max(1, risk_tolerance)
-        max_risk = min(10, risk_tolerance)
-        df = df[(df['overallRisk'] >= min_risk) & (df['overallRisk'] <= max_risk)]
+        max_risk = user.data["risk_tolerance"]
+        df = df[df['overallRisk'] <= max_risk]
     return df
 
 def build_available_tickers(user) -> List[Dict]:
