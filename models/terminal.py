@@ -1,5 +1,16 @@
 # models/terminal.py
-# Terminal-based application for portfolio optimization
+"""
+Terminal-based Portfolio Optimization Application
+
+This module implements a TUI (Text User Interface) application for portfolio optimization
+using the Textual framework. It provides a step-by-step wizard interface for users to:
+1. Update market data
+2. Select preferred stocks
+3. Exclude sectors
+4. Set risk tolerance
+5. Define investment constraints
+6. View optimization results in a dashboard
+"""
 
 from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal
@@ -18,11 +29,16 @@ from services.build_list import build_available_tickers
 from models.dashboard2 import PortfolioOptimizationDashboard
 
 class BaseScreen(Screen):
+    """Base screen class that provides common header and footer for all screens."""
     def compose(self) -> ComposeResult:
         yield Header()
         yield Footer()
 
 class UpdateDataScreen(BaseScreen):
+    """
+    First screen in the wizard that allows users to update market data.
+    Provides options to either fetch new data or use existing data.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Update Market Data", classes="heading")
@@ -54,6 +70,10 @@ class UpdateDataScreen(BaseScreen):
             update_data(mode)
 
 class StocksScreen(BaseScreen):
+    """
+    Screen for stock selection where users can input their preferred stock tickers.
+    Validates input against available stocks in the database and provides immediate feedback.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Select Preferred Stocks", classes="heading")
@@ -91,7 +111,6 @@ class StocksScreen(BaseScreen):
                 status.remove_class("success")
                 status.add_class("error")
                 status.update(f"Invalid tickers: {', '.join(invalid_stocks)}")
-            # save the valid stocks to the user data
             self.app.user.data["preferred_stocks"] = valid_stocks
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -101,6 +120,10 @@ class StocksScreen(BaseScreen):
             self.app.pop_screen()
 
 class SectorsScreen(BaseScreen):
+    """
+    Screen for sector exclusion where users can select sectors they want to avoid.
+    Implements a toggle mechanism for sector selection/deselection with real-time updates.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Exclude Sectors", classes="heading")
@@ -131,13 +154,11 @@ class SectorsScreen(BaseScreen):
             if "sectors_to_avoid" not in self.app.user.data:
                 self.app.user.data["sectors_to_avoid"] = []
 
-            # Toggle sector selection
             if selected_sector in self.app.user.data["sectors_to_avoid"]:
                 self.app.user.data["sectors_to_avoid"].remove(selected_sector)
             else:
                 self.app.user.data["sectors_to_avoid"].append(selected_sector)
 
-            # Update display
             sectors_text = ", ".join(self.app.user.data["sectors_to_avoid"])
             if not sectors_text:
                 sectors_text = "None"
@@ -150,6 +171,10 @@ class SectorsScreen(BaseScreen):
             self.app.pop_screen()
 
 class RiskScreen(BaseScreen):
+    """
+    Screen for setting risk tolerance level on a scale of 1-10.
+    Provides input validation and immediate feedback on the selected risk level.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Risk Tolerance", classes="heading")
@@ -184,6 +209,10 @@ class RiskScreen(BaseScreen):
             self.app.pop_screen()
 
 class ConstraintsScreen(BaseScreen):
+    """
+    Screen for setting investment constraints including maximum investment per stock.
+    Implements real-time validation of input values and constraint rules.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Investment Constraints", classes="heading")
@@ -223,14 +252,16 @@ class ConstraintsScreen(BaseScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "continue" and self.validate_constraints():
-            self.app.pop_screen()  # Remove current screen
-            self.app.push_screen("data_pulling")  # Push new screen
+            self.app.pop_screen()
+            self.app.push_screen("data_pulling")
         elif event.button.id == "back":
             self.app.pop_screen()
 
 class DataPullingScreen(BaseScreen):
-    """Screen for data pulling and portfolio initialization."""
-
+    """
+    Screen shown during portfolio initialization and data processing.
+    Handles asynchronous data loading and portfolio setup with progress feedback.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Initializing Portfolio...", classes="heading")
@@ -241,36 +272,36 @@ class DataPullingScreen(BaseScreen):
             yield Footer()
 
     async def on_mount(self) -> None:
-        """Start the initialization process immediately after mounting the screen."""
-        await asyncio.sleep(0.1)  # Yield to allow the screen to render
+        await asyncio.sleep(0.1)
         asyncio.create_task(self.initialize_and_redirect())
 
     async def initialize_and_redirect(self) -> None:
-        """Perform initialization and redirect to the next screen."""
+        """
+        Asynchronously initializes the portfolio and handles any errors during setup.
+        Uses threading to prevent UI blocking during data processing.
+        """
         try:
-            # Perform portfolio initialization
             await asyncio.to_thread(self.perform_initialization)
-            # Redirect to the next screen after successful initialization
             self.app.push_screen("optimization")
         except Exception as e:
-            # If an error occurs, display it on the screen
             self.query_one("#status").update(f"[red]Error: {str(e)}[/red]")
 
     def perform_initialization(self) -> None:
-        """Blocking initialization logic moved to a thread."""
         available_tickers = build_available_tickers(self.app.user)
-        # save the available tickers to the user data
         self.app.user.data["available_stocks"] = available_tickers
         if not available_tickers:
             raise ValueError("No tickers match your criteria")
         self.app.portfolio = Portfolio(self.app.user)
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "exit":
             self.app.exit()
 
 class PortfolioOptimizationScreen(BaseScreen):
-    """Screen for selecting and running optimizations"""
-    
+    """
+    Final screen that launches the optimization dashboard.
+    Manages the dashboard process in a separate thread and provides browser integration.
+    """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Portfolio Optimization", classes="header centered")
@@ -284,26 +315,38 @@ class PortfolioOptimizationScreen(BaseScreen):
         PortfolioOptimizationDashboard(self.app.portfolio).run()
     
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """
+        Handles dashboard launch and application exit.
         
+        For dashboard launch:
+        1. Creates a new thread for the dashboard
+        2. Waits for server initialization
+        3. Opens the dashboard in the default browser
+        """
         if event.button.id == "dashboard":
             def run_dashboard():
                 PortfolioOptimizationDashboard(self.app.portfolio).run()
 
-            # Start dashboard in separate thread
             dashboard_thread = threading.Thread(target=run_dashboard)
-            dashboard_thread.daemon = True  # Thread will be terminated when main program exits
+            dashboard_thread.daemon = True
             dashboard_thread.start()
 
-            # Wait briefly for server to start
             time.sleep(4)
-            
-            # Open browser
             webbrowser.open("http://127.0.0.1:8509")
 
         if event.button.id == "exit":
             self.app.exit()
             
 class PortfolioApp(App):
+    """
+    Main application class that manages the screen workflow and global state.
+    
+    Features:
+    - Implements a wizard-like interface with multiple screens
+    - Maintains user preferences and portfolio data
+    - Provides keyboard shortcuts for navigation
+    - Custom styling for consistent UI appearance
+    """
     CSS = """
     Screen {
         background: #1f1f1f;
@@ -408,13 +451,13 @@ class PortfolioApp(App):
     ]
 
     SCREENS = {
-        "update": UpdateDataScreen,
-        "stocks": StocksScreen, 
-        "sectors": SectorsScreen,
-        "risk": RiskScreen,
-        "constraints": ConstraintsScreen,
-        "data_pulling": DataPullingScreen,
-        "optimization": PortfolioOptimizationScreen
+        "update": UpdateDataScreen,    # Initial data update screen
+        "stocks": StocksScreen,        # Stock selection screen
+        "sectors": SectorsScreen,      # Sector exclusion screen
+        "risk": RiskScreen,            # Risk tolerance screen
+        "constraints": ConstraintsScreen,  # Investment constraints screen
+        "data_pulling": DataPullingScreen, # Data processing screen
+        "optimization": PortfolioOptimizationScreen  # Final dashboard screen
     }
 
     def __init__(self):
@@ -423,10 +466,9 @@ class PortfolioApp(App):
 
     def on_mount(self) -> None:
         """Called when app starts"""
-        # Push the first screen
-        self.push_screen("update")  # Start with update screen
+        self.push_screen("update")
 
     def action_pop_screen(self) -> None:
         """Handle going back to previous screen"""
-        if len(self.screen_stack) > 1:  # Ensure we don't pop the last screen
+        if len(self.screen_stack) > 1:
             self.pop_screen()

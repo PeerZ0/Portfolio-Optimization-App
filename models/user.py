@@ -1,5 +1,7 @@
 # models/user.py
-# User model, storing user data
+'''
+User class, storing user-specific data for portfolio optimization.
+'''
 
 class User:
     """
@@ -20,9 +22,6 @@ class User:
             Defaults to 5 if not provided.
         - max_equity_investment : float, optional
             The maximum percentage of the total portfolio that the user is willing to invest in a single equity.
-            Defaults to None until specified.
-        - min_equity_investment : float, optional
-            The minimum percentage of the total portfolio that the user wants to invest in a single equity.
             Defaults to None until specified.
     """
     def __init__(self):

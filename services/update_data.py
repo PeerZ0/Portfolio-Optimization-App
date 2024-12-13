@@ -28,12 +28,16 @@ def get_wikipedia_tickers():
     
     for url in urls:
         try:
+            # Send a request to the Wikipedia page
             response = requests.get(url)
             if response.status_code == 200:
+                # Parse the HTML content of the page
                 soup = BeautifulSoup(response.text, 'html.parser')
+                # Extract tables from the page using pandas
                 tables = pd.read_html(response.text)
                 
                 for table in tables:
+                    # Identify the column containing ticker symbols based on its header
                     if "Symbol" in table.columns:
                         tickers += table["Symbol"].to_list()
                     elif "Ticker" in table.columns:
@@ -41,10 +45,12 @@ def get_wikipedia_tickers():
                     elif "Code" in table.columns:
                         tickers += table["Code"].to_list()
         except Exception as e:
+            # Log an error if scraping fails for a URL
             print(f"Error scraping {url}: {e}")
     
+    # Clean up and standardize ticker symbols
     tickers = [ticker.strip().upper() for ticker in tickers if isinstance(ticker, str)]
-    tickers = list(set(tickers))
+    tickers = list(set(tickers))  # Remove duplicates
     return [{'ticker': ticker} for ticker in tickers]
 
 def fetch_ticker_data(tickers):
@@ -64,37 +70,49 @@ def fetch_ticker_data(tickers):
     data = []
     for ticker in tickers:
         try:
+            # Use yfinance to fetch ticker information
             stock = yf.Ticker(ticker['ticker'])
-            info = stock.info
+            info = stock.info  # Extract detailed information about the stock
             data.append({
-                'Ticker': ticker['ticker'],
-                **info
+                'Ticker': ticker['ticker'],  # Add ticker symbol
+                **info  # Include all available information from yfinance
             })
         except Exception as e:
+            # Log an error if data fetching fails for a specific ticker
             print(f"Error fetching data for {ticker['ticker']}: {e}")
     return data
 
 def update_data(response: str = "no"):
     """
     Update stock data by fetching ticker symbols and company information from Wikipedia.
+    
+    Parameters
+    ----------
+    response : str
+        User response to confirm whether data should be updated. "yes" triggers the update process.
     """
     try:
         if response == "yes":
+            # Ensure the static directory exists
             os.makedirs('static', exist_ok=True)
 
             print("Fetching tickers from Wikipedia...")
+            # Scrape ticker symbols from Wikipedia
             wikipedia_tickers = get_wikipedia_tickers()
+            # Fetch detailed stock data for each ticker
             ticker_data = fetch_ticker_data(wikipedia_tickers)
+            
+            # Create a DataFrame from the fetched data
             df = pd.DataFrame(ticker_data)
+            # Drop rows with missing values in critical columns
             df = df.dropna(subset=['longName'])
             df = df.dropna(subset=['sector'])
 
+            # Save the data to a CSV file
             df.to_csv('static/ticker_data.csv', index=False)
             print("Data successfully saved to 'ticker_data.csv'")
             
     except Exception as e:
+        # Log any errors that occur during the update process
         print(f"An error occurred: {str(e)}")
         raise
-
-if __name__ == "__main__":
-    update_data()
