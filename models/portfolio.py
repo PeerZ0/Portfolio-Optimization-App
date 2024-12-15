@@ -8,6 +8,7 @@ import plotly.graph_objs as go
 import plotly.subplots as sp
 
 
+
 class Portfolio:
     def __init__(self, user, min_weight: float = 0.0, start_date = '2023-01-01', end_date = datetime.date.today()):
         """
@@ -203,13 +204,21 @@ class Portfolio:
         # Load S&P 500 returns using yfinance
         sp500_returns = self.sp500.pct_change().dropna()
         self.sp500_returns = sp500_returns
-        
-        # Calculate portfolio returns
-        weighted_returns = self.returns.dot(pd.Series(portfolio_weights))
-        cumulative_returns = (1 + weighted_returns).cumprod()
 
-        # Calculate SP500 benchmark cumulative returns
-        cumulative_sp500_returns = (1 + sp500_returns).cumprod() * 1
+        # Calculate portfolio weighted returns
+        weighted_returns = self.returns.dot(pd.Series(portfolio_weights))
+
+        # Align dates
+        aligned_data = pd.concat([weighted_returns, sp500_returns], axis=1, join="inner")
+        aligned_data.columns = ["Portfolio", "S&P 500"]
+
+        # Calculate cumulative returns
+        cumulative_returns = (1 + aligned_data["Portfolio"]).cumprod()
+        cumulative_sp500_returns = (1 + aligned_data["S&P 500"]).cumprod()
+
+        # Debug output (optional)
+        print("Cumulative Portfolio Returns:", cumulative_returns.head())
+        print("Cumulative S&P 500 Returns:", cumulative_sp500_returns.head())
 
         # Create the plot
         fig = go.Figure()
@@ -280,7 +289,6 @@ class Portfolio:
         return summary_df
 
 
-
     def plot_portfolio_allocation(self, portfolio_weights):
         """
         Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
@@ -293,6 +301,59 @@ class Portfolio:
         fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
         fig.update_layout(title_text='Portfolio Allocation', template='plotly_white')
         return fig
+    
+    def create_weighted_sector_treemap(self, weights):
+        """
+        Generate a weighted treemap of sectors for the given tickers.
+
+        Parameters:
+        weights (dict): A dictionary mapping tickers to their respective weights.
+
+        Returns:
+        plotly.graph_objects.Figure: A treemap figure showing sectors with their respective weights.
+        """
+        # Check if all tickers have corresponding weights
+        if set(self.tickers) - set(weights.keys()):
+            raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
+
+        sector_data = []
+        missing_tickers = []
+
+        # Fetch sector information for each ticker
+        for ticker in self.tickers:
+            try:
+                stock_info = yf.Ticker(ticker).info
+                sector = stock_info.get('sector', 'Unknown')  # Default to 'Unknown' if sector is missing
+                weight = weights.get(ticker, 0)  # Get weight for the ticker, default to 0 if not found
+                sector_data.append({'Ticker': ticker, 'Sector': sector, 'Weight': weight})
+            except Exception as e:
+                print(f"Error fetching sector for {ticker}: {e}")
+                missing_tickers.append(ticker)
+        
+        # Create a DataFrame for sector data
+        df = pd.DataFrame(sector_data)
+
+        # Aggregate weights by sector
+        sector_weights = df.groupby('Sector')['Weight'].sum().reset_index()
+
+        # Create the treemap
+        fig = go.Figure(go.Treemap(
+            labels=sector_weights['Sector'],  # Sector names
+            parents=[""] * len(sector_weights),  # Top-level nodes
+            values=sector_weights['Weight'],  # Aggregate weights
+            textinfo="label+value+percent entry",
+            marker=dict(colorscale="Viridis")
+        ))
+
+        fig.update_layout(
+            title="Weighted Treemap of Sectors",
+            template="plotly_white"
+        )
+
+        # Return the treemap figure
+        return fig
+
+    
 
     def plot_annualized_returns(self, portfolio_weights):
         """
@@ -313,3 +374,4 @@ class Portfolio:
             template='plotly_white'
         )
         return fig
+
