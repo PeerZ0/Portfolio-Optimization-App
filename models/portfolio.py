@@ -1,4 +1,3 @@
-#%%
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
@@ -8,16 +7,21 @@ import plotly.graph_objs as go
 import plotly.subplots as sp
 
 
-
 class Portfolio:
-    def __init__(self, user, min_weight: float = 0.0, start_date = '2023-01-01', end_date = datetime.date.today()):
+    def __init__(self, user, min_weight: float = 0.0, start_date='2023-01-01', end_date=datetime.date.today()):
         """
-        Initialize the MinVariancePortfolio with stock ticker data and calculate mean returns and covariance matrix.
-        
-        Parameters:
-        tickers (list): A list of stock ticker symbols.
-        start_date (str): The start date for fetching historical data in 'YYYY-MM-DD' format.
-        end_date (str): The end date for fetching historical data in 'YYYY-MM-DD' format.
+        Initialize the Portfolio with historical stock data and calculate statistics.
+
+        Parameters
+        ----------
+        user : object
+            User data object containing available stock tickers and investment limits.
+        min_weight : float, optional
+            Minimum weight for each stock in the portfolio, by default 0.0.
+        start_date : str, optional
+            Start date for historical data in 'YYYY-MM-DD' format, by default '2023-01-01'.
+        end_date : datetime.date, optional
+            End date for historical data, by default today's date.
         """
         self.tickers = user.data['available_stocks']
         self.start_date = start_date
@@ -27,59 +31,75 @@ class Portfolio:
         self.returns = self.calculate_returns()
         self.mean_returns = self.returns.mean()
         self.cov_matrix = self.returns.cov()
-        #self.bounds = tuple((0.05,0.4) for _ in range(len(self.tickers)))
-        self.bounds = tuple((0, user.data['max_equity_investment']/100) for _ in range(len(self.tickers)))
-        self.constraints = [{'type': 'eq', 'fun': lambda x: np.sum(x) - 1}, {'type': 'ineq', 'fun': lambda x: np.sum(x) - len(self.tickers) * min_weight}]
+        self.bounds = tuple((0, user.data['max_equity_investment'] / 100) for _ in range(len(self.tickers)))
+        self.constraints = [
+            {'type': 'eq', 'fun': lambda x: np.sum(x) - 1},
+            {'type': 'ineq', 'fun': lambda x: np.sum(x) - len(self.tickers) * min_weight}
+        ]
         self.sp500 = yf.download('^GSPC', start=start_date, end=end_date)['Adj Close']
+        self.weights_eq = self.equal_weight_portfolio()
+        self.weights_min = self.min_variance_portfolio()
+        self.weights_sharpe = self.max_sharpe_ratio_portfolio()
+
 
     def _get_data(self):
         """
         Fetch historical stock price data from Yahoo Finance.
-        
-        Returns:
-        pd.DataFrame: A DataFrame containing historical stock prices of the assets.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame containing historical adjusted close prices of the assets.
         """
         data_list = []
         for ticker in self.tickers:
             try:
+                # Fetch data for each ticker
                 df = yf.download(ticker, self.start_date, self.end_date, progress=False)['Adj Close']
                 data_list.append(df)
             except KeyError as e:
                 print(f"Error fetching data for {ticker}: {e}")
+
         self.data_retrieval_success = True
         data = pd.concat(data_list, axis=1)
         data = data.sort_index()
-        data = data.dropna(axis=1, how='all')
-        data.ffill(inplace=True)
-        
+        data = data.dropna(axis=1, how='all')  # Remove columns with all NaNs
+        data.ffill(inplace=True)  # Forward-fill missing data
+
         for column in data.columns:
+            # Drop columns with large missing data streaks
             max_nan_streak = (data[column].isna().groupby((~data[column].isna()).cumsum()).cumsum()).max()
             if max_nan_streak >= 4:
                 data.drop(columns=[column], inplace=True)
             else:
                 data[column].fillna(method='ffill', inplace=True)
-        
+
         if pd.isna(data.iloc[0]).any() and len(data) > 1:
-            data.iloc[0] = data.iloc[1]
-        
+            data.iloc[0] = data.iloc[1]  # Fill the first row if NaN
+
         self.tickers = list(data.columns)
         return data
+
         
     def calculate_returns(self):
         """
         Calculate daily returns from stock price data.
-        
-        Returns:
-        pd.DataFrame: A DataFrame containing daily returns of the assets.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame containing daily returns of the assets.
         """
         return self.data.pct_change().dropna()
 
     def min_variance_portfolio(self):
         """
         Find the portfolio with the minimum possible variance.
-        
-        Returns:
-        dict: A dictionary containing the optimized weights for each ticker.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the optimized weights for each ticker.
         """
         num_assets = len(self.tickers)
         initial_weights = np.ones(num_assets) / num_assets
@@ -87,15 +107,18 @@ class Portfolio:
         def portfolio_volatility(weights):
             return np.sqrt(np.dot(weights.T, np.dot(self.cov_matrix, weights)))
 
+        # Minimize portfolio volatility
         result = minimize(portfolio_volatility, initial_weights, method='SLSQP', bounds=self.bounds, constraints=self.constraints)
         return dict(zip(self.tickers, result.x))
 
     def equal_weight_portfolio(self):
         """
         Create an equally weighted portfolio.
-        
-        Returns:
-        dict: A dictionary containing equal weights for each ticker.
+
+        Returns
+        -------
+        dict
+            Dictionary containing equal weights for each ticker.
         """
         num_assets = len(self.tickers)
         weights = np.ones(num_assets) / num_assets
@@ -104,16 +127,19 @@ class Portfolio:
     def max_sharpe_ratio_portfolio(self, risk_free_rate=0.01):
         """
         Find the portfolio that maximizes the Sharpe ratio.
-        
-        Parameters:
-        risk_free_rate (float): The risk-free rate used to calculate the Sharpe ratio.
-        
-        Returns:
-        dict: A dictionary containing the optimized weights for each ticker.
+
+        Parameters
+        ----------
+        risk_free_rate : float, optional
+            The risk-free rate used to calculate the Sharpe ratio, by default 0.01.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the optimized weights for each ticker.
         """
         num_assets = len(self.tickers)
         initial_weights = np.ones(num_assets) / num_assets
-        #constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
 
         def negative_sharpe_ratio(weights):
             portfolio_return = np.sum(weights * self.mean_returns)
@@ -121,6 +147,7 @@ class Portfolio:
             sharpe_ratio = (portfolio_return - risk_free_rate) / portfolio_volatility
             return -sharpe_ratio
 
+        # Maximize Sharpe ratio (minimize negative Sharpe)
         result = minimize(negative_sharpe_ratio, initial_weights, method='SLSQP', bounds=self.bounds, constraints=self.constraints)
         return dict(zip(self.tickers, result.x))
 
@@ -128,12 +155,16 @@ class Portfolio:
     def choose_best_return_portfolio(self, yearly_rebalance='no'):
         """
         Choose the portfolio with the highest return.
-        
-        Parameters:
-        yearly_rebalance (str): Whether to rebalance the portfolio annually ('yes' or 'no').
 
-        Returns:
-        dict: A dictionary containing the optimized weights for the portfolio with the highest return.
+        Parameters
+        ----------
+        yearly_rebalance : str
+            Whether to rebalance the portfolio annually ('yes' or 'no').
+
+        Returns
+        -------
+        dict
+            A dictionary containing the optimized weights for the portfolio with the highest return.
         """
         portfolios = {
             'min_variance': self.min_variance_portfolio(),
@@ -181,12 +212,16 @@ class Portfolio:
     def calculate_max_drawdowns(self, returns):
         """
         Calculate the maximum drawdown of a returns series.
-        
-        Parameters:
-        returns (pd.Series): The returns series.
-        
-        Returns:
-        float: The maximum drawdown.
+
+        Parameters
+        ----------
+        returns : pd.Series
+            The returns series.
+
+        Returns
+        -------
+        float
+            The maximum drawdown.
         """
         cumulative = (1 + returns).cumprod()
         peak = cumulative.cummax()
@@ -197,9 +232,15 @@ class Portfolio:
     def plot_cumulative_returns(self, portfolio_weights):
         """
         Plot cumulative returns of the given portfolio weights using Plotly.
-        
-        Parameters:
-        portfolio_weights (dict): A dictionary containing the weights of each ticker in the portfolio.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            Dictionary containing the weights of each ticker in the portfolio.
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            Plotly figure showing the cumulative returns.
         """
         # Load S&P 500 returns using yfinance
         sp500_returns = self.sp500.pct_change().dropna()
@@ -236,13 +277,18 @@ class Portfolio:
     def get_summary_statistics(self, portfolio_weights, risk_free_rate=0.01):
         """
         Get summary statistics of the given portfolio.
-        
-        Parameters:
-        portfolio_weights (dict): A dictionary containing the weights of each ticker in the portfolio.
-        risk_free_rate (float): The risk-free rate used to calculate the Sharpe ratio.
-        
-        Returns:
-        dict: A dictionary containing summary statistics of the portfolio.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            Dictionary containing the weights of each ticker in the portfolio.
+        risk_free_rate : float, optional
+            The risk-free rate used to calculate the Sharpe ratio, by default 0.01.
+
+        Returns
+        -------
+        dict
+            Dictionary containing summary statistics of the portfolio.
         """
         # Calculate portfolio returns
         weighted_returns = self.returns.dot(pd.Series(portfolio_weights))
@@ -276,13 +322,18 @@ class Portfolio:
     def get_summary_statistics_table(self, portfolio_weights, risk_free_rate=0.01):
         """
         Get a summary statistics table of the given portfolio.
-        
-        Parameters:
-        portfolio_weights (dict): A dictionary containing the weights of each ticker in the portfolio.
-        risk_free_rate (float): The risk-free rate used to calculate the Sharpe ratio.
-        
-        Returns:
-        pd.DataFrame: A DataFrame containing summary statistics of the portfolio.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            A dictionary containing the weights of each ticker in the portfolio.
+        risk_free_rate : float
+            The risk-free rate used to calculate the Sharpe ratio.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing summary statistics of the portfolio.
         """
         summary_stats = self.get_summary_statistics(portfolio_weights, risk_free_rate)
         summary_df = pd.DataFrame(list(summary_stats.items()), columns=['Metric', 'Value'])
@@ -292,9 +343,11 @@ class Portfolio:
     def plot_portfolio_allocation(self, portfolio_weights):
         """
         Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
-        
-        Parameters:
-        portfolio_weights (dict): A dictionary containing the weights of each ticker in the portfolio.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            A dictionary containing the weights of each ticker in the portfolio.
         """
         labels = list(portfolio_weights.keys())
         values = list(portfolio_weights.values())
@@ -306,11 +359,15 @@ class Portfolio:
         """
         Generate a weighted treemap of sectors for the given tickers.
 
-        Parameters:
-        weights (dict): A dictionary mapping tickers to their respective weights.
+        Parameters
+        ----------
+        weights : dict
+            A dictionary mapping tickers to their respective weights.
 
-        Returns:
-        plotly.graph_objects.Figure: A treemap figure showing sectors with their respective weights.
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            A treemap figure showing sectors with their respective weights.
         """
         # Check if all tickers have corresponding weights
         if set(self.tickers) - set(weights.keys()):
@@ -359,9 +416,11 @@ class Portfolio:
     def plot_annualized_returns(self, portfolio_weights):
         """
         Plot a bar chart showing the annualized returns of the individual assets in the portfolio.
-        
-        Parameters:
-        portfolio_weights (dict): A dictionary containing the weights of each ticker in the portfolio.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            A dictionary containing the weights of each ticker in the portfolio.
         """
         annualized_returns = self.mean_returns * 252
         labels = self.tickers
