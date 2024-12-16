@@ -310,11 +310,11 @@ class Portfolio:
         
         # Create a summary dictionary
         summary_stats = {
-            'Cumulative Return': cumulative_return,
-            'Annualized Return': annualized_return,
-            'Annualized Volatility': annualized_volatility,
-            'Sharpe Ratio': sharpe_ratio,
-            'Maximum Drawdown': max_drawdown,
+            'Cumulative Return': round(cumulative_return, 3),
+            'Annualized Return': round(annualized_return, 3),
+            'Annualized Volatility': round(annualized_volatility, 3),
+            'Sharpe Ratio': round(sharpe_ratio, 3),
+            'Maximum Drawdown': round(max_drawdown, 3),
         }
         
         return summary_stats

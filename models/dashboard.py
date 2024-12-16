@@ -138,7 +138,7 @@ class PortfolioOptimizationDashboard:
                 }
 
             # Plot portfolio allocation
-            portfolio_allocation_fig = self.portfolio.plot_portfolio_allocation(portfolio_weights)
+            portfolio_allocation_fig = self.portfolio.plot_portfolio_allocation(portfolio_weights, selected_strategy)
             if not portfolio_allocation_fig:
                 portfolio_allocation_fig = {
                     "data": [],
