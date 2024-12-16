@@ -29,9 +29,9 @@ class PortfolioOptimizationDashboard:
         self.portfolio = portfolio
 
         # Example portfolio weights
-        self.min_variance_weights = self.portfolio.min_variance_portfolio()
-        self.equal_weights = self.portfolio.equal_weight_portfolio()
-        self.max_sharpe_weights = self.portfolio.max_sharpe_ratio_portfolio()
+        self.min_variance_weights = portfolio.weights_min
+        self.equal_weights = portfolio.weights_eq
+        self.max_sharpe_weights = portfolio.weights_sharpe
 
         # Initialize layout
         self._initialize_layout()
