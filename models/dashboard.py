@@ -1,17 +1,22 @@
-import sys
-from importlib import import_module
+# models/dashboard.py
+"""
+Dashboard class for interactive visualization of portfolio optimization results.
+
+This module defines the PortfolioOptimizationDashboard class, which is used to create an 
+interactive dashboard for visualizing the results of portfolio optimization.
+"""
+
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 from flask_caching import Cache
-import subprocess
-
 
 class PortfolioOptimizationDashboard:
     def __init__(self, portfolio):
         """
         Initializes the Portfolio Optimization Dashboard.
 
-        Args:
+        Parameters
+        ----------
             portfolio (Portfolio): An instance of the Portfolio class.
         """
         self.app = Dash(__name__)

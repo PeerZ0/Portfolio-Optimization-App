@@ -1,7 +1,7 @@
 # models/user.py
-'''
+"""
 User class, storing user-specific data for portfolio optimization.
-'''
+"""
 
 class User:
     """
@@ -12,7 +12,7 @@ class User:
     data : dict
         A dictionary containing user preferences and constraints, including:
         - preferred_stocks : list of str
-            A list of tickers the user prefers to include in their portfolio.
+            A list of tickers the user does not want to exclude from the optimization.
         - available_stocks : list of str
             A list of stock tickers available for investment.
         - sectors_to_avoid : list of str
@@ -31,5 +31,5 @@ class User:
             "available_stocks": [],  # List of stock tickers available for investment
             "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
             "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
-            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is None
+            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is 30%
         }

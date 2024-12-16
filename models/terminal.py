@@ -22,7 +22,6 @@ import asyncio
 import webbrowser
 import time
 import threading
-
 from models.portfolio import Portfolio
 from models.user import User
 from services.build_list import build_available_tickers
@@ -40,6 +39,7 @@ class UpdateDataScreen(BaseScreen):
     Provides options to either fetch new data or use existing data.
     """
     def compose(self) -> ComposeResult:
+        # Display the initial screen with options to update or use existing data
         with Container(classes="container"):
             yield Label("Update Market Data", classes="heading")
             yield Label("Do you want to update the market data?", classes="subtitle")
@@ -49,21 +49,30 @@ class UpdateDataScreen(BaseScreen):
                 yield Button("No", id="no", variant="primary")
             yield Footer()
 
+    # Handle button press events
     def on_button_pressed(self, event: Button.Pressed) -> None:
         status = self.query_one("#status")
         if event.button.id in ["yes", "no"]:
+            # Update the user data with the data update choice
             self.app.user.data["data_updated"] = event.button.id
             if event.button.id in ["yes", "static"]:
+                # Update the data and redirect to the stock selection screen
                 status.update("Updating data... (This may take a few minutes)")
+                # Run the data update in a separate thread
                 asyncio.create_task(self.async_update_data(event.button.id, status))
             else:
                 self.app.push_screen("stocks")
 
+    # Asynchronously update the market data in a separate thread
     async def async_update_data(self, mode: str, status: Label) -> None:
+        # Wait for the data to be updated
         await asyncio.to_thread(self.update_data, mode)
+        # Update the status message and redirect to the stock selection screen
         status.update("Data updated successfully!")
+        # Redirect to the stock selection screen
         self.app.push_screen("stocks")
-
+    
+    # Update the market data based on the user choice
     def update_data(self, mode: str) -> None:
         from services.update_data import update_data
         with open(os.devnull, 'w') as fnull:
@@ -76,6 +85,7 @@ class StocksScreen(BaseScreen):
     """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
+            # Display the stock selection screen with input field for stock tickers
             yield Label("Select Preferred Stocks", classes="heading")
             try:
                 df = pd.read_csv('static/ticker_data.csv')
@@ -94,6 +104,7 @@ class StocksScreen(BaseScreen):
                     yield Button("Back", id="back")
             yield Footer()
 
+    # Handle input change events
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "stocks":
             stocks = [s.strip().upper() for s in event.value.split(",") if s.strip()]
@@ -112,7 +123,8 @@ class StocksScreen(BaseScreen):
                 status.add_class("error")
                 status.update(f"Invalid tickers: {', '.join(invalid_stocks)}")
             self.app.user.data["preferred_stocks"] = valid_stocks
-
+    
+    # Handle button press events
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "continue":
             self.app.push_screen(SectorsScreen())
@@ -126,6 +138,7 @@ class SectorsScreen(BaseScreen):
     """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
+            # Display the sector exclusion screen with a list of sectors
             yield Label("Exclude Sectors", classes="heading")
             try:
                 df = pd.read_csv('static/ticker_data.csv')
@@ -142,28 +155,34 @@ class SectorsScreen(BaseScreen):
                 with Horizontal(classes="button-group"):
                     yield Button("Back", id="back")
                     yield Button("Continue", id="continue", variant="primary")
+            # Display an error message if the sector data is not found
             except FileNotFoundError:
                 yield Label("Sector data not found. Please update data first.", classes="error")
                 with Horizontal(classes="button-group"):
                     yield Button("Back", id="back", variant="primary")
             yield Footer()
 
+    # Handle sector selection/deselection events
     def on_select_changed(self, event: Select.Changed) -> None:
         selected_sector = event.value
         if selected_sector:
+            # Update the user data with the selected sectors to avoid
             if "sectors_to_avoid" not in self.app.user.data:
                 self.app.user.data["sectors_to_avoid"] = []
-
+            
+            # Toggle the selected sector in the list
             if selected_sector in self.app.user.data["sectors_to_avoid"]:
                 self.app.user.data["sectors_to_avoid"].remove(selected_sector)
             else:
                 self.app.user.data["sectors_to_avoid"].append(selected_sector)
-
+            
+            # Update the selected sectors display
             sectors_text = ", ".join(self.app.user.data["sectors_to_avoid"])
             if not sectors_text:
                 sectors_text = "None"
             self.query_one("#selected_sectors").update(sectors_text)
 
+    # Handle button press events
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "continue":
             self.app.push_screen("risk")
@@ -177,6 +196,7 @@ class RiskScreen(BaseScreen):
     """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
+            # Display the risk tolerance screen with input field for risk level
             yield Label("Risk Tolerance", classes="heading")
             yield Label("Please indicate your risk tolerance (1-10):")
             yield Label("1 = Low Risk, 10 = High Risk")
@@ -187,10 +207,13 @@ class RiskScreen(BaseScreen):
                 yield Button("Continue", id="continue")
             yield Footer()
 
+    # Validate the input risk level and update user data
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "risk":
             try:
+                # Get the risk level from the input field
                 risk = int(event.value)
+                # Update the user data with the risk tolerance level
                 if 1 <= risk <= 10:
                     self.app.user.data["risk_tolerance"] = risk
                     self.query_one("#status").remove_class("error")
@@ -198,10 +221,12 @@ class RiskScreen(BaseScreen):
                 else:
                     self.query_one("#status").add_class("error")
                     self.query_one("#status").update("Risk level must be between 1 and 10")
+            # Display an error message if the input is invalid
             except ValueError:
                 self.query_one("#status").add_class("error")
                 self.query_one("#status").update("Please enter a valid number")
-
+    
+    # Handle button press events
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "continue" and self.app.user.data.get("risk_tolerance"):
             self.app.push_screen(ConstraintsScreen())
@@ -215,6 +240,7 @@ class ConstraintsScreen(BaseScreen):
     """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
+            # Display the constraints screen with input fields for maximum investment
             yield Label("Investment Constraints", classes="heading")
             yield Label("Enter investment constraints (0-100%):")
             yield Input(placeholder="Maximum investment per stock in %", id="max")
@@ -224,21 +250,27 @@ class ConstraintsScreen(BaseScreen):
                 yield Button("Continue", id="continue")
             yield Footer()
 
+    # Validate the input constraints and update user data
     def validate_constraints(self) -> bool:
+        # Get the maximum investment value from the input field
         max_input = self.query_one("#max").value
         status = self.query_one("#status")
 
         try:
+            # Convert the input to a float value
             max_equity = float(max_input)
 
             if 0 < max_equity <= 100:
+                # Update the user data with the maximum equity investment
                 self.app.user.data.update({
                     "max_equity_investment": max_equity
                 })
+                # Display a success message if the input is valid
                 status.remove_class("error")
                 status.update("Valid constraints")
                 return True
             else:
+                # Display an error message if the input is invalid
                 status.add_class("error")
                 status.update("Invalid constraints: Min must be less than Max (0-100)")
                 return False
@@ -247,9 +279,11 @@ class ConstraintsScreen(BaseScreen):
             status.update("Please enter valid numbers")
             return False
 
+    # Handle input change events
     def on_input_changed(self, event: Input.Changed) -> None:
         self.validate_constraints()
 
+    # Handle button press events
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "continue" and self.validate_constraints():
             self.app.pop_screen()
@@ -264,6 +298,7 @@ class DataPullingScreen(BaseScreen):
     """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
+            # Display the loading screen with a message and exit button
             yield Label("Initializing Portfolio...", classes="heading")
             yield Static("Please wait while we prepare your portfolio.", id="status")
             yield Static("This may take a few seconds... (data is pulled from YahooFinance)", id="loading")
@@ -272,27 +307,39 @@ class DataPullingScreen(BaseScreen):
             yield Footer()
 
     async def on_mount(self) -> None:
+        # Wait for the screen to load
         await asyncio.sleep(0.1)
+        # Initialize the portfolio and redirect to the optimization screen
         asyncio.create_task(self.initialize_and_redirect())
 
+    # Asynchronously initialize the portfolio and redirect to the optimization screen
     async def initialize_and_redirect(self) -> None:
         """
         Asynchronously initializes the portfolio and handles any errors during setup.
         Uses threading to prevent UI blocking during data processing.
         """
         try:
+            # Initialize the portfolio in a separate thread
             await asyncio.to_thread(self.perform_initialization)
+            # Redirect to the optimization screen
             self.app.push_screen("optimization")
         except Exception as e:
+            # Display error message if initialization fails
             self.query_one("#status").update(f"[red]Error: {str(e)}[/red]")
-
+    
+    # Initialize the portfolio with user preferences through the Portfolio class
     def perform_initialization(self) -> None:
+        # Build the list of available tickers based on user preferences
         available_tickers = build_available_tickers(self.app.user)
+        # Update the user data with available tickers
         self.app.user.data["available_stocks"] = available_tickers
+        # Raise an error if no tickers match the criteria
         if not available_tickers:
             raise ValueError("No tickers match your criteria")
+        # Initialize the portfolio with the user's preferences
         self.app.portfolio = Portfolio(self.app.user)
-
+    
+    # Handle exit button press
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "exit":
             self.app.exit()
@@ -304,6 +351,7 @@ class PortfolioOptimizationScreen(BaseScreen):
     """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
+            # Display the final screen with a message and buttons to launch the dashboard or exit
             yield Label("Portfolio Optimization", classes="header centered")
             yield Static("Please click 'Open Dashboard' to see the optimized portfolios")
             yield Static("Hint: Depending on your hardware, you may need to wait a few seconds for the dashboard to load.")
@@ -311,10 +359,7 @@ class PortfolioOptimizationScreen(BaseScreen):
                 yield Button("Open Dashboard", id="dashboard", variant="primary")
                 yield Button("Exit", id="exit", variant="error")
             yield Footer()
-    
-    def perform_initialization(self) -> None:
-        PortfolioOptimizationDashboard(self.app.portfolio).run()
-    
+        
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
         Handles dashboard launch and application exit.
@@ -325,14 +370,19 @@ class PortfolioOptimizationScreen(BaseScreen):
         3. Opens the dashboard in the default browser
         """
         if event.button.id == "dashboard":
+            # Define a function to run the dashboard
             def run_dashboard():
+                # Run the dashboard through the PortfolioOptimizationDashboard class
                 PortfolioOptimizationDashboard(self.app.portfolio).run()
-
+            
+            # Start the dashboard in a separate thread
             dashboard_thread = threading.Thread(target=run_dashboard)
             dashboard_thread.daemon = True
             dashboard_thread.start()
 
+            # Wait for the server to start
             time.sleep(2)
+            # Open the dashboard in the default browser
             webbrowser.open("http://127.0.0.1:8509")
 
         if event.button.id == "exit":
@@ -349,6 +399,7 @@ class PortfolioApp(App):
     - Provides keyboard shortcuts for navigation
     - Custom styling for consistent UI appearance
     """
+    # Custom CSS styling for the application
     CSS = """
     Screen {
         background: #1f1f1f;
@@ -446,12 +497,14 @@ class PortfolioApp(App):
         text-align: left;
     }
     """
-
+    
+    # Keyboard shortcuts for navigation
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("escape", "pop_screen", "Back"),
     ]
-
+    
+    # Mapping of screen names to screen classes
     SCREENS = {
         "update": UpdateDataScreen,    # Initial data update screen
         "stocks": StocksScreen,        # Stock selection screen
@@ -464,13 +517,16 @@ class PortfolioApp(App):
 
     def __init__(self):
         super().__init__()
+        # Create an internal user object to store user preferences
         self.user = User()
 
     def on_mount(self) -> None:
         """Called when app starts"""
+        # Initialize screen stack with the first screen
         self.push_screen("update")
 
     def action_pop_screen(self) -> None:
         """Handle going back to previous screen"""
+        # Pop the current screen from the stack
         if len(self.screen_stack) > 1:
             self.pop_screen()

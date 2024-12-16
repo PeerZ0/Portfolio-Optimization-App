@@ -9,7 +9,7 @@ WARNING: Calculations are hardware intensive and can take a while to run, especi
 2. Select if you want to update the stock data (this will take a while and can be limited due to yfinance restrictions)
 3. Enter any tickers that you want to include in the optimization (those will not be filtered out later in the sector filter)
 4. Select/Deselect any sector you want to avoid to invest in
-5. Select the investment constraints (maximum investment per stock as of % of total capital)
+5. Enter the investment constraint (maximum investment per stock as of % of total capital)
 6. Wait for the data to be pulled and the optimization to run
 7. Click on open dashboard to see the results
 

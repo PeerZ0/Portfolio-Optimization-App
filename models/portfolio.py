@@ -1,11 +1,20 @@
+# models/portfolio.py
+"""
+Portfolio Optimization Class
+
+This module implements a Portfolio class that fetches historical stock data from Yahoo Finance, and
+calculates optimal portfolio weights using different strategies such as:
+1. Minimum variance
+2. Equal weight
+3. Maximum Sharpe ratio
+"""
+
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 import yfinance as yf
 import datetime
 import plotly.graph_objs as go
-import plotly.subplots as sp
-
 
 class Portfolio:
     def __init__(self, user, min_weight: float = 0.0, start_date='2023-01-01', end_date=datetime.date.today()):
@@ -237,6 +246,7 @@ class Portfolio:
         ----------
         portfolio_weights : dict
             Dictionary containing the weights of each ticker in the portfolio.
+        
         Returns
         -------
         plotly.graph_objects.Figure
@@ -429,8 +439,6 @@ class Portfolio:
         # Return the treemap figure
         return fig
 
-    
-
     def plot_annualized_returns(self, portfolio_weights):
         """
         Plot a bar chart showing the annualized returns of the individual assets in the portfolio.
@@ -452,4 +460,3 @@ class Portfolio:
             template='plotly_white'
         )
         return fig
-
