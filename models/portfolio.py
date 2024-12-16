@@ -370,19 +370,18 @@ class Portfolio:
             values = list(portfolio_weights.values())
 
             if selected_strategy in ['min_variance', 'max_sharpe']:
-                # Convert to Series for sorting and aggregation
-                allocation = pd.Series(values, index=labels)
-                sorted_allocation = allocation.sort_values(ascending=False)
-
-                # Select the top 19 weights and aggregate the rest as 'Others'
-                top_allocation = sorted_allocation.head(19)
-                other_allocation = sorted_allocation.iloc[19:].sum()
-
-                labels = list(top_allocation.index) + ['Others']
-                values = list(top_allocation.values) + [other_allocation]
-
+                # Sort the allocation by weight
+                sorted_allocation = pd.Series(portfolio_weights).sort_values(ascending=False)
+                
+                # Summarize all under 0.01 as 'Others'
+                other_allocation = sorted_allocation[sorted_allocation < 0.01].sum()
+                sorted_allocation = sorted_allocation[sorted_allocation >= 0.01]
+                
+                labels = list(sorted_allocation.index) + ['Others']
+                values = list(sorted_allocation.values) + [other_allocation]
+                                        
             fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-            fig.update_layout(title_text=f'Portfolio Allocation ({selected_strategy.capitalize()} Strategy)', template='plotly_white')
+            fig.update_layout(title_text=f'Portfolio Allocation', template='plotly_white')
 
             return fig
     

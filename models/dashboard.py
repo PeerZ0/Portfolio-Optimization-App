@@ -172,3 +172,17 @@ class PortfolioOptimizationDashboard:
         """Runs the Dash application."""
         self.app.run_server(debug=False, port=8509)
 
+if __name__ == "__main__":
+    from user import User
+    from portfolio import Portfolio
+    user = User()
+    user.data = {
+            "preferred_stocks": [],  # List of stock tickers the user wants in their portfolio
+            "available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE'],  # List of stock tickers available for investment
+            "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
+            "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
+            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is 30%
+        }
+    # user.data = {"available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE', 'PPL', 'SOON.SW', 'FRE.DE', 'EVRG', 'CS.PA', 'ZURN.SW', 'MMC', 'C', 'UNP', 'PNC', 'AIR.PA', 'MA', 'NI', 'ZAL.DE', 'XEL', 'AI.PA', 'RSG', 'URI', 'SLB', 'PCG', 'BBVA.MC', 'GD', 'OTIS']}  # List of stock tickers available for investment}
+    port = Portfolio(user)
+    PortfolioOptimizationDashboard(port).run()
