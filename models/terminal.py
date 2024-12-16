@@ -26,7 +26,7 @@ import threading
 from models.portfolio import Portfolio
 from models.user import User
 from services.build_list import build_available_tickers
-from models.dashboard2 import PortfolioOptimizationDashboard
+from models.dashboard import PortfolioOptimizationDashboard
 
 class BaseScreen(Screen):
     """Base screen class that provides common header and footer for all screens."""
@@ -342,6 +342,7 @@ class PortfolioApp(App):
     Main application class that manages the screen workflow and global state.
     
     Features:
+    ----------
     - Implements a wizard-like interface with multiple screens
     - Maintains user preferences and portfolio data
     - Provides keyboard shortcuts for navigation
