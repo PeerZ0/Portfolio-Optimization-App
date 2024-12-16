@@ -360,10 +360,13 @@ class Portfolio:
             values = list(portfolio_weights.values())
 
             if selected_strategy in ['min_variance', 'max_sharpe']:
-                # Group all but the top tickers into 'Others'
+                # Convert to Series for sorting and aggregation
                 allocation = pd.Series(values, index=labels)
-                top_allocation = allocation[allocation > 0.05]  # Threshold for grouping
-                other_allocation = allocation[allocation <= 0.05].sum()
+                sorted_allocation = allocation.sort_values(ascending=False)
+
+                # Select the top 19 weights and aggregate the rest as 'Others'
+                top_allocation = sorted_allocation.head(19)
+                other_allocation = sorted_allocation.iloc[19:].sum()
 
                 labels = list(top_allocation.index) + ['Others']
                 values = list(top_allocation.values) + [other_allocation]
@@ -432,24 +435,34 @@ class Portfolio:
     
 
     def plot_annualized_returns(self, portfolio_weights):
-        """
-        Plot a bar chart showing the annualized returns of the individual assets in the portfolio.
+            """
+            Plot a bar chart showing the contribution of each asset's annualized returns to the portfolio's total return.
 
-        Parameters
-        ----------
-        portfolio_weights : dict
-            A dictionary containing the weights of each ticker in the portfolio.
-        """
-        annualized_returns = self.mean_returns * 252
-        labels = self.tickers
-        values = [annualized_returns[ticker] for ticker in self.tickers]
-        
-        fig = go.Figure(data=[go.Bar(x=labels, y=values)])
-        fig.update_layout(
-            title='Annualized Returns of Individual Assets',
-            xaxis_title='Asset',
-            yaxis_title='Annualized Return',
-            template='plotly_white'
-        )
-        return fig
+            Parameters
+            ----------
+            portfolio_weights : dict
+                A dictionary containing the weights of each ticker in the portfolio.
+
+            Returns
+            -------
+            plotly.graph_objects.Figure
+                A bar chart figure showing each asset's contribution to the portfolio return.
+            """
+            annualized_returns = self.mean_returns * 252
+            labels = self.tickers
+
+            # Contribution of each asset to the portfolio return
+            contribution_to_portfolio = [portfolio_weights[ticker] * annualized_returns[ticker] for ticker in self.tickers]
+
+            fig = go.Figure()
+            fig.add_trace(go.Bar(x=labels, y=contribution_to_portfolio, name='Contribution to Portfolio Return'))
+
+            fig.update_layout(
+                title='Contribution of Each Asset to Portfolio Return',
+                xaxis_title='Asset',
+                yaxis_title='Contribution to Portfolio Return',
+                template='plotly_white'
+            )
+
+            return fig
 
