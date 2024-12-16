@@ -340,20 +340,38 @@ class Portfolio:
         return summary_df
 
 
-    def plot_portfolio_allocation(self, portfolio_weights):
-        """
-        Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
+    def plot_portfolio_allocation(self, portfolio_weights, selected_strategy):
+            """
+            Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
 
-        Parameters
-        ----------
-        portfolio_weights : dict
-            A dictionary containing the weights of each ticker in the portfolio.
-        """
-        labels = list(portfolio_weights.keys())
-        values = list(portfolio_weights.values())
-        fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-        fig.update_layout(title_text='Portfolio Allocation', template='plotly_white')
-        return fig
+            Parameters
+            ----------
+            portfolio_weights : dict
+                A dictionary containing the weights of each ticker in the portfolio.
+            selected_strategy : str
+                The strategy used to generate the portfolio (min_variance, equal_weight, or max_sharpe).
+
+            Returns
+            -------
+            plotly.graph_objects.Figure
+                A pie chart figure showing the portfolio allocation.
+            """
+            labels = list(portfolio_weights.keys())
+            values = list(portfolio_weights.values())
+
+            if selected_strategy in ['min_variance', 'max_sharpe']:
+                # Group all but the top tickers into 'Others'
+                allocation = pd.Series(values, index=labels)
+                top_allocation = allocation[allocation > 0.05]  # Threshold for grouping
+                other_allocation = allocation[allocation <= 0.05].sum()
+
+                labels = list(top_allocation.index) + ['Others']
+                values = list(top_allocation.values) + [other_allocation]
+
+            fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+            fig.update_layout(title_text=f'Portfolio Allocation ({selected_strategy.capitalize()} Strategy)', template='plotly_white')
+
+            return fig
     
     def create_weighted_sector_treemap(self, weights):
         """
