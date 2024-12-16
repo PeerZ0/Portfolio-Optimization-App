@@ -316,14 +316,15 @@ class Portfolio:
         if set(self.tickers) - set(weights.keys()):
             raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
 
+        sector_data_raw = pd.read_csv('static/ticker_data.csv')
         sector_data = []
         missing_tickers = []
 
         # Fetch sector information for each ticker
         for ticker in self.tickers:
             try:
-                stock_info = yf.Ticker(ticker).info
-                sector = stock_info.get('sector', 'Unknown')  # Default to 'Unknown' if sector is missing
+                # read static/ticker_data.csv
+                sector = sector_data_raw[sector_data_raw['Ticker'] == ticker]['industry'].values[0]
                 weight = weights.get(ticker, 0)  # Get weight for the ticker, default to 0 if not found
                 sector_data.append({'Ticker': ticker, 'Sector': sector, 'Weight': weight})
             except Exception as e:

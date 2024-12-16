@@ -82,7 +82,7 @@ class StocksScreen(BaseScreen):
                 total_stocks = len(df)
                 
                 yield Label(f"Total available stocks: {total_stocks}")
-                yield Label(f"Please add your preferred stocks as a comma-separated list.")
+                yield Label(f"Please add your preferred stocks as a comma-separated list. (e.g., AAPL, MSFT)")
                 yield Input(placeholder="Enter stock tickers (comma-separated)", id="stocks")
                 yield Label("", id="status")
                 with Horizontal(classes="button-group"):
@@ -305,7 +305,8 @@ class PortfolioOptimizationScreen(BaseScreen):
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
             yield Label("Portfolio Optimization", classes="header centered")
-            yield Static("Please click 'Open Dashboard' to see the optimized portfolios", id="status")
+            yield Static("Please click 'Open Dashboard' to see the optimized portfolios")
+            yield Static("Hint: Depending on your hardware, you may need to wait a few seconds for the dashboard to load.")
             with Horizontal(classes="button-group"):
                 yield Button("Open Dashboard", id="dashboard", variant="primary")
                 yield Button("Exit", id="exit", variant="error")
@@ -331,7 +332,7 @@ class PortfolioOptimizationScreen(BaseScreen):
             dashboard_thread.daemon = True
             dashboard_thread.start()
 
-            time.sleep(4)
+            time.sleep(2)
             webbrowser.open("http://127.0.0.1:8509")
 
         if event.button.id == "exit":
