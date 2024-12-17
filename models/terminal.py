@@ -33,51 +33,6 @@ class BaseScreen(Screen):
         yield Header()
         yield Footer()
 
-class UpdateDataScreen(BaseScreen):
-    """
-    First screen in the wizard that allows users to update market data.
-    Provides options to either fetch new data or use existing data.
-    """
-    def compose(self) -> ComposeResult:
-        # Display the initial screen with options to update or use existing data
-        with Container(classes="container"):
-            yield Label("Update Market Data", classes="heading")
-            yield Label("Do you want to update the market data?", classes="subtitle")
-            yield Label("", id="status")
-            with Horizontal(classes="button-group"):
-                yield Button("Yes", id="yes")
-                yield Button("No", id="no", variant="primary")
-            yield Footer()
-
-    # Handle button press events
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        status = self.query_one("#status")
-        if event.button.id in ["yes", "no"]:
-            # Update the user data with the data update choice
-            self.app.user.data["data_updated"] = event.button.id
-            if event.button.id in ["yes", "static"]:
-                # Update the data and redirect to the stock selection screen
-                status.update("Updating data... (This may take a few minutes)")
-                # Run the data update in a separate thread
-                asyncio.create_task(self.async_update_data(event.button.id, status))
-            else:
-                self.app.push_screen("stocks")
-
-    # Asynchronously update the market data in a separate thread
-    async def async_update_data(self, mode: str, status: Label) -> None:
-        # Wait for the data to be updated
-        await asyncio.to_thread(self.update_data, mode)
-        # Update the status message and redirect to the stock selection screen
-        status.update("Data updated successfully!")
-        # Redirect to the stock selection screen
-        self.app.push_screen("stocks")
-    
-    # Update the market data based on the user choice
-    def update_data(self, mode: str) -> None:
-        from services.update_data import update_data
-        with open(os.devnull, 'w') as fnull:
-            update_data(mode)
-
 class StocksScreen(BaseScreen):
     """
     Screen for stock selection where users can input their preferred stock tickers.
@@ -298,11 +253,11 @@ class DataPullingScreen(BaseScreen):
     """
     def compose(self) -> ComposeResult:
         with Container(classes="container"):
-            # Display the loading screen with a message and exit button
             yield Label("Initializing Portfolio...", classes="heading")
-            yield Static("Please wait while we prepare your portfolio.", id="status")
-            yield Static("This may take a few seconds... (data is pulled from YahooFinance)", id="loading")
-            with Horizontal(classes="button-group"):
+            yield Static("Please wait while we prepare your portfolio.", id="status", classes="status-message")
+            yield Static("This may take a few seconds... (data is pulled from YahooFinance)", 
+                       id="loading", classes="status-message")
+            with Container(classes="button-container bottom-space"):
                 yield Button("Exit", id="exit", variant="error")
             yield Footer()
 
@@ -449,6 +404,24 @@ class PortfolioApp(App):
         margin-top: 1;
         margin-bottom: 1;
     }
+    
+    .button-container {
+        width: 100%;
+        height: auto;
+        display: block;
+        align: center middle;
+        margin: 1;
+    }
+
+    .bottom-space {
+        margin-bottom: 2;
+    }
+
+    Button#exit {
+        min-width: 16;
+        margin: 1;
+        background: $error;
+    }
 
     Button {
         margin: 1;
@@ -506,7 +479,6 @@ class PortfolioApp(App):
     
     # Mapping of screen names to screen classes
     SCREENS = {
-        "update": UpdateDataScreen,    # Initial data update screen
         "stocks": StocksScreen,        # Stock selection screen
         "sectors": SectorsScreen,      # Sector exclusion screen
         "risk": RiskScreen,            # Risk tolerance screen
@@ -523,7 +495,7 @@ class PortfolioApp(App):
     def on_mount(self) -> None:
         """Called when app starts"""
         # Initialize screen stack with the first screen
-        self.push_screen("update")
+        self.push_screen("stocks")
 
     def action_pop_screen(self) -> None:
         """Handle going back to previous screen"""

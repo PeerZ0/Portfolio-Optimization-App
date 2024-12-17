@@ -7,8 +7,9 @@ interactive dashboard for visualizing the results of portfolio optimization.
 """
 
 from dash import Dash, html, dcc
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from flask_caching import Cache
+from services.export_portfolio import export_portfolio
 
 class PortfolioOptimizationDashboard:
     def __init__(self, portfolio):
@@ -63,6 +64,24 @@ class PortfolioOptimizationDashboard:
                         value='min_variance',
                         style={'width': '50%', 'margin': 'auto'}
                     )
+                ], style={'text-align': 'center'}),
+
+                # Add Download Button after dropdown
+                html.Div([
+                    html.Button(
+                        "Download Portfolio Data",
+                        id="btn-download",
+                        style={
+                            'margin': '20px',
+                            'padding': '10px 20px',
+                            'backgroundColor': '#4CAF50',
+                            'color': 'white',
+                            'border': 'none',
+                            'borderRadius': '4px',
+                            'cursor': 'pointer'
+                        }
+                    ),
+                    dcc.Download(id="download-dataframe-csv"),
                 ], style={'text-align': 'center'})
             ]),
 
@@ -168,6 +187,33 @@ class PortfolioOptimizationDashboard:
             print(f"update_dashboard called with strategy: {selected_strategy}")
             return summary_table, cumulative_returns_fig, portfolio_allocation_fig, annualized_returns_fig, sector_allocation_fig
 
+        @self.app.callback(
+            Output("download-dataframe-csv", "data"),
+            [Input("btn-download", "n_clicks"),
+             Input("portfolio-strategy-dropdown", "value")],
+            prevent_initial_call=True
+        )
+        def download_csv(n_clicks, selected_strategy):
+            if n_clicks is None:
+                return None
+            
+            # Select portfolio weights based on strategy
+            if selected_strategy == 'min_variance':
+                portfolio_weights = self.min_variance_weights
+                strategy_name = "Minimum Variance Strategy"
+            elif selected_strategy == 'equal_weight':
+                portfolio_weights = self.equal_weights
+                strategy_name = "Equal Weight Strategy"
+            elif selected_strategy == 'max_sharpe':
+                portfolio_weights = self.max_sharpe_weights
+                strategy_name = "Maximum Sharpe Ratio Strategy"
+
+            # Export portfolio and get file path
+            output_file = export_portfolio(portfolio_weights, strategy_name)
+            
+            # Return the file as a download
+            return dcc.send_file(output_file)
+
     def run(self):
         """Runs the Dash application."""
         self.app.run_server(debug=False, port=8509)
@@ -175,6 +221,7 @@ class PortfolioOptimizationDashboard:
 if __name__ == "__main__":
     from user import User
     from portfolio import Portfolio
+    
     user = User()
     user.data = {
             "preferred_stocks": [],  # List of stock tickers the user wants in their portfolio

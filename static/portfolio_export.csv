@@ -1,0 +1,5 @@
+Optimized Portfolio Weights according to Example Strategy
+Ticker,Weight,Company Name,Sector,Industry,Website,Country
+AAPL,0.5,Apple Inc.,Technology,Consumer Electronics,https://www.apple.com,United States
+MSFT,0.3,Microsoft Corporation,Technology,Software - Infrastructure,https://www.microsoft.com,United States
+GOOGL,0.2,Alphabet Inc.,Communication Services,Internet Content & Information,https://abc.xyz,United States
