@@ -26,6 +26,7 @@ def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
         # Filter stocks by risk tolerance
         max_risk = user.data["risk_tolerance"]
         df = df[df['overallRisk'] <= max_risk]
+    
     return df
 
 def build_available_tickers(user) -> List[Dict]:
@@ -67,6 +68,7 @@ def build_available_tickers(user) -> List[Dict]:
 
         # Convert the DataFrame to a list of dictionaries for the result
         result = final_df.to_dict('records')
+        
         return [ticker['Ticker'] for ticker in result]
 
     except FileNotFoundError:

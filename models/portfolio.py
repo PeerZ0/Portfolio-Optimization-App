@@ -92,6 +92,7 @@ class Portfolio:
             data.iloc[0] = data.iloc[1]  # Use the second row to fill the first
 
         self.tickers = list(data.columns)  # Update tickers list to include only valid ones
+        
         return data  # Return the cleaned DataFrame
 
         
@@ -166,84 +167,6 @@ class Portfolio:
         result = minimize(negative_sharpe_ratio, initial_weights, method='SLSQP', bounds=self.bounds, constraints=self.constraints)
         return dict(zip(self.tickers, result.x))
 
-
-    def choose_best_return_portfolio(self, yearly_rebalance='no'):
-        """
-        Choose the portfolio with the highest return.
-
-        Parameters
-        ----------
-        yearly_rebalance : str
-            Whether to rebalance the portfolio annually ('yes' or 'no').
-
-        Returns
-        -------
-        dict
-            A dictionary containing the optimized weights for the portfolio with the highest return.
-        """
-        portfolios = {
-            'min_variance': self.min_variance_portfolio(),
-            'equal_weight': self.equal_weight_portfolio(),
-            'max_sharpe': self.max_sharpe_ratio_portfolio(0.01)
-        }
-        
-        best_portfolio = None
-        best_return = -float('inf')
-
-        for name, weights in portfolios.items():
-            if yearly_rebalance == 'yes':
-                cumulative_value = 1.0  # Starting with an initial wealth of 1
-                rebalanced_weights = self.yearly_rebalance(weights)
-                
-                # Iteratively apply yearly returns
-                for year, year_weights in rebalanced_weights.items():
-                    yearly_returns = self.returns[self.returns.index.year == year]
-                    
-                    if yearly_returns.empty:
-                        continue
-                    
-                    # Apply the weights to the returns for the given year
-                    weighted_returns = yearly_returns.dot(pd.Series(year_weights))
-                    
-                    # Calculate the cumulative return for the year
-                    cumulative_year_return = (1 + weighted_returns).prod() - 1
-                    
-                    # Update the overall portfolio value based on the year's return
-                    cumulative_value *= (1 + cumulative_year_return)
-                    
-                total_return = cumulative_value - 1  # Calculate the overall return
-            else:
-                # No rebalancing: calculate return using original weights across the whole period
-                weighted_returns = self.returns.dot(pd.Series(weights))
-                total_return = (1 + weighted_returns).prod() - 1  # Final cumulative return
-
-            if total_return > best_return:
-                best_return = total_return
-                best_portfolio = weights
-        
-        return best_portfolio
-    
-
-    def calculate_max_drawdowns(self, returns):
-        """
-        Calculate the maximum drawdown of a returns series.
-
-        Parameters
-        ----------
-        returns : pd.Series
-            The returns series.
-
-        Returns
-        -------
-        float
-            The maximum drawdown.
-        """
-        cumulative = (1 + returns).cumprod()
-        peak = cumulative.cummax()
-        drawdown = (cumulative - peak) / peak
-        return drawdown.min()
-
-
     def plot_cumulative_returns(self, portfolio_weights):
         """
         Plot cumulative returns of the given portfolio weights using Plotly.
@@ -259,7 +182,6 @@ class Portfolio:
             Plotly figure showing the cumulative returns.
         """
         
-        
         # Load S&P 500 returns using yfinance
         sp500_returns = self.sp500.pct_change().dropna()
         self.sp500_returns = sp500_returns
@@ -274,10 +196,6 @@ class Portfolio:
         # Calculate cumulative returns
         cumulative_returns = (1 + aligned_data["Portfolio"]).cumprod()
         cumulative_sp500_returns = (1 + aligned_data["S&P 500"]).cumprod()
-
-        # Debug output (optional)
-        print("Cumulative Portfolio Returns:", cumulative_returns.head())
-        print("Cumulative S&P 500 Returns:", cumulative_sp500_returns.head())
 
         # Create the plot
         fig = go.Figure()
@@ -353,45 +271,49 @@ class Portfolio:
         pd.DataFrame
             A DataFrame containing summary statistics of the portfolio.
         """
+        # Calculate summary statistics
         summary_stats = self.get_summary_statistics(portfolio_weights, risk_free_rate)
         summary_df = pd.DataFrame(list(summary_stats.items()), columns=['Metric', 'Value'])
+        
         return summary_df
 
 
     def plot_portfolio_allocation(self, portfolio_weights, selected_strategy):
-            """
-            Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
+        """
+        Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
 
-            Parameters
-            ----------
-            portfolio_weights : dict
-                A dictionary containing the weights of each ticker in the portfolio.
-            selected_strategy : str
-                The strategy used to generate the portfolio (min_variance, equal_weight, or max_sharpe).
+        Parameters
+        ----------
+        portfolio_weights : dict
+            A dictionary containing the weights of each ticker in the portfolio.
+        selected_strategy : str
+            The strategy used to generate the portfolio (min_variance, equal_weight, or max_sharpe).
 
-            Returns
-            -------
-            plotly.graph_objects.Figure
-                A pie chart figure showing the portfolio allocation.
-            """
-            labels = list(portfolio_weights.keys())
-            values = list(portfolio_weights.values())
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            A pie chart figure showing the portfolio allocation.
+        """
+        
+        labels = list(portfolio_weights.keys())
+        values = list(portfolio_weights.values())
+        
+        # Adjust chart for min_variance and max_sharpe strategies
+        if selected_strategy in ['min_variance', 'max_sharpe']:
+            # Sort the allocation by weight
+            sorted_allocation = pd.Series(portfolio_weights).sort_values(ascending=False)
+            
+            # Summarize all under 0.01 as 'Others'
+            other_allocation = sorted_allocation[sorted_allocation < 0.01].sum()
+            sorted_allocation = sorted_allocation[sorted_allocation >= 0.01]
+            
+            labels = list(sorted_allocation.index) + ['Others']
+            values = list(sorted_allocation.values) + [other_allocation]
+                                    
+        fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+        fig.update_layout(title_text=f'Portfolio Allocation', template='plotly_white')
 
-            if selected_strategy in ['min_variance', 'max_sharpe']:
-                # Sort the allocation by weight
-                sorted_allocation = pd.Series(portfolio_weights).sort_values(ascending=False)
-                
-                # Summarize all under 0.01 as 'Others'
-                other_allocation = sorted_allocation[sorted_allocation < 0.01].sum()
-                sorted_allocation = sorted_allocation[sorted_allocation >= 0.01]
-                
-                labels = list(sorted_allocation.index) + ['Others']
-                values = list(sorted_allocation.values) + [other_allocation]
-                                        
-            fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-            fig.update_layout(title_text=f'Portfolio Allocation', template='plotly_white')
-
-            return fig
+        return fig
     
     def create_weighted_sector_treemap(self, weights):
         """
@@ -455,9 +377,9 @@ class Portfolio:
         ], ignore_index=True)
 
         custom_text = combined_df.apply(
-    lambda x: f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Weight: {x['Weight_n']:.2f}%", axis=1
-)
-    # Generate Treemap
+        lambda x: f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Weight: {x['Weight_n']:.2f}%", axis=1)
+        
+        # Generate Treemap
         fig = go.Figure(go.Treemap(
             labels=combined_df['Name'], 
             parents=combined_df['Parent'], 
@@ -471,40 +393,42 @@ class Portfolio:
         fig.update_layout(
             title="Sector Treemap with Stocks: Absolute and Normalized Weights",
             margin=dict(t=50, l=25, r=25, b=25)
-    )
+            )
+        
         return fig
 
 
     def plot_annualized_returns(self, portfolio_weights):
-            """
-            Plot a bar chart showing the contribution of each asset's annualized returns to the portfolio's total return.
+        """
+        Plot a bar chart showing the contribution of each asset's annualized returns to the portfolio's total return.
 
-            Parameters
-            ----------
-            portfolio_weights : dict
-                A dictionary containing the weights of each ticker in the portfolio.
+        Parameters
+        ----------
+        portfolio_weights : dict
+            A dictionary containing the weights of each ticker in the portfolio.
 
-            Returns
-            -------
-            plotly.graph_objects.Figure
-                A bar chart figure showing each asset's contribution to the portfolio return.
-            """
-            annualized_returns = self.mean_returns * 252
-            labels = self.tickers
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            A bar chart figure showing each asset's contribution to the portfolio return.
+        """
+        annualized_returns = self.mean_returns * 252
+        labels = self.tickers
 
-            # Contribution of each asset to the portfolio return
-            contribution_to_portfolio = [portfolio_weights[ticker] * annualized_returns[ticker] for ticker in self.tickers]
+        # Contribution of each asset to the portfolio return
+        contribution_to_portfolio = [portfolio_weights[ticker] * annualized_returns[ticker] for ticker in self.tickers]
 
-            fig = go.Figure()
-            fig.add_trace(go.Bar(x=labels, y=contribution_to_portfolio, name='Contribution to Portfolio Return'))
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=labels, y=contribution_to_portfolio, name='Contribution to Portfolio Return'))
 
-            fig.update_layout(
-                title='Contribution of Each Asset to Portfolio Return',
-                xaxis_title='Asset',
-                yaxis_title='Contribution to Portfolio Return',
-                template='plotly_white'
-            )
-            return fig
+        fig.update_layout(
+            title='Contribution of Each Asset to Portfolio Return',
+            xaxis_title='Asset',
+            yaxis_title='Contribution to Portfolio Return',
+            template='plotly_white'
+        )
+        
+        return fig
 
 if __name__ == "__main__":
     from user import User
@@ -540,5 +464,3 @@ if __name__ == "__main__":
         margin=dict(t=50, l=25, r=25, b=25)
 )
     fig.show()"""
-
-

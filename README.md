@@ -2,16 +2,11 @@
 
 A simple Python-based terminal app that runs several optimization algorithms to find the best investment portfolio allocation based on the user's preferences and then visualizes the results in a dashboard. The app currently covers around 600 tickers, webscraped from the largest indices around the world.
 
+Due to yFinance rate limiting being more strict lately, we had to remove an automatic update of the stock data. Furthermore, due to cross-platform issues, we had to move all frontend to Dash and Plotly.
+
 WARNING: Calculations are hardware intensive and can take a while to run, especially when updating the stock data, optimizing the portfolio, or loading the dashboard. The app is not optimized for performance and should be used for educational purposes only.
 
 ## How to use
-1. Run the main.py file
-2. Select if you want to update the stock data (this will take a while and can be limited due to yfinance restrictions)
-3. Enter any tickers that you want to include in the optimization (those will not be filtered out later in the sector filter)
-4. Select/Deselect any sector you want to avoid to invest in
-5. Enter the investment constraint (maximum investment per stock as of % of total capital)
-6. Wait for the data to be pulled and the optimization to run
-7. Click on open dashboard to see the results
 
 ## Requirements
 
@@ -34,6 +29,7 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ````
+5. Visit the dashboard at [http://127.0.0.1:8050/]
 
 ## Project Structure
 
@@ -53,7 +49,6 @@ Main dependencies include:
 - yfinance: Stock data retrieval
 - pandas: Data manipulation
 - plotly & Dash: Interactive visualization
-- textual: Terminal user interface
 - scipy: Optimization algorithms
 
 ## Literature

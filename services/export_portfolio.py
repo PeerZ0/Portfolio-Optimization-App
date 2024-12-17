@@ -74,13 +74,3 @@ def export_portfolio(weights, strategy_name, output_file='static/portfolio_expor
         portfolio_df.to_csv(f, index=False)
 
     return output_file
-
-if __name__ == "__main__":
-    # Testing usage
-    weights = {
-        'AAPL': 0.5,
-        'MSFT': 0.3,
-        'GOOGL': 0.2
-    }
-    # Run the export function
-    export_portfolio(weights, "Example Strategy")
