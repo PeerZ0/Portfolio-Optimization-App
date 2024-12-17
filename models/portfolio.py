@@ -240,17 +240,13 @@ class Portfolio:
         
         # Calculate Sharpe ratio
         sharpe_ratio = (annualized_return - risk_free_rate) / annualized_volatility
-        
-        # Calculate maximum drawdown
-        max_drawdown = self.calculate_max_drawdowns(weighted_returns)
-        
+                
         # Create a summary dictionary
         summary_stats = {
             'Cumulative Return': round(cumulative_return, 3),
             'Annualized Return': round(annualized_return, 3),
             'Annualized Volatility': round(annualized_volatility, 3),
             'Sharpe Ratio': round(sharpe_ratio, 3),
-            'Maximum Drawdown': round(max_drawdown, 3),
         }
         
         return summary_stats

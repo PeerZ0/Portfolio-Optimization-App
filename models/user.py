@@ -3,6 +3,8 @@
 User class, storing user-specific data for portfolio optimization.
 """
 
+import pandas as pd
+
 class User:
     """
     User class to store and manage user-specific data for portfolio optimization.
@@ -33,3 +35,5 @@ class User:
             "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
             "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is 30%
         }
+        self.static_data = pd.read_csv("static/ticker_data.csv")
+        self.portfolio = None

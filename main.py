@@ -1,13 +1,13 @@
-# main.py
-"""
-Main file to run the application
-"""
+import dash
+from dash import Dash, html, dcc
+import dash_bootstrap_components as dbc
 
-from models.terminal import PortfolioApp
-from models.testfile_dash1 import PortfolioManager
+app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+app.layout = html.Div([
+    dcc.Location(id="url", refresh=True),  # Handles navigation
+    dash.page_container  # Renders pages
+])
 
 if __name__ == "__main__":
-    # Run the PortfolioApp
-    static = 'static/ticker_data.csv'
-    manager = PortfolioManager(static)
-    manager.run()
+    app.run(debug=True)

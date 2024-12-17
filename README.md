@@ -5,7 +5,7 @@ A simple Python-based terminal app that runs several optimization algorithms to 
 Due to yFinance rate limiting being more strict lately, we had to remove an automatic update of the stock data. Furthermore, due to cross-platform issues, we had to move all frontend to Dash and Plotly.
 
 WARNING: Calculations are hardware intensive and can take a while to run, especially when updating the stock data, optimizing the portfolio, or loading the dashboard. The app is not optimized for performance and should be used for educational purposes only.
-
+aaaaAaaaaaaaaaaaaa
 ## How to use
 
 ## Requirements
