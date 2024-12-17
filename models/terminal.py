@@ -325,6 +325,20 @@ class DataPullingScreen(BaseScreen):
         if event.button.id == "exit":
             self.app.exit()
 
+# Move the dashboard function outside the class
+def run_dashboard_process(portfolio):
+    """Separate function to run the dashboard process"""
+    try:
+        # Redirect stdout/stderr on Windows
+        if sys.platform == 'win32':
+            sys.stdout = open(os.devnull, 'w')
+            sys.stderr = open(os.devnull, 'w')
+        
+        dashboard = PortfolioOptimizationDashboard(portfolio)
+        dashboard.run()
+    except Exception as e:
+        print(f"Dashboard initialization failed: {str(e)}")
+
 class PortfolioOptimizationScreen(BaseScreen):
     """
     Final screen that launches the optimization dashboard.
@@ -350,25 +364,17 @@ class PortfolioOptimizationScreen(BaseScreen):
         if event.button.id == "dashboard":
             self.app.logger.info("Starting dashboard initialization")
 
-            def run_dashboard():
-                try:
-                    if sys.platform == 'win32':
-                        sys.stdout = open(os.devnull, 'w')
-                        sys.stderr = open(os.devnull, 'w')
-                
-                    PortfolioOptimizationDashboard(self.app.portfolio).run()
-                except Exception as e:
-                    self.app.logger.error(f"Dashboard initialization failed: {str(e)}", exc_info=True)
-
             # Start the dashboard in a separate process
-            dashboard_process = multiprocessing.Process(target=run_dashboard)
-            dashboard_process.start()
+            self.dashboard_process = multiprocessing.Process(
+                target=run_dashboard_process,
+                args=(self.app.portfolio,)
+            )
+            self.dashboard_process.start()
 
             # Give time for the server to initialize
             time.sleep(2)
             self.app.logger.info("Opening dashboard in browser")
             webbrowser.open("http://127.0.0.1:8509")
-
 
         if event.button.id == "exit":
             self.app.logger.info("Application exit requested")
