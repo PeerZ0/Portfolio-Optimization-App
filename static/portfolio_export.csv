@@ -1,5 +1,12 @@
-Optimized Portfolio Weights according to Example Strategy
+Optimized Portfolio Weights according to Maximum Sharpe Ratio Strategy
 Ticker,Weight,Company Name,Sector,Industry,Website,Country
-AAPL,0.5,Apple Inc.,Technology,Consumer Electronics,https://www.apple.com,United States
-MSFT,0.3,Microsoft Corporation,Technology,Software - Infrastructure,https://www.microsoft.com,United States
-GOOGL,0.2,Alphabet Inc.,Communication Services,Internet Content & Information,https://abc.xyz,United States
+KEY,0.1,KeyCorp,Financial Services,Banks - Regional,https://www.key.com,United States
+GNRC,0.1,Generac Holdings Inc.,Industrials,Specialty Industrial Machinery,https://www.generac.com,United States
+RCL,0.1,Royal Caribbean Cruises Ltd.,Consumer Cyclical,Travel Services,https://www.rclinvestor.com,United States
+NCLH,0.1,Norwegian Cruise Line Holdings Ltd.,Consumer Cyclical,Travel Services,https://www.nclhltd.com,United States
+TSLA,0.1,"Tesla, Inc.",Consumer Cyclical,Auto Manufacturers,https://www.tesla.com,United States
+CZR,0.1,"Caesars Entertainment, Inc.",Consumer Cyclical,Resorts & Casinos,https://www.caesars.com,United States
+CCL,0.1,Carnival Corporation & plc,Consumer Cyclical,Travel Services,https://www.carnivalcorp.com,United States
+WBD,0.1,"Warner Bros. Discovery, Inc.",Communication Services,Entertainment,https://ir.wbd.com,United States
+RKT,0.1,"Rocket Companies, Inc.",Financial Services,Mortgage Finance,https://www.rocketcompanies.com,United States
+AHT,0.1,"Ashford Hospitality Trust, Inc.",Real Estate,REIT - Hotel & Motel,https://www.ahtreit.com,United States

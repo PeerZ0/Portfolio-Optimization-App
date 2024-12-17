@@ -26,6 +26,7 @@ from models.portfolio import Portfolio
 from models.user import User
 from services.build_list import build_available_tickers
 from models.dashboard import PortfolioOptimizationDashboard
+from services.logger import setup_logger
 
 class BaseScreen(Screen):
     """Base screen class that provides common header and footer for all screens."""
@@ -39,6 +40,7 @@ class StocksScreen(BaseScreen):
     Validates input against available stocks in the database and provides immediate feedback.
     """
     def compose(self) -> ComposeResult:
+        self.app.logger.info("Displaying stocks selection screen")
         with Container(classes="container"):
             # Display the stock selection screen with input field for stock tickers
             yield Label("Select Preferred Stocks", classes="heading")
@@ -63,6 +65,7 @@ class StocksScreen(BaseScreen):
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "stocks":
             stocks = [s.strip().upper() for s in event.value.split(",") if s.strip()]
+            self.app.logger.debug(f"Processing stock input: {stocks}")
             df = pd.read_csv('static/ticker_data.csv')
             valid_stocks = [s for s in stocks if s in df['Ticker'].values]
             invalid_stocks = [s for s in stocks if s not in df['Ticker'].values]
@@ -73,10 +76,12 @@ class StocksScreen(BaseScreen):
                 status.remove_class("error")
                 status.add_class("success")
                 status.update(f"Valid stocks: {', '.join(valid_stocks)}")
+                self.app.logger.info(f"Valid stocks selected: {valid_stocks}")
             if invalid_stocks:
                 status.remove_class("success")
                 status.add_class("error")
                 status.update(f"Invalid tickers: {', '.join(invalid_stocks)}")
+                self.app.logger.warning(f"Invalid stocks entered: {invalid_stocks}")
             self.app.user.data["preferred_stocks"] = valid_stocks
     
     # Handle button press events
@@ -92,6 +97,7 @@ class SectorsScreen(BaseScreen):
     Implements a toggle mechanism for sector selection/deselection with real-time updates.
     """
     def compose(self) -> ComposeResult:
+        self.app.logger.info("Displaying sectors exclusion screen")
         with Container(classes="container"):
             # Display the sector exclusion screen with a list of sectors
             yield Label("Exclude Sectors", classes="heading")
@@ -103,7 +109,8 @@ class SectorsScreen(BaseScreen):
                 yield Label("Select/deselect sectors to exclude:")
                 yield Select(
                     [(sector, sector) for sector in sectors],
-                    id="sectors"
+                    id="sectors",
+                    prompt="Choose a sector",  # Add prompt text
                 )
                 yield Static("Selected sectors to exclude:", classes="label")
                 yield Static("None", id="selected_sectors", classes="selected-sectors")
@@ -120,22 +127,23 @@ class SectorsScreen(BaseScreen):
     # Handle sector selection/deselection events
     def on_select_changed(self, event: Select.Changed) -> None:
         selected_sector = event.value
-        if selected_sector:
-            # Update the user data with the selected sectors to avoid
-            if "sectors_to_avoid" not in self.app.user.data:
-                self.app.user.data["sectors_to_avoid"] = []
+        if selected_sector is None:  # Handle empty selection
+            return
             
-            # Toggle the selected sector in the list
-            if selected_sector in self.app.user.data["sectors_to_avoid"]:
-                self.app.user.data["sectors_to_avoid"].remove(selected_sector)
-            else:
-                self.app.user.data["sectors_to_avoid"].append(selected_sector)
-            
-            # Update the selected sectors display
-            sectors_text = ", ".join(self.app.user.data["sectors_to_avoid"])
-            if not sectors_text:
-                sectors_text = "None"
-            self.query_one("#selected_sectors").update(sectors_text)
+        self.app.logger.debug(f"Sector selection changed: {selected_sector}")
+        if "sectors_to_avoid" not in self.app.user.data:
+            self.app.user.data["sectors_to_avoid"] = []
+        
+        if selected_sector in self.app.user.data["sectors_to_avoid"]:
+            self.app.user.data["sectors_to_avoid"].remove(selected_sector)
+        else:
+            self.app.user.data["sectors_to_avoid"].append(selected_sector)
+        
+        sectors_text = ", ".join(self.app.user.data["sectors_to_avoid"])
+        if not sectors_text:
+            sectors_text = "None"
+        self.query_one("#selected_sectors").update(sectors_text)
+        self.app.logger.info(f"Updated sectors to avoid: {self.app.user.data.get('sectors_to_avoid', [])}")
 
     # Handle button press events
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -150,6 +158,7 @@ class RiskScreen(BaseScreen):
     Provides input validation and immediate feedback on the selected risk level.
     """
     def compose(self) -> ComposeResult:
+        self.app.logger.info("Displaying risk tolerance screen")
         with Container(classes="container"):
             # Display the risk tolerance screen with input field for risk level
             yield Label("Risk Tolerance", classes="heading")
@@ -170,14 +179,17 @@ class RiskScreen(BaseScreen):
                 risk = int(event.value)
                 # Update the user data with the risk tolerance level
                 if 1 <= risk <= 10:
+                    self.app.logger.info(f"Risk tolerance set to: {risk}")
                     self.app.user.data["risk_tolerance"] = risk
                     self.query_one("#status").remove_class("error")
                     self.query_one("#status").update("Valid risk level")
                 else:
+                    self.app.logger.warning(f"Invalid risk level entered: {risk}")
                     self.query_one("#status").add_class("error")
                     self.query_one("#status").update("Risk level must be between 1 and 10")
             # Display an error message if the input is invalid
             except ValueError:
+                self.app.logger.error(f"Invalid risk input: {event.value}")
                 self.query_one("#status").add_class("error")
                 self.query_one("#status").update("Please enter a valid number")
     
@@ -194,6 +206,7 @@ class ConstraintsScreen(BaseScreen):
     Implements real-time validation of input values and constraint rules.
     """
     def compose(self) -> ComposeResult:
+        self.app.logger.info("Displaying investment constraints screen")
         with Container(classes="container"):
             # Display the constraints screen with input fields for maximum investment
             yield Label("Investment Constraints", classes="heading")
@@ -209,7 +222,7 @@ class ConstraintsScreen(BaseScreen):
     def validate_constraints(self) -> bool:
         # Get the maximum investment value from the input field
         max_input = self.query_one("#max").value
-        status = self.query_one("#status")
+        self.app.logger.debug(f"Validating constraints: max_input={max_input}")
 
         try:
             # Convert the input to a float value
@@ -221,17 +234,20 @@ class ConstraintsScreen(BaseScreen):
                     "max_equity_investment": max_equity
                 })
                 # Display a success message if the input is valid
-                status.remove_class("error")
-                status.update("Valid constraints")
+                self.query_one("#status").remove_class("error")
+                self.query_one("#status").update("Valid constraints")
+                self.app.logger.info(f"Valid constraints set: max_equity={max_equity}")
                 return True
             else:
                 # Display an error message if the input is invalid
-                status.add_class("error")
-                status.update("Invalid constraints: Min must be less than Max (0-100)")
+                self.query_one("#status").add_class("error")
+                self.query_one("#status").update("Invalid constraints: Min must be less than Max (0-100)")
+                self.app.logger.warning(f"Invalid constraint values: max_equity={max_equity}")
                 return False
         except ValueError:
-            status.add_class("error")
-            status.update("Please enter valid numbers")
+            self.query_one("#status").add_class("error")
+            self.query_one("#status").update("Please enter valid numbers")
+            self.app.logger.error(f"Invalid constraint input: {max_input}")
             return False
 
     # Handle input change events
@@ -252,6 +268,7 @@ class DataPullingScreen(BaseScreen):
     Handles asynchronous data loading and portfolio setup with progress feedback.
     """
     def compose(self) -> ComposeResult:
+        self.app.logger.info("Displaying data pulling screen")
         with Container(classes="container"):
             yield Label("Initializing Portfolio...", classes="heading")
             yield Static("Please wait while we prepare your portfolio.", id="status", classes="status-message")
@@ -274,25 +291,32 @@ class DataPullingScreen(BaseScreen):
         Uses threading to prevent UI blocking during data processing.
         """
         try:
+            self.app.logger.info("Starting portfolio initialization")
             # Initialize the portfolio in a separate thread
             await asyncio.to_thread(self.perform_initialization)
+            self.app.logger.info("Portfolio initialization completed successfully")
             # Redirect to the optimization screen
             self.app.push_screen("optimization")
         except Exception as e:
+            self.app.logger.error(f"Portfolio initialization failed: {str(e)}", exc_info=True)
             # Display error message if initialization fails
             self.query_one("#status").update(f"[red]Error: {str(e)}[/red]")
     
     # Initialize the portfolio with user preferences through the Portfolio class
     def perform_initialization(self) -> None:
+        self.app.logger.info("Building available tickers list")
         # Build the list of available tickers based on user preferences
         available_tickers = build_available_tickers(self.app.user)
+        self.app.logger.debug(f"Available tickers: {available_tickers}")
         # Update the user data with available tickers
         self.app.user.data["available_stocks"] = available_tickers
         # Raise an error if no tickers match the criteria
         if not available_tickers:
+            self.app.logger.error("No tickers match the specified criteria")
             raise ValueError("No tickers match your criteria")
         # Initialize the portfolio with the user's preferences
         self.app.portfolio = Portfolio(self.app.user)
+        self.app.logger.info(f"Initializing portfolio with {len(available_tickers)} tickers")
     
     # Handle exit button press
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -305,6 +329,7 @@ class PortfolioOptimizationScreen(BaseScreen):
     Manages the dashboard process in a separate thread and provides browser integration.
     """
     def compose(self) -> ComposeResult:
+        self.app.logger.info("Displaying portfolio optimization screen")
         with Container(classes="container"):
             # Display the final screen with a message and buttons to launch the dashboard or exit
             yield Label("Portfolio Optimization", classes="header centered")
@@ -325,10 +350,14 @@ class PortfolioOptimizationScreen(BaseScreen):
         3. Opens the dashboard in the default browser
         """
         if event.button.id == "dashboard":
+            self.app.logger.info("Starting dashboard initialization")
             # Define a function to run the dashboard
             def run_dashboard():
-                # Run the dashboard through the PortfolioOptimizationDashboard class
-                PortfolioOptimizationDashboard(self.app.portfolio).run()
+                try:
+                    # Run the dashboard through the PortfolioOptimizationDashboard class
+                    PortfolioOptimizationDashboard(self.app.portfolio).run()
+                except Exception as e:
+                    self.app.logger.error(f"Dashboard initialization failed: {str(e)}", exc_info=True)
             
             # Start the dashboard in a separate thread
             dashboard_thread = threading.Thread(target=run_dashboard)
@@ -337,10 +366,12 @@ class PortfolioOptimizationScreen(BaseScreen):
 
             # Wait for the server to start
             time.sleep(2)
+            self.app.logger.info("Opening dashboard in browser")
             # Open the dashboard in the default browser
             webbrowser.open("http://127.0.0.1:8509")
 
         if event.button.id == "exit":
+            self.app.logger.info("Application exit requested")
             self.app.exit()
             
 class PortfolioApp(App):
@@ -491,6 +522,8 @@ class PortfolioApp(App):
         super().__init__()
         # Create an internal user object to store user preferences
         self.user = User()
+        self.logger = setup_logger(__name__)
+        self.logger.info("Portfolio Application initialized")
 
     def on_mount(self) -> None:
         """Called when app starts"""
