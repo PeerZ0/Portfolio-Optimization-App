@@ -60,10 +60,17 @@ layout = html.Div([
             # First row: Summary statistics
             html.Div([
                 html.H2("Summary Statistics", style={'text-align': 'center'}),
-                html.Div(id='summary-statistics-table', style={'width': '70%', 'margin': 'auto', 'margin-bottom': '30px'})
+                html.Div(
+                    id='summary-statistics-table',
+                    style={
+                        'display': 'flex',
+                        'justify-content': 'center',
+                        'align-items': 'center',
+                        'margin': '40px auto',  # Adds spacing only at the top and bottom
+                        'width': '70%'          # Keeps the table width manageable
+                    }
+                )
             ]),
-
-            html.Br(),
 
             # Second row: Plots
             html.Div([
