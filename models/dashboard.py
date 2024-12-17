@@ -252,6 +252,7 @@ class PortfolioOptimizationDashboard:
         self.logger.info("Starting dashboard server on port 8509")
         try:
             self.app.run_server(debug=False, port=8509)
+            self.logger.info("Dashboard successfully started")
         except Exception as e:
             self.logger.error(f"Error starting dashboard server: {str(e)}", exc_info=True)
             raise
