@@ -17,7 +17,8 @@ from textual.containers import Container, Horizontal
 from textual.widgets import Button, Header, Footer, Input, Label, Select, Static
 from textual.screen import Screen
 import pandas as pd
-import os
+import multiprocessing
+import sys
 import asyncio
 import webbrowser
 import time
@@ -339,11 +340,6 @@ class PortfolioOptimizationScreen(BaseScreen):
                 yield Button("Open Dashboard", id="dashboard", variant="primary")
                 yield Button("Exit", id="exit", variant="error")
             yield Footer()
-        
-    import multiprocessing
-    import time
-    import webbrowser
-    import sys
 
     # Fix for macOS
     if sys.platform == 'darwin':  
@@ -368,8 +364,6 @@ class PortfolioOptimizationScreen(BaseScreen):
             self.app.logger.info("Opening dashboard in browser")
             webbrowser.open("http://127.0.0.1:8509")
 
-            # Store the process for cleanup if needed
-            self.dashboard_process = dashboard_process
 
         if event.button.id == "exit":
             self.app.logger.info("Application exit requested")

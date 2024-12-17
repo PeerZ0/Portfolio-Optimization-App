@@ -422,10 +422,9 @@ class Portfolio:
             A treemap figure showing sectors with their respective weights.
         """
         self.logger.info("Creating weighted sector treemap")
-        try:
-            # Check if all tickers have corresponding weights
-            if set(self.tickers) - set(weights.keys()):
-                raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
+        # Check if all tickers have corresponding weights
+        if set(self.tickers) - set(weights.keys()):
+            raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
 
         sector_data_raw = pd.read_csv('static/ticker_data.csv')
         sector_data = []
