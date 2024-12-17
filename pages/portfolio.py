@@ -1,6 +1,7 @@
 import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
+from dash.exceptions import PreventUpdate
 from state import user  # Shared state where portfolio is already initialized
 from services.export_portfolio import export_portfolio
 from models.portfolio import Portfolio

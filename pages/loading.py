@@ -1,6 +1,5 @@
 import dash
 from dash import html, dcc, callback, Input, Output
-import time
 from state import user
 from services.build_list import build_available_tickers
 from models.portfolio import Portfolio
