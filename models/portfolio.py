@@ -439,7 +439,7 @@ class Portfolio:
         # Aggregate weights by sector
         sector_weights = df.groupby('Parent')['Weight'].sum().reset_index()
         sector_weights["Name"] = sector_weights["Parent"]
-        sector_weights["Parent"] = "World"
+        sector_weights["Parent"] = "Portfolio"
 
         # Normalize stock weights to sum to 100% within each sector
         df['Normalized_Weight'] = df.groupby('Parent')['Weight'].transform(lambda x: 100 * x / x.sum())
@@ -454,32 +454,25 @@ class Portfolio:
             df  # Stocks
         ], ignore_index=True)
 
-        # Extract hierarchy information
-        labels = combined_df["Name"].tolist()
-        parents = combined_df["Parent"].tolist()
-        values = combined_df["Weight"].round(3).tolist()
         custom_text = combined_df.apply(
-    lambda x: f"Absolute Weight: {x['Weight']:.3f}<br>Normalized: {x['Weight_n']:.2f}%", axis=1
+    lambda x: f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Weight: {x['Weight_n']:.2f}%", axis=1
 )
-
-        # Build the treemap using plotly.graph_objects
+    # Generate Treemap
         fig = go.Figure(go.Treemap(
-            labels=labels,     # Names of the nodes (stocks and sectors)
-            parents=parents,   # Parent-child relationships
-            values=values,     # Sizes (weights) of nodes
-            text=custom_text,
-            textinfo="label+value+percent parent",  # Display node name, value, and % of parent
+            labels=combined_df['Name'], 
+            parents=combined_df['Parent'], 
+            #values=combined_df['Weight'], 
+            text=custom_text,  # Display both absolute and normalized weights
+            textinfo="label+text+value",
             root_color="lightgrey"
         ))
 
-        # Update layout for clean visualization
+        # Update layout for clarity
         fig.update_layout(
-            title="Sectors with Stocks Treemap",
-            margin=dict(t=100, l=25, r=25, b=25)
-        )
-        # Return the treemap figure  
-        fig.show()  
-        return combined_df
+            title="Sector Treemap with Stocks: Absolute and Normalized Weights",
+            margin=dict(t=50, l=25, r=25, b=25)
+    )
+        return fig
 
 
     def plot_annualized_returns(self, portfolio_weights):
