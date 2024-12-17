@@ -38,17 +38,32 @@ layout = dbc.Container([
     dbc.Row([
         dbc.Col([
             html.H5("Risk Tolerance (1-10)"),
-            dcc.Slider(id="risk-slider", min=1, max=10, step=1, value=5)
+            dcc.Slider(id="risk-slider", min=1, max=10, step=1)  # Set default value
         ], width=6),
         dbc.Col([
             html.H5("Max Equity Investment (%)"),
-            dcc.Input(id="max-investment", type="number", value=30, className="form-control")
+            dcc.Input(id="max-investment", type="number", className="form-control")
         ], width=6)
     ]),
 
     dbc.Button("Create Portfolio", id="create-btn", n_clicks=0, className="btn btn-primary mt-3"),
 ])
 
+@callback(
+    Output("preferred-stocks", "value"),
+    Output("avoid-sectors", "value"),
+    Output("risk-slider", "value"),
+    Output("max-investment", "value"),
+    Input("url", "pathname")
+)
+def update_inputs_on_load(pathname):
+    if pathname == "/":
+        preferred_stocks = user.data.get("preferred_stocks", [])
+        avoided_sectors = user.data.get("sectors_to_avoid", [])
+        risk_tolerance = user.data.get("risk_tolerance", 5)
+        max_investment = user.data.get("max_equity_investment", 30)
+        return preferred_stocks, avoided_sectors, risk_tolerance, max_investment
+    return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
 @callback(
     Output("url", "pathname"),  # Update the pathname of the dcc.Location
