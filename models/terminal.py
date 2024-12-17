@@ -23,6 +23,7 @@ import asyncio
 import webbrowser
 import time
 import multiprocessing
+import os
 from models.portfolio import Portfolio
 from models.user import User
 from services.build_list import build_available_tickers
@@ -351,6 +352,10 @@ class PortfolioOptimizationScreen(BaseScreen):
 
             def run_dashboard():
                 try:
+                    if sys.platform == 'win32':
+                        sys.stdout = open(os.devnull, 'w')
+                        sys.stderr = open(os.devnull, 'w')
+                
                     PortfolioOptimizationDashboard(self.app.portfolio).run()
                 except Exception as e:
                     self.app.logger.error(f"Dashboard initialization failed: {str(e)}", exc_info=True)
