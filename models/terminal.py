@@ -21,7 +21,7 @@ import os
 import asyncio
 import webbrowser
 import time
-import threading
+import multiprocessing
 from models.portfolio import Portfolio
 from models.user import User
 from services.build_list import build_available_tickers
@@ -340,39 +340,48 @@ class PortfolioOptimizationScreen(BaseScreen):
                 yield Button("Exit", id="exit", variant="error")
             yield Footer()
         
+    import multiprocessing
+    import time
+    import webbrowser
+    import sys
+
+    # Fix for macOS
+    if sys.platform == 'darwin':  
+        multiprocessing.set_start_method('fork')
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        Handles dashboard launch and application exit.
-        
-        For dashboard launch:
-        1. Creates a new thread for the dashboard
-        2. Waits for server initialization
-        3. Opens the dashboard in the default browser
-        """
         if event.button.id == "dashboard":
             self.app.logger.info("Starting dashboard initialization")
-            # Define a function to run the dashboard
+
             def run_dashboard():
                 try:
-                    # Run the dashboard through the PortfolioOptimizationDashboard class
                     PortfolioOptimizationDashboard(self.app.portfolio).run()
                 except Exception as e:
                     self.app.logger.error(f"Dashboard initialization failed: {str(e)}", exc_info=True)
-            
-            # Start the dashboard in a separate thread
-            dashboard_thread = threading.Thread(target=run_dashboard)
-            dashboard_thread.daemon = True
-            dashboard_thread.start()
 
-            # Wait for the server to start
+            # Start the dashboard in a separate process
+            dashboard_process = multiprocessing.Process(target=run_dashboard)
+            dashboard_process.start()
+
+            # Give time for the server to initialize
             time.sleep(2)
             self.app.logger.info("Opening dashboard in browser")
-            # Open the dashboard in the default browser
             webbrowser.open("http://127.0.0.1:8509")
+
+            # Store the process for cleanup if needed
+            self.dashboard_process = dashboard_process
 
         if event.button.id == "exit":
             self.app.logger.info("Application exit requested")
+            
+            if hasattr(self, "dashboard_process") and self.dashboard_process.is_alive():
+                self.app.logger.info("Terminating dashboard process")
+                self.dashboard_process.terminate()
+                self.dashboard_process.join()
+            
             self.app.exit()
+
+
             
 class PortfolioApp(App):
     """
