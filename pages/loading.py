@@ -7,14 +7,14 @@ from models.portfolio import Portfolio
 
 dash.register_page(__name__, path="/loading")
 
-# Custom loader CSS
+# Custom loader style with terminal theme
 loader_style = {
     'width': '60px',
     'aspectRatio': '2',
     'background': '''
-        radial-gradient(circle closest-side,#000 90%,#0000) 0% 50%,
-        radial-gradient(circle closest-side,#000 90%,#0000) 50% 50%,
-        radial-gradient(circle closest-side,#000 90%,#0000) 100% 50%
+        radial-gradient(circle closest-side,#FF8000 90%,#0000) 0% 50%,
+        radial-gradient(circle closest-side,#FF8000 90%,#0000) 50% 50%,
+        radial-gradient(circle closest-side,#FF8000 90%,#0000) 100% 50%
     ''',
     'backgroundSize': 'calc(100%/3) 50%',
     'backgroundRepeat': 'no-repeat',
@@ -43,14 +43,15 @@ dash.clientside_callback(
 )
 
 layout = html.Div([
-    html.H2("Processing Your Portfolio", className="text-center mt-5"),
+    html.H2("PROCESSING YOUR PORTFOLIO", 
+            className="text-center mt-5 terminal-title"),
     html.Div(
         html.Div(id="loading-animation", className="loader", style=loader_style),
-        className="d-flex justify-content-center mt-4"  # Added mt-4 for margin
+        className="d-flex justify-content-center mt-4"
     ),
     html.Div(id="loading-output", style={"display": "none"}),
     dcc.Location(id="redirect", refresh=True)
-], className="d-flex flex-column align-items-center")  # Added flex container classes
+], className="terminal-container d-flex flex-column align-items-center")
 
 @callback(
     Output("redirect", "href"),

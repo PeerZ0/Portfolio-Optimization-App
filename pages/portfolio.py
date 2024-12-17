@@ -8,93 +8,69 @@ from models.portfolio import Portfolio
 # Register the page
 dash.register_page(__name__, path="/portfolio")
 
-# Layout for the portfolio dashboard
+# Layout with terminal styling
 layout = html.Div([
-            # Header section
-            html.Div([
-                # Back button
-                dbc.Button(
-                    "← Back", 
-                    id="back-button",
-                    color="secondary",
-                    className="mb-3",
-                    href="/"
-                ),
-                html.H1("Portfolio Optimization Dashboard", style={'text-align': 'center'}),
+    # Header section
+    html.Div([
+        dbc.Button(
+            "← BACK", 
+            id="back-button",
+            className="mb-3 terminal-button",
+            href="/"
+        ),
+        html.H1("PORTFOLIO OPTIMIZATION DASHBOARD", className="text-center terminal-title"),
 
-                html.Div([
-                    html.Label("Select Portfolio Strategy:"),
-                    dcc.Dropdown(
-                        id='portfolio-strategy-dropdown',
-                        options=[
-                            {'label': 'Minimum Variance Portfolio', 'value': 'min_variance'},
-                            {'label': 'Equal Weight Portfolio', 'value': 'equal_weight'},
-                            {'label': 'Maximum Sharpe Ratio Portfolio', 'value': 'max_sharpe'}
-                        ],
-                        value='min_variance',
-                        style={'width': '50%', 'margin': 'auto'},
-                    )
-                ], style={'text-align': 'center'}),
+        html.Div([
+            html.Label("SELECT PORTFOLIO STRATEGY:", className="text-info mb-2"),
+            dcc.Dropdown(
+                id='portfolio-strategy-dropdown',
+                options=[
+                    {'label': 'MINIMUM VARIANCE PORTFOLIO', 'value': 'min_variance'},
+                    {'label': 'EQUAL WEIGHT PORTFOLIO', 'value': 'equal_weight'},
+                    {'label': 'MAXIMUM SHARPE RATIO PORTFOLIO', 'value': 'max_sharpe'}
+                ],
+                value='min_variance',
+                className="dash-dropdown-modern terminal-input w-50 mx-auto",
+            )
+        ], className="text-center mb-4"),
 
-                # Add Download Button after dropdown
-                html.Div([
-                    html.Button(
-                        "Download Portfolio Data",
-                        id="btn-download",
-                        style={
-                            'margin': '20px',
-                            'padding': '10px 20px',
-                            'backgroundColor': '#4CAF50',
-                            'color': 'white',
-                            'border': 'none',
-                            'borderRadius': '4px',
-                            'cursor': 'pointer'
-                        }
-                    ),
-                    dcc.Download(id="download-dataframe-csv"),
-                ], style={'text-align': 'center'})
-            ]),
+        html.Div([
+            dbc.Button(
+                "DOWNLOAD PORTFOLIO DATA",
+                id="btn-download",
+                className="terminal-button my-3"
+            ),
+            dcc.Download(id="download-dataframe-csv"),
+        ], className="text-center")
+    ]),
 
-            html.Br(),
+    html.Br(),
 
-            # First row: Summary statistics
-            html.Div([
-                html.H2("Summary Statistics", style={'text-align': 'center'}),
-                html.Div(
-                    id='summary-statistics-table',
-                    style={
-                        'display': 'flex',
-                        'justify-content': 'center',
-                        'align-items': 'center',
-                        'margin': '40px auto',  # Adds spacing only at the top and bottom
-                        'width': '70%'          # Keeps the table width manageable
-                    }
-                )
-            ]),
+    # Summary statistics
+    html.Div([
+        html.H2("SUMMARY STATISTICS", className="text-center terminal-title"),
+        html.Div(
+            id='summary-statistics-table',
+            className="terminal-card p-4 w-75 mx-auto my-4"
+        )
+    ]),
 
-            # Second row: Plots
-            html.Div([
-                html.H2("Portfolio Visualization", style={'text-align': 'center'}),
-                html.Div([
-                    dcc.Graph(id='cumulative-returns-plot', style={'margin-bottom': '30px'}),
-                ], style={'width': '85%', 'margin': 'auto'}),
+    # Visualization section
+    html.Div([
+        html.H2("PORTFOLIO VISUALIZATION", className="text-center terminal-title"),
+        html.Div([
+            dcc.Graph(id='cumulative-returns-plot', className="mb-4"),
+            dcc.Graph(id='portfolio-allocation-plot', className="mb-4"),
+            dcc.Graph(id='annualized-returns-plot', className="mb-4"),
+            dcc.Graph(id='sector-allocation-plot', className="mb-4")
+        ], className="w-85 mx-auto")
+    ]),
 
-                html.Div([
-                    dcc.Graph(id='portfolio-allocation-plot', style={'margin-bottom': '30px'}),
-                ], style={'width': '85%', 'margin': 'auto'}),
-
-                html.Div([
-                    dcc.Graph(id='annualized-returns-plot')
-                ], style={'width': '85%', 'margin': 'auto'}),
-
-                #new test plot 
-                html.Div([
-                    dcc.Graph(id='sector-allocation-plot')
-                ], style={'width': '85%', 'margin': 'auto'}),
-            ]),
-
-            html.Div("Dashboard created using Dash & Plotly", style={'text-align': 'center', 'margin-top': '50px'})
-        ])
+    html.Div(
+        "DASHBOARD CREATED USING DASH & PLOTLY", 
+        className="text-center mt-5 text-info"
+    )
+], className="terminal-container py-4")
 
 @callback(
     [
@@ -107,44 +83,58 @@ layout = html.Div([
     Input('portfolio-strategy-dropdown', 'value')
 )
 def update_dashboard(selected_strategy):
-    """
-    Update dashboard components based on the selected strategy.
-    """
-    # Ensure portfolio is initialized
+    """Update dashboard components based on the selected strategy."""
     if not user.portfolio:
         user.portfolio = Portfolio(user)
-
-    # Retrieve portfolio object
+    
     portfolio = user.portfolio
-
-    # Retrieve weights
-    if selected_strategy == 'min_variance':
-        portfolio_weights = portfolio.weights_min
-    elif selected_strategy == 'equal_weight':
-        portfolio_weights = portfolio.weights_eq
-    elif selected_strategy == 'max_sharpe':
-        portfolio_weights = portfolio.weights_sharpe
-    else:
+    
+    # Get weights based on strategy
+    weights_map = {
+        'min_variance': portfolio.weights_min,
+        'equal_weight': portfolio.weights_eq,
+        'max_sharpe': portfolio.weights_sharpe
+    }
+    portfolio_weights = weights_map.get(selected_strategy)
+    if not portfolio_weights:
         return None, None, None, None, None
 
-    # Get summary statistics
+    # Create summary table with terminal styling
     summary_df = portfolio.get_summary_statistics_table(portfolio_weights)
-    summary_table = html.Table([
-        html.Thead(html.Tr([html.Th(col) for col in summary_df.columns])),
-        html.Tbody([
-            html.Tr([html.Td(summary_df.iloc[i][col]) for col in summary_df.columns])
-            for i in range(len(summary_df))
-        ])
-    ])
+    summary_table = html.Table(
+        [
+            html.Thead(html.Tr([html.Th(col, style={'color': '#FF8000'}) for col in summary_df.columns])),
+            html.Tbody([
+                html.Tr([html.Td(summary_df.iloc[i][col], style={'color': '#FFFFFF'}) 
+                        for col in summary_df.columns])
+                for i in range(len(summary_df))
+            ])
+        ],
+        style={'width': '100%', 'border-collapse': 'collapse'}
+    )
 
-    # Generate plots
-    cumulative_returns_fig = portfolio.plot_cumulative_returns(portfolio_weights)
-    portfolio_allocation_fig = portfolio.plot_portfolio_allocation(portfolio_weights, selected_strategy)
-    annualized_returns_fig = portfolio.plot_annualized_returns(portfolio_weights)
-    sector_allocation_fig = portfolio.create_weighted_sector_treemap(portfolio_weights)
+    # Generate plots with terminal theme
+    plots = [
+        portfolio.plot_cumulative_returns(portfolio_weights),
+        portfolio.plot_portfolio_allocation(portfolio_weights, selected_strategy),
+        portfolio.plot_annualized_returns(portfolio_weights),
+        portfolio.create_weighted_sector_treemap(portfolio_weights)
+    ]
 
-    return summary_table, cumulative_returns_fig, portfolio_allocation_fig, annualized_returns_fig, sector_allocation_fig
+    # Apply terminal theme to all plots
+    for plot in plots:
+        plot.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="#000000",
+            plot_bgcolor="#000000",
+            font=dict(
+                family="Roboto Mono",
+                color="#FFFFFF"
+            ),
+            title_font_color="#FF8000"
+        )
 
+    return summary_table, *plots
 
 @callback(
     Output("download-dataframe-csv", "data"),

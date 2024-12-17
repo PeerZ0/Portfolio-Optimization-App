@@ -50,6 +50,21 @@ class Portfolio:
         self.weights_eq = self.equal_weight_portfolio()
         self.weights_min = self.min_variance_portfolio()
         self.weights_sharpe = self.max_sharpe_ratio_portfolio()
+        self.plot_config = {
+            "template": "plotly_dark",
+            "paper_bgcolor": "#000000",
+            "plot_bgcolor": "#000000",
+            "font": dict(
+                family="Roboto Mono",
+                color="#FFFFFF"
+            ),
+            "title_font_color": "#FF8000"
+        }
+
+    def _apply_theme(self, fig):
+        """Apply terminal theme to plot"""
+        fig.update_layout(**self.plot_config)
+        return fig
 
     def _get_data(self):
         """
@@ -208,7 +223,7 @@ class Portfolio:
             yaxis_title='Cumulative Return',
             template='plotly_white'
         )
-        return fig
+        return self._apply_theme(fig)
 
     def get_summary_statistics(self, portfolio_weights, risk_free_rate=0.01):
         """
@@ -309,7 +324,7 @@ class Portfolio:
         fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
         fig.update_layout(title_text=f'Portfolio Allocation', template='plotly_white')
 
-        return fig
+        return self._apply_theme(fig)
     
     def create_weighted_sector_treemap(self, weights):
         """
@@ -396,7 +411,7 @@ class Portfolio:
             margin=dict(t=50, l=25, r=25, b=25)
         )
 
-        return fig
+        return self._apply_theme(fig)
 
 
 
@@ -430,7 +445,7 @@ class Portfolio:
             template='plotly_white'
         )
         
-        return fig
+        return self._apply_theme(fig)
 
 if __name__ == "__main__":
     from user import User

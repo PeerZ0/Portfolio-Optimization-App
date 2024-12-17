@@ -7,47 +7,96 @@ from state import user
 # Load stock data
 data = pd.read_csv("static/ticker_data.csv")
 
+# Add custom CSS for animations
+external_stylesheets = [
+    dbc.themes.DARKLY,
+    "https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap"
+]
+
 dash.register_page(__name__, path="/")
 
 layout = dbc.Container([
-    html.H1("Portfolio Builder", className="text-center text-primary mb-4"),
-    dcc.Store(id="user-store"),  # Store inputs temporarily
-
-    dcc.Location(id="url", refresh=True),  # Location component for navigation
-
-    # Inputs
     dbc.Row([
         dbc.Col([
-            html.H5("Select Preferred Stocks"),
-            dcc.Dropdown(
-                id="preferred-stocks",
-                options=[{"label": stock, "value": stock} for stock in data['Ticker'].unique()],
-                multi=True
-            )
-        ], width=6),
-        dbc.Col([
-            html.H5("Select Sectors to Avoid"),
-            dcc.Dropdown(
-                id="avoid-sectors",
-                options=[{"label": sector, "value": sector} for sector in data['sector'].unique()],
-                multi=True
-            )
-        ], width=6)
-    ]),
+            html.H1("PORTFOLIO BUILDER", 
+                className="text-center mb-4 terminal-title")
+        ], width=12)
+    ], className="mb-4"),
 
     dbc.Row([
         dbc.Col([
-            html.H5("Risk Tolerance (1-10)"),
-            dcc.Slider(id="risk-slider", min=1, max=10, step=1)  # Set default value
+            dbc.Card([
+                dbc.CardBody([
+                    html.H5("PREFERRED STOCKS", className="text-info"),
+                    dcc.Dropdown(
+                        id="preferred-stocks",
+                        options=[{"label": stock, "value": stock} for stock in data['Ticker'].unique()],
+                        multi=True,
+                        className="dash-dropdown-modern terminal-input"
+                    )
+                ])
+            ], className="h-100 terminal-card animate__animated animate__fadeInLeft")
         ], width=6),
         dbc.Col([
-            html.H5("Max Equity Investment (%)"),
-            dcc.Input(id="max-investment", type="number", className="form-control")
+            dbc.Card([
+                dbc.CardBody([
+                    html.H5("SECTORS TO AVOID", className="text-info"),
+                    dcc.Dropdown(
+                        id="avoid-sectors",
+                        options=[{"label": sector, "value": sector} for sector in data['sector'].unique()],
+                        multi=True,
+                        className="dash-dropdown-modern terminal-input"
+                    )
+                ])
+            ], className="h-100 terminal-card animate__animated animate__fadeInRight")
         ], width=6)
+    ], className="mb-4"),
+
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([
+                dbc.CardBody([
+                    html.H5("RISK TOLERANCE", className="text-info"),
+                    dcc.Slider(
+                        id="risk-slider",
+                        min=1,
+                        max=10,
+                        step=1,
+                        marks={i: str(i) for i in range(1, 11)},
+                        className="mt-3",
+                        tooltip={"placement": "bottom", "always_visible": True}
+                    )
+                ])
+            ], className="h-100 terminal-card animate__animated animate__fadeInLeft")
+        ], width=6),
+        dbc.Col([
+            dbc.Card([
+                dbc.CardBody([
+                    html.H5("MAX EQUITY INVESTMENT (%)", className="text-info"),
+                    dcc.Input(
+                        id="max-investment",
+                        type="number",
+                        className="form-control terminal-input"
+                    )
+                ])
+            ], className="h-100 terminal-card animate__animated animate__fadeInRight")
+        ], width=6)
+    ], className="mb-4"),
+
+    dbc.Row([
+        dbc.Col([
+            dbc.Button(
+                "CREATE PORTFOLIO",
+                id="create-btn",
+                n_clicks=0,
+                className="btn btn-lg w-100 terminal-button"
+            )
+        ], width={"size": 6, "offset": 3})
     ]),
 
-    dbc.Button("Create Portfolio", id="create-btn", n_clicks=0, className="btn btn-primary mt-3"),
-])
+    dcc.Store(id="user-store"),
+    dcc.Location(id="url", refresh=True)
+], fluid=True, className="py-5 terminal-container")
 
 @callback(
     Output("preferred-stocks", "value"),

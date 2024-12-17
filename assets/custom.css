@@ -1,0 +1,87 @@
+.dash-dropdown-modern .Select-control:hover {
+    border-color: #FFFFFF !important;
+}
+
+.dash-dropdown-modern .Select-value-label {
+    color: #FFFFFF !important;
+}
+
+.dash-dropdown-modern .Select-menu-outer {
+    background-color: #000000 !important;
+}
+
+.dash-dropdown-modern .Select-option {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+}
+
+.dash-dropdown-modern .Select-option.is-selected {
+    background-color: #333333 !important;
+}
+
+.dash-dropdown-modern .Select-option.is-focused {
+    background-color: #222222 !important;
+}
+
+.btn:hover {
+    background-color: #444444 !important;
+}
+
+/* Terminal base styles */
+.terminal-container {
+    background-color: #000000;
+    font-family: 'Roboto Mono', monospace;
+    color: #FFFFFF;
+    min-height: 100vh;
+}
+
+/* Card styles */
+.terminal-card {
+    background-color: #000000 !important;
+    border: 1px solid #333333 !important;
+    border-radius: 3px;
+    color: #FFFFFF;
+}
+
+/* Title styles */
+.terminal-title {
+    font-family: 'Roboto Mono', monospace;
+    color: #FF8000;
+    letter-spacing: 2px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Text info override */
+.text-info {
+    color: #FF8000 !important;
+}
+
+/* Input styles */
+.terminal-input {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #333333 !important;
+    border-radius: 3px;
+}
+
+/* Button styles */
+.terminal-button {
+    background-color: #333333 !important;
+    color: #FF8000 !important;
+    border: none !important;
+    border-radius: 3px !important;
+    padding: 15px !important;
+    transition: background-color 0.3s ease;
+}
+
+.terminal-button:hover {
+    background-color: #444444 !important;
+}
+
+/* Dropdown styles */
+.dash-dropdown-modern .Select-control {
+    background-color: #000000 !important;
+    border: 1px solid #333333 !important;
+    color: #FFFFFF !important;
+}
