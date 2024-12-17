@@ -32,7 +32,7 @@ class Portfolio:
         end_date : datetime.date, optional
             End date for historical data, by default today's date.
         """
-        self.tickers = user.data['available_stocks']
+        self.tickers = set(user.data['available_stocks'])
         self.start_date = start_date
         self.end_date = end_date
         self.data_retrieval_success = False
