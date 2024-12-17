@@ -1,3 +1,4 @@
+#%%
 # models/portfolio.py
 """
 Portfolio Optimization Class
@@ -426,47 +427,70 @@ class Portfolio:
             if set(self.tickers) - set(weights.keys()):
                 raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
 
-            sector_data_raw = pd.read_csv('static/ticker_data.csv')
-            sector_data = []
-            missing_tickers = []
+        sector_data_raw = pd.read_csv('static/ticker_data.csv')
+        sector_data = []
+        missing_tickers = []
+        for ticker in self.tickers:  # Iterate over tickers
+            try:
+                # Get sector data for the ticker
+                sector = sector_data_raw.loc[sector_data_raw['Ticker'] == ticker, 'industry'].values[0]
+                weight = weights.get(ticker, 0)  # Get weight, default to 0 if not found
 
-            # Fetch sector information for each ticker
-            for ticker in self.tickers:
-                try:
-                    # read static/ticker_data.csv
-                    sector = sector_data_raw[sector_data_raw['Ticker'] == ticker]['industry'].values[0]
-                    weight = weights.get(ticker, 0)  # Get weight for the ticker, default to 0 if not found
-                    sector_data.append({'Ticker': ticker, 'Sector': sector, 'Weight': weight})
-                except Exception as e:
-                    print(f"Error fetching sector for {ticker}: {e}")
-                    missing_tickers.append(ticker)
-            
-            # Create a DataFrame for sector data
-            df = pd.DataFrame(sector_data)
+                # Append stock-level data
+                sector_data.append({'Name': ticker, 'Parent': sector, 'Weight': weight})
 
-            # Aggregate weights by sector
-            sector_weights = df.groupby('Sector')['Weight'].sum().reset_index()
+            except Exception as e:
+                print(f"Error fetching sector for {ticker}: {e}")
+                missing_tickers.append(ticker)
 
-            # Create the treemap
-            fig = go.Figure(go.Treemap(
-                labels=sector_weights['Sector'],  # Sector names
-                parents=[""] * len(sector_weights),  # Top-level nodes
-                values=sector_weights['Weight'],  # Aggregate weights
-                textinfo="label+value+percent entry",
-                marker=dict(colorscale="Viridis")
-            ))
+        # Aggregate sector-level weights
+        sector_weights = sector_data_raw.groupby('industry').apply(
+            lambda x: sum(weights.get(ticker, 0) for ticker in x['Ticker'])
+            ).reset_index(name='Weight')
 
-            fig.update_layout(
-                title="Weighted Treemap of Sectors",
-                template="plotly_white"
-            )
+        # Create the DataFrame with hierarchical structure
+        df = pd.DataFrame(sector_data)
 
-            if missing_tickers:
-                self.logger.warning(f"Missing sector data for tickers: {missing_tickers}")
-            return fig
-        except Exception as e:
-            self.logger.error(f"Error creating sector treemap: {str(e)}")
-            raise
+        # Aggregate weights by sector
+        sector_weights = df.groupby('Parent')['Weight'].sum().reset_index()
+        sector_weights["Name"] = sector_weights["Parent"]
+        sector_weights["Parent"] = "World"
+
+        # Normalize stock weights to sum to 100% within each sector
+        df['Normalized_Weight'] = df.groupby('Parent')['Weight'].transform(lambda x: 100 * x / x.sum())
+
+        # Replace the 'Weight' column with normalized weights for the stocks
+        df['Weight_n'] = df['Normalized_Weight']
+        df.drop(columns=['Normalized_Weight'], inplace=True)
+
+        # Combine sector-level and stock-level data
+        combined_df = pd.concat([
+            sector_weights,  # Sectors
+            df  # Stocks
+        ], ignore_index=True)
+
+        # Extract hierarchy information
+        labels = combined_df["Name"].tolist()
+        parents = combined_df["Parent"].tolist()
+        values = combined_df["Weight"].round(3).tolist()
+
+        # Build the treemap using plotly.graph_objects
+        fig = go.Figure(go.Treemap(
+            labels=labels,     # Names of the nodes (stocks and sectors)
+            parents=parents,   # Parent-child relationships
+            values=values,     # Sizes (weights) of nodes
+            textinfo="label+value+percent parent",  # Display node name, value, and % of parent
+            root_color="lightgrey",
+        ))
+
+        # Update layout for clean visualization
+        fig.update_layout(
+            title="Sectors with Stocks Treemap",
+            margin=dict(t=100, l=25, r=25, b=25)
+        )
+        # Return the treemap figure
+        return fig
+
 
     def plot_annualized_returns(self, portfolio_weights):
             """
@@ -497,6 +521,21 @@ class Portfolio:
                 yaxis_title='Contribution to Portfolio Return',
                 template='plotly_white'
             )
-
             return fig
+
+if __name__ == "__main__":
+    from user import User
+    user = User()
+    user.data = {
+            "preferred_stocks": [],  # List of stock tickers the user wants in their portfolio
+            "available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE'],  # List of stock tickers available for investment
+            "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
+            "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
+            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is 30%
+        }
+    # user.data = {"available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE', 'PPL', 'SOON.SW', 'FRE.DE', 'EVRG', 'CS.PA', 'ZURN.SW', 'MMC', 'C', 'UNP', 'PNC', 'AIR.PA', 'MA', 'NI', 'ZAL.DE', 'XEL', 'AI.PA', 'RSG', 'URI', 'SLB', 'PCG', 'BBVA.MC', 'GD', 'OTIS']}  # List of stock tickers available for investment}
+    port = Portfolio(user)
+    weights = port.equal_weight_portfolio()
+    port.create_weighted_sector_treemap(weights)
+
 
