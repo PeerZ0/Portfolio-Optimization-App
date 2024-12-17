@@ -325,37 +325,36 @@ class Portfolio:
         plotly.graph_objects.Figure
             A treemap figure showing sectors with their respective weights.
         """
-        
+
         # Check if all tickers have corresponding weights
         if set(self.tickers) - set(weights.keys()):
             raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
 
+        # Load sector data
         sector_data_raw = pd.read_csv('static/ticker_data.csv')
         sector_data = []
         missing_tickers = []
+
         for ticker in self.tickers:  # Iterate over tickers
             try:
                 # Get sector data for the ticker
-                sector = sector_data_raw.loc[sector_data_raw['Ticker'] == ticker, 'industry'].values[0]
+                sector = sector_data_raw.loc[sector_data_raw['Ticker'] == ticker, 'sector'].values[0]
                 weight = weights.get(ticker, 0)  # Get weight, default to 0 if not found
 
                 # Append stock-level data
-                sector_data.append({'Name': ticker, 'Parent': sector, 'Weight': weight})
+                if weight >= 0.0001:  # Exclude weights smaller than 0.01%
+                    sector_data.append({'Name': ticker, 'Parent': sector, 'Weight': weight})
 
             except Exception as e:
                 print(f"Error fetching sector for {ticker}: {e}")
                 missing_tickers.append(ticker)
 
-        # Aggregate sector-level weights
-        sector_weights = sector_data_raw.groupby('industry').apply(
-            lambda x: sum(weights.get(ticker, 0) for ticker in x['Ticker'])
-            ).reset_index(name='Weight')
-
-        # Create the DataFrame with hierarchical structure
+        # Convert to DataFrame
         df = pd.DataFrame(sector_data)
 
-        # Aggregate weights by sector
+        # Aggregate sector-level weights
         sector_weights = df.groupby('Parent')['Weight'].sum().reset_index()
+        sector_weights = sector_weights[sector_weights['Weight'] >= 0.0001]  # Filter sectors
         sector_weights["Name"] = sector_weights["Parent"]
         sector_weights["Parent"] = "Portfolio"
 
@@ -372,14 +371,20 @@ class Portfolio:
             df  # Stocks
         ], ignore_index=True)
 
+        # Filter combined_df to exclude weights < 0.01%
+        combined_df = combined_df[combined_df['Weight'] >= 0.0001]
+
+        # Create custom text
         custom_text = combined_df.apply(
-        lambda x: f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Weight: {x['Weight_n']:.2f}%", axis=1)
-        
+        lambda x: (f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Weight: {x['Weight_n']:.2f}%"
+                   if not pd.isna(x['Weight_n'])
+                   else f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Total Weight: {combined_df[combined_df['Parent'] == x['Name']]['Weight'].sum()*100:.2f}%"),
+        axis=1)
         # Generate Treemap
         fig = go.Figure(go.Treemap(
-            labels=combined_df['Name'], 
-            parents=combined_df['Parent'], 
-            #values=combined_df['Weight'], 
+            labels=combined_df['Name'],
+            parents=combined_df['Parent'],
+            #values=combined_df['Weight'],
             text=custom_text,  # Display both absolute and normalized weights
             textinfo="label+text+value",
             root_color="lightgrey"
@@ -389,9 +394,10 @@ class Portfolio:
         fig.update_layout(
             title="Sector Treemap with Stocks: Absolute and Normalized Weights",
             margin=dict(t=50, l=25, r=25, b=25)
-            )
-        
+        )
+
         return fig
+
 
 
     def plot_annualized_returns(self, portfolio_weights):
