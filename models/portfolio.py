@@ -1,3 +1,4 @@
+#%%
 # models/portfolio.py
 """
 Portfolio Optimization Class
@@ -406,40 +407,148 @@ class Portfolio:
         sector_data_raw = pd.read_csv('static/ticker_data.csv')
         sector_data = []
         missing_tickers = []
-
-        # Fetch sector information for each ticker
-        for ticker in self.tickers:
+        for ticker in self.tickers:  # Iterate over tickers
             try:
-                # read static/ticker_data.csv
-                sector = sector_data_raw[sector_data_raw['Ticker'] == ticker]['industry'].values[0]
-                weight = weights.get(ticker, 0)  # Get weight for the ticker, default to 0 if not found
-                sector_data.append({'Ticker': ticker, 'Sector': sector, 'Weight': weight})
+                # Get sector data for the ticker
+                sector = sector_data_raw.loc[sector_data_raw['Ticker'] == ticker, 'industry'].values[0]
+                weight = weights.get(ticker, 0)  # Get weight, default to 0 if not found
+
+                # Append stock-level data
+                sector_data.append({'Name': ticker, 'Parent': sector, 'Weight': weight})
+
             except Exception as e:
                 print(f"Error fetching sector for {ticker}: {e}")
                 missing_tickers.append(ticker)
-        
-        # Create a DataFrame for sector data
+
+        # Aggregate sector-level weights
+        sector_weights = sector_data_raw.groupby('industry').apply(
+            lambda x: sum(weights.get(ticker, 0) for ticker in x['Ticker'])
+            ).reset_index(name='Weight')
+
+        # Create the DataFrame with hierarchical structure
         df = pd.DataFrame(sector_data)
 
         # Aggregate weights by sector
-        sector_weights = df.groupby('Sector')['Weight'].sum().reset_index()
+        sector_weights = df.groupby('Parent')['Weight'].sum().reset_index()
+        sector_weights["Name"] = sector_weights["Parent"]
+        sector_weights["Parent"] = "World"
 
-        # Create the treemap
+        # Normalize stock weights to sum to 100% within each sector
+        df['Normalized_Weight'] = df.groupby('Parent')['Weight'].transform(lambda x: 100 * x / x.sum())
+
+        # Replace the 'Weight' column with normalized weights for the stocks
+        df['Weight_n'] = df['Normalized_Weight']
+        df.drop(columns=['Normalized_Weight'], inplace=True)
+
+        # Combine sector-level and stock-level data
+        combined_df = pd.concat([
+            sector_weights,  # Sectors
+            df  # Stocks
+        ], ignore_index=True)
+
+        # Extract hierarchy information
+        labels = combined_df["Name"].tolist()
+        parents = combined_df["Parent"].tolist()
+        values = combined_df["Weight"].round(3).tolist()
+
+        # Build the treemap using plotly.graph_objects
         fig = go.Figure(go.Treemap(
-            labels=sector_weights['Sector'],  # Sector names
-            parents=[""] * len(sector_weights),  # Top-level nodes
-            values=sector_weights['Weight'],  # Aggregate weights
-            textinfo="label+value+percent entry",
-            marker=dict(colorscale="Viridis")
+            labels=labels,     # Names of the nodes (stocks and sectors)
+            parents=parents,   # Parent-child relationships
+            values=values,     # Sizes (weights) of nodes
+            textinfo="label+value+percent parent",  # Display node name, value, and % of parent
+            root_color="lightgrey",
         ))
 
+        # Update layout for clean visualization
         fig.update_layout(
-            title="Weighted Treemap of Sectors",
-            template="plotly_white"
+            title="Sectors with Stocks Treemap",
+            margin=dict(t=100, l=25, r=25, b=25)
         )
-
+        fig.show()
         # Return the treemap figure
         return fig
+    
+    def create_weighted_sector_treemap2(self, weights):
+        """
+        Generate a weighted treemap of sectors for the given tickers.
+
+        Parameters
+        ----------
+        weights : dict
+            A dictionary mapping tickers to their respective weights.
+
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            A treemap figure showing sectors with their respective weights.
+        """
+        # Check if all tickers have corresponding weights
+        if set(self.tickers) - set(weights.keys()):
+            raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
+
+        sector_data_raw = pd.read_csv('static/ticker_data.csv')
+        sector_data = []
+
+        # Extract sector and stock-level data
+        for ticker in self.tickers:
+            try:
+                sector = sector_data_raw.loc[sector_data_raw['Ticker'] == ticker, 'industry'].values[0]
+                weight = weights.get(ticker, 0)
+                sector_data.append({'Name': ticker, 'Parent': sector, 'Weight': weight})
+            except Exception as e:
+                print(f"Error fetching sector for {ticker}: {e}")
+
+        # Create DataFrame with stock-level data
+        df = pd.DataFrame(sector_data)
+
+        # Step 1: Calculate total weight for each sector
+        sector_totals = df.groupby('Parent')['Weight'].sum().reset_index()
+        sector_totals.rename(columns={'Weight': 'Total_Weight'}, inplace=True)
+
+        # Step 2: Merge sector total weights into stock-level data
+        df = df.merge(sector_totals, on='Parent', how='left')
+
+        # Step 3: Scale stock weights proportionally to sum to 100% within each sector
+        df['Normalized_Weight'] = df['Weight'] / df['Total_Weight'] * 100
+
+        # Aggregate weights at the sector level
+        sector_weights = df.groupby('Parent')['Total_Weight'].first().reset_index()
+        sector_weights['Name'] = sector_weights['Parent']
+        sector_weights['Parent'] = 'World'
+
+        # Add sector-level data
+        combined_df = pd.concat([
+            pd.DataFrame(sector_weights),  # Sectors as parents
+            df[['Name', 'Parent', 'Weight', 'Normalized_Weight']]  # Stocks as children
+        ], ignore_index=True)
+
+        # Extract hierarchy and text for display
+        labels = combined_df['Name'].tolist()
+        parents = combined_df['Parent'].tolist()
+        values = combined_df['Weight'].tolist()
+        custom_text = combined_df.apply(
+            lambda row: f"Original: {row['Weight']:.3f}<br>Sector %: {row['Normalized_Weight']:.1f}%",
+            axis=1
+        ).tolist()
+
+        # Build the treemap using plotly.graph_objects
+        fig = go.Figure(go.Treemap(
+            labels=labels,
+            parents=parents,
+            values=values,
+            text=custom_text,  # Custom text with original and normalized weights
+            textinfo="label+text",
+            root_color="lightgrey"
+        ))
+
+        # Update layout for clean visualization
+        fig.update_layout(
+            title="Sectors with Stocks Treemap (Stocks sum to 100%, display original weight)",
+            margin=dict(t=100, l=25, r=25, b=25)
+        )
+        return fig
+
 
     def plot_annualized_returns(self, portfolio_weights):
             """
@@ -470,6 +579,21 @@ class Portfolio:
                 yaxis_title='Contribution to Portfolio Return',
                 template='plotly_white'
             )
-
             return fig
+
+if __name__ == "__main__":
+    from user import User
+    user = User()
+    user.data = {
+            "preferred_stocks": [],  # List of stock tickers the user wants in their portfolio
+            "available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE'],  # List of stock tickers available for investment
+            "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
+            "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
+            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is 30%
+        }
+    # user.data = {"available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE', 'PPL', 'SOON.SW', 'FRE.DE', 'EVRG', 'CS.PA', 'ZURN.SW', 'MMC', 'C', 'UNP', 'PNC', 'AIR.PA', 'MA', 'NI', 'ZAL.DE', 'XEL', 'AI.PA', 'RSG', 'URI', 'SLB', 'PCG', 'BBVA.MC', 'GD', 'OTIS']}  # List of stock tickers available for investment}
+    port = Portfolio(user)
+    weights = port.equal_weight_portfolio()
+    port.create_weighted_sector_treemap(weights)
+
 
