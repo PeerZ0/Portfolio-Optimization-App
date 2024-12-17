@@ -1,12 +1,22 @@
 Optimized Portfolio Weights according to Maximum Sharpe Ratio Strategy
 Ticker,Weight,Company Name,Sector,Industry,Website,Country
-KEY,0.1,KeyCorp,Financial Services,Banks - Regional,https://www.key.com,United States
-GNRC,0.1,Generac Holdings Inc.,Industrials,Specialty Industrial Machinery,https://www.generac.com,United States
-RCL,0.1,Royal Caribbean Cruises Ltd.,Consumer Cyclical,Travel Services,https://www.rclinvestor.com,United States
-NCLH,0.1,Norwegian Cruise Line Holdings Ltd.,Consumer Cyclical,Travel Services,https://www.nclhltd.com,United States
-TSLA,0.1,"Tesla, Inc.",Consumer Cyclical,Auto Manufacturers,https://www.tesla.com,United States
-CZR,0.1,"Caesars Entertainment, Inc.",Consumer Cyclical,Resorts & Casinos,https://www.caesars.com,United States
-CCL,0.1,Carnival Corporation & plc,Consumer Cyclical,Travel Services,https://www.carnivalcorp.com,United States
-WBD,0.1,"Warner Bros. Discovery, Inc.",Communication Services,Entertainment,https://ir.wbd.com,United States
-RKT,0.1,"Rocket Companies, Inc.",Financial Services,Mortgage Finance,https://www.rocketcompanies.com,United States
-AHT,0.1,"Ashford Hospitality Trust, Inc.",Real Estate,REIT - Hotel & Motel,https://www.ahtreit.com,United States
+C,0.05,Citigroup Inc.,Financial Services,Banks - Diversified,https://www.citigroup.com,United States
+SLB,0.05,Schlumberger Limited,Energy,Oil & Gas Equipment & Services,https://www.slb.com,United States
+HPQ,0.05,HP Inc.,Technology,Computer Hardware,https://www.hp.com,United States
+OMC,0.05,Omnicom Group Inc.,Communication Services,Advertising Agencies,https://www.omnicomgroup.com,United States
+ISP.MI,0.05,Intesa Sanpaolo S.p.A.,Financial Services,Banks - Regional,https://www.intesasanpaolo.com,Italy
+ASML.AS,0.05,ASML Holding N.V.,Technology,Semiconductor Equipment & Materials,https://www.asml.com,Netherlands
+ADBE,0.05,Adobe Inc.,Technology,Software - Infrastructure,https://www.adobe.com,United States
+POOL,0.05,Pool Corporation,Industrials,Industrial Distribution,https://www.poolcorp.com,United States
+BBVA.MC,0.05,"Banco Bilbao Vizcaya Argentaria, S.A.",Financial Services,Banks - Diversified,https://www.bbva.com,Spain
+URI,0.05,"United Rentals, Inc.",Industrials,Rental & Leasing Services,https://www.unitedrentals.com,United States
+BK,0.05,The Bank of New York Mellon Corporation,Financial Services,Banks - Diversified,https://www.bny.com,United States
+USB,0.05,U.S. Bancorp,Financial Services,Banks - Regional,https://www.usbank.com,United States
+MU,0.05,"Micron Technology, Inc.",Technology,Semiconductors,https://www.micron.com,United States
+IFX.DE,0.05,Infineon Technologies AG,Technology,Semiconductors,https://www.infineon.com,Germany
+GEN,0.05,Gen Digital Inc.,Technology,Software - Infrastructure,https://www.gendigital.com,United States
+IT,0.05,"Gartner, Inc.",Technology,Information Technology Services,https://www.gartner.com,United States
+SIE.DE,0.05,Siemens Aktiengesellschaft,Industrials,Specialty Industrial Machinery,https://www.siemens.com,Germany
+TER,0.05,"Teradyne, Inc.",Technology,Semiconductor Equipment & Materials,https://www.teradyne.com,United States
+LRCX,0.05,Lam Research Corporation,Technology,Semiconductor Equipment & Materials,https://www.lamresearch.com,United States
+AMAT,0.05,"Applied Materials, Inc.",Technology,Semiconductor Equipment & Materials,https://www.appliedmaterials.com,United States
