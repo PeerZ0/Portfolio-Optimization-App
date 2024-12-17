@@ -12,6 +12,14 @@ dash.register_page(__name__, path="/portfolio")
 layout = html.Div([
             # Header section
             html.Div([
+                # Back button
+                dbc.Button(
+                    "← Back", 
+                    id="back-button",
+                    color="secondary",
+                    className="mb-3",
+                    href="/"
+                ),
                 html.H1("Portfolio Optimization Dashboard", style={'text-align': 'center'}),
 
                 html.Div([
