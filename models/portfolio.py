@@ -16,6 +16,7 @@ from scipy.optimize import minimize
 import yfinance as yf
 import datetime
 import plotly.graph_objs as go
+from services.logger import setup_logger
 
 class Portfolio:
     def __init__(self, user, min_weight: float = 0.0, start_date='2023-01-01', end_date=datetime.date.today()):
@@ -33,6 +34,8 @@ class Portfolio:
         end_date : datetime.date, optional
             End date for historical data, by default today's date.
         """
+        self.logger = setup_logger(__name__)
+        self.logger.info(f"Initializing Portfolio with {len(user.data['available_stocks'])} stocks")
         self.tickers = set(user.data['available_stocks'])
         self.start_date = start_date
         self.end_date = end_date
@@ -51,7 +54,6 @@ class Portfolio:
         self.weights_min = self.min_variance_portfolio()
         self.weights_sharpe = self.max_sharpe_ratio_portfolio()
 
-
     def _get_data(self):
         """
         Fetch historical stock price data from Yahoo Finance.
@@ -61,6 +63,7 @@ class Portfolio:
         pd.DataFrame
             DataFrame containing historical adjusted close prices of the assets.
         """
+        self.logger.info(f"Fetching historical data for {len(self.tickers)} tickers")
         data_list = []
         for ticker in self.tickers:
             try:
@@ -68,9 +71,14 @@ class Portfolio:
                 df = yf.download(ticker, self.start_date, self.end_date, progress=False)['Adj Close']
                 data_list.append(df)
             except KeyError as e:
-                print(f"Error fetching data for {ticker}: {e}")
+                self.logger.error(f"Failed to fetch data for {ticker}: {str(e)}")
+                continue
+            except Exception as e:
+                self.logger.error(f"Unexpected error fetching {ticker}: {str(e)}")
+                continue
 
         self.data_retrieval_success = True
+        self.logger.info(f"Successfully retrieved data for {len(data_list)} tickers")
         data = pd.concat(data_list, axis=1)
         data = data.sort_index()
         data = data.dropna(axis=1, how='all')  # Remove columns with all NaNs
@@ -111,6 +119,7 @@ class Portfolio:
         dict
             Dictionary containing the optimized weights for each ticker.
         """
+        self.logger.info("Calculating minimum variance portfolio")
         num_assets = len(self.tickers)
         initial_weights = np.ones(num_assets) / num_assets
 
@@ -119,6 +128,8 @@ class Portfolio:
 
         # Minimize portfolio volatility
         result = minimize(portfolio_volatility, initial_weights, method='SLSQP', bounds=self.bounds, constraints=self.constraints)
+        if not result.success:
+            self.logger.warning(f"Optimization failed: {result.message}")
         return dict(zip(self.tickers, result.x))
 
     def equal_weight_portfolio(self):
@@ -148,6 +159,7 @@ class Portfolio:
         dict
             Dictionary containing the optimized weights for each ticker.
         """
+        self.logger.info(f"Calculating maximum Sharpe ratio portfolio with rf={risk_free_rate}")
         num_assets = len(self.tickers)
         initial_weights = np.ones(num_assets) / num_assets
 
@@ -159,6 +171,8 @@ class Portfolio:
 
         # Maximize Sharpe ratio (minimize negative Sharpe)
         result = minimize(negative_sharpe_ratio, initial_weights, method='SLSQP', bounds=self.bounds, constraints=self.constraints)
+        if not result.success:
+            self.logger.warning(f"Optimization failed: {result.message}")
         return dict(zip(self.tickers, result.x))
 
 
@@ -176,6 +190,7 @@ class Portfolio:
         dict
             A dictionary containing the optimized weights for the portfolio with the highest return.
         """
+        self.logger.info(f"Finding best return portfolio with yearly_rebalance={yearly_rebalance}")
         portfolios = {
             'min_variance': self.min_variance_portfolio(),
             'equal_weight': self.equal_weight_portfolio(),
@@ -216,6 +231,7 @@ class Portfolio:
                 best_return = total_return
                 best_portfolio = weights
         
+        self.logger.info(f"Best portfolio found with return: {best_return:.4f}")
         return best_portfolio
     
 
@@ -253,37 +269,42 @@ class Portfolio:
         plotly.graph_objects.Figure
             Plotly figure showing the cumulative returns.
         """
-        # Load S&P 500 returns using yfinance
-        sp500_returns = self.sp500.pct_change().dropna()
-        self.sp500_returns = sp500_returns
+        self.logger.info("Generating cumulative returns plot")
+        try:
+            # Load S&P 500 returns using yfinance
+            sp500_returns = self.sp500.pct_change().dropna()
+            self.sp500_returns = sp500_returns
 
-        # Calculate portfolio weighted returns
-        weighted_returns = self.returns.dot(pd.Series(portfolio_weights))
+            # Calculate portfolio weighted returns
+            weighted_returns = self.returns.dot(pd.Series(portfolio_weights))
 
-        # Align dates
-        aligned_data = pd.concat([weighted_returns, sp500_returns], axis=1, join="inner")
-        aligned_data.columns = ["Portfolio", "S&P 500"]
+            # Align dates
+            aligned_data = pd.concat([weighted_returns, sp500_returns], axis=1, join="inner")
+            aligned_data.columns = ["Portfolio", "S&P 500"]
 
-        # Calculate cumulative returns
-        cumulative_returns = (1 + aligned_data["Portfolio"]).cumprod()
-        cumulative_sp500_returns = (1 + aligned_data["S&P 500"]).cumprod()
+            # Calculate cumulative returns
+            cumulative_returns = (1 + aligned_data["Portfolio"]).cumprod()
+            cumulative_sp500_returns = (1 + aligned_data["S&P 500"]).cumprod()
 
-        # Debug output (optional)
-        print("Cumulative Portfolio Returns:", cumulative_returns.head())
-        print("Cumulative S&P 500 Returns:", cumulative_sp500_returns.head())
+            # Debug output (optional)
+            print("Cumulative Portfolio Returns:", cumulative_returns.head())
+            print("Cumulative S&P 500 Returns:", cumulative_sp500_returns.head())
 
-        # Create the plot
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=cumulative_returns.index, y=cumulative_returns, mode='lines', name='Portfolio'))
-        fig.add_trace(go.Scatter(x=cumulative_sp500_returns.index, y=cumulative_sp500_returns, mode='lines', name='S&P 500 Benchmark'))
-        
-        fig.update_layout(
-            title='Cumulative Returns of Portfolio vs S&P 500',
-            xaxis_title='Date',
-            yaxis_title='Cumulative Return',
-            template='plotly_white'
-        )
-        return fig
+            # Create the plot
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=cumulative_returns.index, y=cumulative_returns, mode='lines', name='Portfolio'))
+            fig.add_trace(go.Scatter(x=cumulative_sp500_returns.index, y=cumulative_sp500_returns, mode='lines', name='S&P 500 Benchmark'))
+            
+            fig.update_layout(
+                title='Cumulative Returns of Portfolio vs S&P 500',
+                xaxis_title='Date',
+                yaxis_title='Cumulative Return',
+                template='plotly_white'
+            )
+            return fig
+        except Exception as e:
+            self.logger.error(f"Error generating cumulative returns plot: {str(e)}")
+            raise
 
     def get_summary_statistics(self, portfolio_weights, risk_free_rate=0.01):
         """
@@ -400,9 +421,11 @@ class Portfolio:
         plotly.graph_objects.Figure
             A treemap figure showing sectors with their respective weights.
         """
-        # Check if all tickers have corresponding weights
-        if set(self.tickers) - set(weights.keys()):
-            raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
+        self.logger.info("Creating weighted sector treemap")
+        try:
+            # Check if all tickers have corresponding weights
+            if set(self.tickers) - set(weights.keys()):
+                raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
 
         sector_data_raw = pd.read_csv('static/ticker_data.csv')
         sector_data = []

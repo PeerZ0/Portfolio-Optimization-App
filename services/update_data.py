@@ -1,5 +1,14 @@
 # services/update_data.py
-# Update stock data by fetching ticker symbols and company information from Wikipedia and yfinance.
+"""
+Service function to update stock data by fetching ticker symbols and company information from Wikipedia.
+
+This script is used to update the stock data used in the application by fetching ticker symbols and company information
+from Wikipedia and saving the data to a CSV file stored in the 'static' directory.
+The process is as follows:
+1. Scrape Wikipedia pages for lists of major stock indices and gather ticker symbols.
+2. Fetch detailed information for each ticker using the yfinance API.
+3. Save the data to a CSV file for use in the application.
+"""
 
 import requests
 import pandas as pd

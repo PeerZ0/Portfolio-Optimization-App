@@ -9,6 +9,8 @@ interactive dashboard for visualizing the results of portfolio optimization.
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 from flask_caching import Cache
+from services.export_portfolio import export_portfolio
+from services.logger import setup_logger
 
 class PortfolioOptimizationDashboard:
     def __init__(self, portfolio):
@@ -19,6 +21,9 @@ class PortfolioOptimizationDashboard:
         ----------
             portfolio (Portfolio): An instance of the Portfolio class.
         """
+        self.logger = setup_logger(__name__)
+        self.logger.info("Initializing Portfolio Optimization Dashboard")
+        
         self.app = Dash(__name__)
         self.app.title = "Portfolio Optimization Dashboard"
 
@@ -29,6 +34,7 @@ class PortfolioOptimizationDashboard:
 
         # Clear cache (useful during development to reset cached data)
         self.cache.clear()
+        self.logger.debug("Cache initialized and cleared")
 
         # Store portfolio instance
         self.portfolio = portfolio
@@ -37,15 +43,18 @@ class PortfolioOptimizationDashboard:
         self.min_variance_weights = portfolio.weights_min
         self.equal_weights = portfolio.weights_eq
         self.max_sharpe_weights = portfolio.weights_sharpe
+        self.logger.debug("Portfolio weights loaded")
 
         # Initialize layout
         self._initialize_layout()
         
         # Set up callbacks
         self._initialize_callbacks()
+        self.logger.info("Dashboard initialization completed")
 
     def _initialize_layout(self):
         """Defines the layout of the dashboard."""
+        self.logger.debug("Setting up dashboard layout")
         self.app.layout = html.Div([
             # Header section
             html.Div([
@@ -61,8 +70,26 @@ class PortfolioOptimizationDashboard:
                             {'label': 'Maximum Sharpe Ratio Portfolio', 'value': 'max_sharpe'}
                         ],
                         value='min_variance',
-                        style={'width': '50%', 'margin': 'auto'}
+                        style={'width': '50%', 'margin': 'auto'},
                     )
+                ], style={'text-align': 'center'}),
+
+                # Add Download Button after dropdown
+                html.Div([
+                    html.Button(
+                        "Download Portfolio Data",
+                        id="btn-download",
+                        style={
+                            'margin': '20px',
+                            'padding': '10px 20px',
+                            'backgroundColor': '#4CAF50',
+                            'color': 'white',
+                            'border': 'none',
+                            'borderRadius': '4px',
+                            'cursor': 'pointer'
+                        }
+                    ),
+                    dcc.Download(id="download-dataframe-csv"),
                 ], style={'text-align': 'center'})
             ]),
 
@@ -102,6 +129,7 @@ class PortfolioOptimizationDashboard:
 
     def _initialize_callbacks(self):
         """Sets up the callbacks for the dashboard."""
+        self.logger.debug("Setting up dashboard callbacks")
         @self.app.callback(
             [
                 Output('summary-statistics-table', 'children'),
@@ -114,67 +142,125 @@ class PortfolioOptimizationDashboard:
             [Input('portfolio-strategy-dropdown', 'value')]
         )
         def update_dashboard(selected_strategy):
-            # Select portfolio weights based on the dropdown
-            if selected_strategy == 'min_variance':
-                portfolio_weights = self.min_variance_weights
-            elif selected_strategy == 'equal_weight':
-                portfolio_weights = self.equal_weights
-            elif selected_strategy == 'max_sharpe':
-                portfolio_weights = self.max_sharpe_weights
+            try:
+                self.logger.info(f"Updating dashboard with strategy: {selected_strategy}")
+                
+                # Handle empty or invalid selection
+                if not selected_strategy:
+                    selected_strategy = 'min_variance'  # Default fallback
+                    self.logger.warning("No strategy selected, defaulting to min_variance")
 
-            # Get summary statistics
-            summary_df = self.portfolio.get_summary_statistics_table(portfolio_weights)
+                # Select portfolio weights based on the dropdown
+                if selected_strategy == 'min_variance':
+                    portfolio_weights = self.min_variance_weights
+                elif selected_strategy == 'equal_weight':
+                    portfolio_weights = self.equal_weights
+                elif selected_strategy == 'max_sharpe':
+                    portfolio_weights = self.max_sharpe_weights
 
-            # Create a table for summary statistics
-            summary_table = html.Table([
-                html.Thead(html.Tr([html.Th(col) for col in summary_df.columns])),
-                html.Tbody([
-                    html.Tr([html.Td(summary_df.iloc[i][col]) for col in summary_df.columns])
-                    for i in range(len(summary_df))
-                ])
-            ], style={'width': '100%', 'text-align': 'center', 'margin-bottom': '20px'})
+                self.logger.debug(f"Selected {selected_strategy} strategy with {len(portfolio_weights)} weights")
 
-            # Plot cumulative returns
-            cumulative_returns_fig = self.portfolio.plot_cumulative_returns(portfolio_weights)
-            if not cumulative_returns_fig:
-                cumulative_returns_fig = {
-                    "data": [],
-                    "layout": {"title": "No data available for cumulative returns"}
-                }
+                # Get summary statistics
+                summary_df = self.portfolio.get_summary_statistics_table(portfolio_weights)
 
-            # Plot portfolio allocation
-            portfolio_allocation_fig = self.portfolio.plot_portfolio_allocation(portfolio_weights, selected_strategy)
-            if not portfolio_allocation_fig:
-                portfolio_allocation_fig = {
-                    "data": [],
-                    "layout": {"title": "No data available for portfolio allocation"}
-                }
+                # Create a table for summary statistics
+                summary_table = html.Table([
+                    html.Thead(html.Tr([html.Th(col) for col in summary_df.columns])),
+                    html.Tbody([
+                        html.Tr([html.Td(summary_df.iloc[i][col]) for col in summary_df.columns])
+                        for i in range(len(summary_df))
+                    ])
+                ], style={'width': '100%', 'text-align': 'center', 'margin-bottom': '20px'})
 
-            # Plot annualized returns
-            annualized_returns_fig = self.portfolio.plot_annualized_returns(portfolio_weights)
-            if not annualized_returns_fig:
-                annualized_returns_fig = {
-                    "data": [],
-                    "layout": {"title": "No data available for annualized returns"}
-                }
+                # Plot cumulative returns
+                cumulative_returns_fig = self.portfolio.plot_cumulative_returns(portfolio_weights)
+                if not cumulative_returns_fig:
+                    cumulative_returns_fig = {
+                        "data": [],
+                        "layout": {"title": "No data available for cumulative returns"}
+                    }
+
+                # Plot portfolio allocation
+                portfolio_allocation_fig = self.portfolio.plot_portfolio_allocation(portfolio_weights, selected_strategy)
+                if not portfolio_allocation_fig:
+                    portfolio_allocation_fig = {
+                        "data": [],
+                        "layout": {"title": "No data available for portfolio allocation"}
+                    }
+
+                # Plot annualized returns
+                annualized_returns_fig = self.portfolio.plot_annualized_returns(portfolio_weights)
+                if not annualized_returns_fig:
+                    annualized_returns_fig = {
+                        "data": [],
+                        "layout": {"title": "No data available for annualized returns"}
+                    }
+                
+                # Plot sector allocation
+                sector_allocation_fig = self.portfolio.create_weighted_sector_treemap(portfolio_weights)
+                if not annualized_returns_fig:
+                    annualized_returns_fig = {
+                        "data": [],
+                        "layout": {"title": "No data available for annualized returns"}
+                    }
+                self.logger.info("Dashboard update completed successfully")
+                return summary_table, cumulative_returns_fig, portfolio_allocation_fig, annualized_returns_fig, sector_allocation_fig
+
+            except Exception as e:
+                self.logger.error(f"Error updating dashboard: {str(e)}", exc_info=True)
+                # Return empty figures in case of error
+                empty_fig = {"data": [], "layout": {"title": "Error generating visualization"}}
+                empty_table = html.Div("Error generating statistics")
+                return empty_table, empty_fig, empty_fig, empty_fig, empty_fig
+
+        @self.app.callback(
+            Output("download-dataframe-csv", "data"),
+            [Input("btn-download", "n_clicks"),
+             Input("portfolio-strategy-dropdown", "value")],
+            prevent_initial_call=True
+        )
+        def download_csv(n_clicks, selected_strategy):
+            if n_clicks is None:
+                return None
             
-            # Plot sector allocation
-            sector_allocation_fig = self.portfolio.create_weighted_sector_treemap(portfolio_weights)
-            if not annualized_returns_fig:
-                annualized_returns_fig = {
-                    "data": [],
-                    "layout": {"title": "No data available for annualized returns"}
-                }
-            print(f"update_dashboard called with strategy: {selected_strategy}")
-            return summary_table, cumulative_returns_fig, portfolio_allocation_fig, annualized_returns_fig, sector_allocation_fig
+            try:
+                self.logger.info(f"Initiating portfolio data download for strategy: {selected_strategy}")
+                
+                # Select portfolio weights based on strategy
+                if selected_strategy == 'min_variance':
+                    portfolio_weights = self.min_variance_weights
+                    strategy_name = "Minimum Variance Strategy"
+                elif selected_strategy == 'equal_weight':
+                    portfolio_weights = self.equal_weights
+                    strategy_name = "Equal Weight Strategy"
+                elif selected_strategy == 'max_sharpe':
+                    portfolio_weights = self.max_sharpe_weights
+                    strategy_name = "Maximum Sharpe Ratio Strategy"
+
+                # Export portfolio and get file path
+                output_file = export_portfolio(portfolio_weights, strategy_name)
+                self.logger.info(f"Portfolio data exported successfully to: {output_file}")
+                
+                return dcc.send_file(output_file)
+
+            except Exception as e:
+                self.logger.error(f"Error downloading portfolio data: {str(e)}", exc_info=True)
+                return None
 
     def run(self):
         """Runs the Dash application."""
-        self.app.run_server(debug=False, port=8509)
+        self.logger.info("Starting dashboard server on port 8509")
+        try:
+            self.app.run_server(debug=False, port=8509)
+            self.logger.info("Dashboard successfully started")
+        except Exception as e:
+            self.logger.error(f"Error starting dashboard server: {str(e)}", exc_info=True)
+            raise
 
 if __name__ == "__main__":
     from user import User
     from portfolio import Portfolio
+    
     user = User()
     user.data = {
             "preferred_stocks": [],  # List of stock tickers the user wants in their portfolio

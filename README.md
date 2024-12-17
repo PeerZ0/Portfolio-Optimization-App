@@ -52,7 +52,7 @@ Main dependencies include:
 
 - yfinance: Stock data retrieval
 - pandas: Data manipulation
-- plotly: Interactive visualization
+- plotly & Dash: Interactive visualization
 - textual: Terminal user interface
 - scipy: Optimization algorithms
 
