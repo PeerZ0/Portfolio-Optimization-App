@@ -1,0 +1,67 @@
+2024-12-17 19:30:29,492 - INFO - Portfolio Application initialized
+2024-12-17 19:30:29,505 - INFO - Displaying stocks selection screen
+2024-12-17 19:30:32,054 - INFO - Displaying sectors exclusion screen
+2024-12-17 19:30:36,861 - INFO - Updated sectors to avoid: ['Utilities']
+2024-12-17 19:30:38,243 - INFO - Updated sectors to avoid: ['Utilities', 'Consumer Cyclical']
+2024-12-17 19:30:39,964 - INFO - Updated sectors to avoid: ['Utilities', 'Consumer Cyclical', 'Real Estate']
+2024-12-17 19:30:40,614 - INFO - Displaying risk tolerance screen
+2024-12-17 19:30:42,785 - INFO - Risk tolerance set to: 1
+2024-12-17 19:30:43,422 - INFO - Displaying investment constraints screen
+2024-12-17 19:30:46,901 - INFO - Valid constraints set: max_equity=2.0
+2024-12-17 19:30:48,797 - ERROR - Invalid constraint input: 
+2024-12-17 19:30:49,157 - INFO - Valid constraints set: max_equity=5.0
+2024-12-17 19:30:49,971 - INFO - Valid constraints set: max_equity=5.0
+2024-12-17 19:30:49,973 - INFO - Displaying data pulling screen
+2024-12-17 19:30:50,122 - INFO - Starting portfolio initialization
+2024-12-17 19:30:50,123 - INFO - Building available tickers list
+2024-12-17 19:30:50,204 - INFO - Initializing Portfolio with 53 stocks
+2024-12-17 19:30:50,204 - INFO - Fetching historical data for 53 tickers
+2024-12-17 19:30:57,911 - INFO - Successfully retrieved data for 53 tickers
+2024-12-17 19:30:58,057 - INFO - Calculating minimum variance portfolio
+2024-12-17 19:30:58,109 - INFO - Calculating maximum Sharpe ratio portfolio with rf=0.01
+2024-12-17 19:30:58,152 - INFO - Initializing portfolio with 53 tickers
+2024-12-17 19:30:58,152 - INFO - Portfolio initialization completed successfully
+2024-12-17 19:30:58,154 - INFO - Displaying portfolio optimization screen
+2024-12-17 19:31:00,786 - INFO - Starting dashboard initialization
+2024-12-17 19:31:00,823 - INFO - Initializing Portfolio Optimization Dashboard
+2024-12-17 19:31:00,850 - INFO - Dashboard initialization completed
+2024-12-17 19:31:00,851 - INFO - Starting dashboard server on port 8509
+2024-12-17 19:31:00,852 - INFO - Dash is running on http://127.0.0.1:8509/
+
+2024-12-17 19:31:00,860 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:8509
+2024-12-17 19:31:00,860 - INFO - [33mPress CTRL+C to quit[0m
+2024-12-17 19:31:02,818 - INFO - Opening dashboard in browser
+2024-12-17 19:31:03,045 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "GET / HTTP/1.1" 200 -
+2024-12-17 19:31:03,060 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "GET /_dash-component-suites/dash/dcc/dash_core_components.v2_14_3m1733765651.js HTTP/1.1" 200 -
+2024-12-17 19:31:03,100 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "GET /_dash-layout HTTP/1.1" 200 -
+2024-12-17 19:31:03,100 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "GET /_dash-dependencies HTTP/1.1" 200 -
+2024-12-17 19:31:03,113 - INFO - Updating dashboard with strategy: min_variance
+2024-12-17 19:31:03,114 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "[36mGET /_dash-component-suites/dash/dcc/async-dropdown.js HTTP/1.1[0m" 304 -
+2024-12-17 19:31:03,117 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "[36mGET /_dash-component-suites/dash/dcc/async-graph.js HTTP/1.1[0m" 304 -
+2024-12-17 19:31:03,122 - INFO - Generating cumulative returns plot
+2024-12-17 19:31:03,143 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "GET /_dash-component-suites/plotly/package_data/plotly.min.js HTTP/1.1" 200 -
+2024-12-17 19:31:03,492 - INFO - Creating weighted sector treemap
+2024-12-17 19:31:03,561 - INFO - Dashboard update completed successfully
+2024-12-17 19:31:03,573 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:03] "POST /_dash-update-component HTTP/1.1" 200 -
+2024-12-17 19:31:10,859 - INFO - Initiating portfolio data download for strategy: min_variance
+2024-12-17 19:31:10,922 - INFO - Portfolio data exported successfully to: static/portfolio_export.csv
+2024-12-17 19:31:10,923 - INFO - 127.0.0.1 - - [17/Dec/2024 19:31:10] "POST /_dash-update-component HTTP/1.1" 200 -
+2024-12-17 19:33:53,426 - INFO - Updating dashboard with strategy: equal_weight
+2024-12-17 19:33:53,429 - INFO - Initiating portfolio data download for strategy: equal_weight
+2024-12-17 19:33:53,436 - INFO - Generating cumulative returns plot
+2024-12-17 19:33:53,499 - INFO - Creating weighted sector treemap
+2024-12-17 19:33:53,562 - INFO - Portfolio data exported successfully to: static/portfolio_export.csv
+2024-12-17 19:33:53,578 - INFO - Dashboard update completed successfully
+2024-12-17 19:33:53,587 - INFO - 127.0.0.1 - - [17/Dec/2024 19:33:53] "POST /_dash-update-component HTTP/1.1" 200 -
+2024-12-17 19:33:53,591 - INFO - 127.0.0.1 - - [17/Dec/2024 19:33:53] "POST /_dash-update-component HTTP/1.1" 200 -
+2024-12-17 19:33:56,758 - INFO - Updating dashboard with strategy: max_sharpe
+2024-12-17 19:33:56,763 - INFO - Initiating portfolio data download for strategy: max_sharpe
+2024-12-17 19:33:56,769 - INFO - Generating cumulative returns plot
+2024-12-17 19:33:56,832 - INFO - Creating weighted sector treemap
+2024-12-17 19:33:56,877 - INFO - Portfolio data exported successfully to: static/portfolio_export.csv
+2024-12-17 19:33:56,878 - INFO - 127.0.0.1 - - [17/Dec/2024 19:33:56] "POST /_dash-update-component HTTP/1.1" 200 -
+2024-12-17 19:33:56,912 - INFO - Dashboard update completed successfully
+2024-12-17 19:33:56,925 - INFO - 127.0.0.1 - - [17/Dec/2024 19:33:56] "POST /_dash-update-component HTTP/1.1" 200 -
+2024-12-17 19:34:30,828 - INFO - Application exit requested
+2024-12-17 19:34:30,828 - INFO - Terminating dashboard process

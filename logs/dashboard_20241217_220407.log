@@ -1,0 +1,82 @@
+2024-12-17 22:04:07,626 - INFO - Initializing Portfolio Optimization Dashboard
+2024-12-17 22:04:07,634 - ERROR - Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/dash.py", line 1376, in dispatch
+    ctx.run(
+    ~~~~~~~^
+        functools.partial(
+        ^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/_callback.py", line 507, in add_context
+    raise err
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/_callback.py", line 496, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/_callback.py", line 43, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/nicolas/Documents/GitHub/advanced-programming/models/testfile_dash1.py", line 106, in collect_user_inputs
+    portfolio_dashboard = PortfolioOptimizationDashboard(self.portfolio)
+  File "/Users/nicolas/Documents/GitHub/advanced-programming/models/dashboard.py", line 36, in __init__
+    self.cache.clear()
+    ~~~~~~~~~~~~~~~~^^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask_caching/__init__.py", line 219, in clear
+    return self.cache.clear()
+           ^^^^^^^^^^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask_caching/__init__.py", line 191, in cache
+    return app.extensions["cache"][self]
+           ~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'cache'
+2024-12-17 22:04:07,639 - INFO - 127.0.0.1 - - [17/Dec/2024 22:04:07] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2024-12-17 22:04:30,510 - INFO - Initializing Portfolio Optimization Dashboard
+2024-12-17 22:04:30,516 - ERROR - Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/dash.py", line 1376, in dispatch
+    ctx.run(
+    ~~~~~~~^
+        functools.partial(
+        ^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        )
+        ^
+    )
+    ^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/_callback.py", line 507, in add_context
+    raise err
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/_callback.py", line 496, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/dash/_callback.py", line 43, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/nicolas/Documents/GitHub/advanced-programming/models/testfile_dash1.py", line 106, in collect_user_inputs
+    portfolio_dashboard = PortfolioOptimizationDashboard(self.portfolio)
+  File "/Users/nicolas/Documents/GitHub/advanced-programming/models/dashboard.py", line 36, in __init__
+    self.cache.clear()
+    ~~~~~~~~~~~~~~~~^^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask_caching/__init__.py", line 219, in clear
+    return self.cache.clear()
+           ^^^^^^^^^^
+  File "/Users/nicolas/opt/anaconda3/envs/adpro/lib/python3.13/site-packages/flask_caching/__init__.py", line 191, in cache
+    return app.extensions["cache"][self]
+           ~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'cache'
+2024-12-17 22:04:30,518 - INFO - 127.0.0.1 - - [17/Dec/2024 22:04:30] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
