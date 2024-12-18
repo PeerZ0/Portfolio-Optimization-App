@@ -4,3 +4,4 @@ plotly
 scipy
 dash
 dash_bootstrap_components
+yfinance

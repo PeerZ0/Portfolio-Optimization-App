@@ -24,7 +24,7 @@ WARNING: Calculations are hardware intensive and can take a while to run, especi
 
 1. Clone the repository
 ```bash
-git clone git@github.com:PeerZ0/Portfolio-Optimization-App.git
+git clone https://github.com/PeerZ0/Portfolio-Optimization-App.git
 cd Portfolio-Optimization-App
 ````
 2. Create a virtual environment:
