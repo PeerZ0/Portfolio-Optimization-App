@@ -1,12 +1,18 @@
 # Portfolio Optimization
 
-A simple Python-based terminal app that runs several optimization algorithms to find the best investment portfolio allocation based on the user's preferences and then visualizes the results in a dashboard. The app currently covers around 600 tickers, webscraped from the largest indices around the world.
+A simple Python-based Dash app that runs several optimization algorithms to find the best investment portfolio allocation based on the user's preferences and then visualizes the results in a dashboard. The app currently covers around 620 tickers, webscraped from the largest indices around the world.
 
 Due to yFinance rate limiting being more strict lately, we had to remove an automatic update of the stock data. Furthermore, due to cross-platform issues, we had to move all frontend to Dash and Plotly.
 
 WARNING: Calculations are hardware intensive and can take a while to run, especially when updating the stock data, optimizing the portfolio, or loading the dashboard. The app is not optimized for performance and should be used for educational purposes only.
-aaaaAaaaaaaaaaaaaa
+
 ## How to use
+
+1. Install the applications as instructed below.
+2. Run the application at http://127.0.0.1:8060
+3. Select any constraints to the optimization on the Dash page (sectors to avoid, max investment per stock, risk tolerance etc.)
+4. Wait for the optimization to finish (can take a while)
+5. View the results on the dashboard
 
 ## Requirements
 
@@ -29,14 +35,17 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ````
-5. Visit the dashboard at [http://127.0.0.1:8050/]
+5. Visit the dashboard at [http://127.0.0.1:8060/]
 
 ## Project Structure
 
 ```plaintext
 .
 ├── main.py           # Application entry point
+├── state.py          # Global state management
+├── assets/           # CSS stylesheet
 ├── models/           # Core classes and data structures
+├── pages/            # Dash web application pages
 ├── services/         # Data retrieval and processing services
 ├── static/           # Stock data storage
 └── requirements.txt  # Project dependencies

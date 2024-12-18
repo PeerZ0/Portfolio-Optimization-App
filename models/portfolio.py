@@ -1,4 +1,3 @@
-#%%
 # models/portfolio.py
 """
 Portfolio Optimization Class
@@ -64,7 +63,10 @@ class Portfolio:
 
     def _apply_theme(self, fig):
         """Apply terminal theme to plot"""
-        fig.update_layout(**self.plot_config)
+        fig.update_layout(
+            **self.plot_config,
+            margin=dict(t=50, l=25, r=25, b=25)
+        )
         return fig
 
     def _get_data(self):
@@ -225,7 +227,14 @@ class Portfolio:
             ),
             xaxis_title='Date',
             yaxis_title='Cumulative Return',
-            template='plotly_white'
+            template='plotly_white',
+            showlegend=True,
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=0.01
+            )
         )
         return self._apply_theme(fig)
 
@@ -485,7 +494,7 @@ class Portfolio:
 
     def plot_annualized_returns(self, portfolio_weights):
         """
-        Plot a bar chart showing the contribution of each asset's annualized returns to the portfolio's total return.
+        Plot a bar chart showing both the annualized returns and weighted contributions of each asset.
 
         Parameters
         ----------
@@ -495,30 +504,77 @@ class Portfolio:
         Returns
         -------
         plotly.graph_objects.Figure
-            A bar chart figure showing each asset's contribution to the portfolio return.
+            A bar chart figure showing asset returns and contributions.
         """
+        # Calculate annualized returns for each asset
         annualized_returns = self.mean_returns * 252
-        labels = self.tickers
-
-        # Contribution of each asset to the portfolio return
-        contribution_to_portfolio = [portfolio_weights[ticker] * annualized_returns[ticker] for ticker in self.tickers]
-
+        
+        # Calculate weighted contribution for each asset
+        contributions = {ticker: weights * annualized_returns[ticker] 
+                       for ticker, weights in portfolio_weights.items()}
+        
+        # Create DataFrame for plotting
+        df = pd.DataFrame({
+            'Ticker': list(portfolio_weights.keys()),
+            'Weight': list(portfolio_weights.values()),
+            'Return': [annualized_returns[ticker] for ticker in portfolio_weights.keys()],
+            'Contribution': list(contributions.values())
+        })
+        
+        # Sort by contribution
+        df = df.sort_values('Contribution', ascending=True)
+        
+        # Create the plot
         fig = go.Figure()
+        
+        # Add bars for annualized returns
         fig.add_trace(go.Bar(
-            x=labels, 
-            y=contribution_to_portfolio,
-            name='Contribution to Portfolio Return',
-            marker_color='#FF8000'  # Terminal orange color
+            x=df['Return'],
+            y=df['Ticker'],
+            name='Annualized Return',
+            orientation='h',
+            marker_color='#404040',
+            text=[f"{x:.1%}" for x in df['Return']],
+            textposition='auto',
+        ))
+        
+        # Add bars for weighted contributions
+        fig.add_trace(go.Bar(
+            x=df['Contribution'],
+            y=df['Ticker'],
+            name='Portfolio Contribution',
+            orientation='h',
+            marker_color='#FF8000',
+            text=[f"{x:.1%}" for x in df['Contribution']],
+            textposition='auto',
         ))
 
+        # Update layout
         fig.update_layout(
             title=dict(
-                text="ASSET RETURN CONTRIBUTION",
+                text="ASSET RETURNS AND PORTFOLIO CONTRIBUTIONS",
                 font=dict(size=24)
             ),
-            xaxis_title='Asset',
-            yaxis_title='Contribution to Portfolio Return',
-            template='plotly_white'
+            height=800,  # Make only this plot taller
+            xaxis_title='Return',
+            yaxis_title='Asset',
+            xaxis=dict(
+                tickformat='.1%',
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            barmode='overlay',
+            showlegend=True,
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=0.01
+            )
         )
         
         return self._apply_theme(fig)
@@ -680,7 +736,7 @@ class Portfolio:
 
         fig.update_layout(
             title=dict(
-                text="MONTHLY RETURNS DISTRIBUTION HISTORGRAM",
+                text="MONTHLY RETURNS DISTRIBUTION HISTOGRAM",
                 font=dict(size=24)
             ),
             xaxis_title='Monthly Return',
@@ -695,7 +751,13 @@ class Portfolio:
                 gridcolor='#333333'
             ),
             bargap=0.1,
-            showlegend=True
+            showlegend=True,
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=0.01
+            )
         )
         
         return self._apply_theme(fig)
