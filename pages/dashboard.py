@@ -186,69 +186,45 @@ def update_dashboard(selected_strategy):
         portfolio.plot_daily_returns_series(portfolio_weights),
     ]
 
-    # Apply terminal theme to all plots
-    for plot in plots:
-        plot.update_layout(
-            template="plotly_dark",
-            paper_bgcolor="#000000",
-            plot_bgcolor="#000000",
-            font=dict(
-                family="Roboto Mono",
-                color="#FFFFFF"
-            ),
-            title_font_color="#FF8000"
+    # Generate random positions for the 3D scatter plot
+    num_stocks = len(available_data)
+    x = np.random.uniform(0, 100, num_stocks)
+    y = np.random.uniform(0, 100, num_stocks)
+    z = np.random.uniform(0, 100, num_stocks)
+
+    # Create the 3D scatter plot
+    fig = go.Figure(data=[go.Scatter3d(
+        x=x,
+        y=y,
+        z=z,
+        mode='markers',
+        text=tickers,  # Ticker names for hover text
+        hovertemplate='%{text}<extra></extra>',  # Show only the ticker name on hover
+        marker=dict(
+            size=10,
+            color=colors,  # Assign colors based on sector
+            colorscale='Viridis',  # Color scale for sectors
+            opacity=0.8
         )
+    )])
 
-    return summary_table, *plots
-
-@callback(
-    Output("download-dataframe-csv", "data"),
-    Input("btn-download", "n_clicks"),
-    State("portfolio-strategy-dropdown", "value"),
-    prevent_initial_call=True
-)
-def download_csv(n_clicks, selected_strategy):
-    """
-    Export portfolio data to CSV based on selected strategy.
-
-    Parameters
-    ----------
-    n_clicks : int
-        Number of times the download button has been clicked
-    selected_strategy : str
-        The selected portfolio strategy
-
-    Returns
-    -------
-    dict
-        Download specification for Dash's dcc.Download component
-
-    Raises
-    ------
-    PreventUpdate
-        If button hasn't been clicked or invalid strategy selected
-    """
-    if n_clicks is None:
-        raise PreventUpdate
-
-    # Ensure portfolio is initialized
-    if not user.portfolio:
-        user.portfolio = Portfolio(user)
-
-    portfolio = user.portfolio
-
-    if selected_strategy == 'min_variance':
-        portfolio_weights = portfolio.weights_min
-        strategy_name = "Minimum_Variance_Strategy"
-    elif selected_strategy == 'equal_weight':
-        portfolio_weights = portfolio.weights_eq
-        strategy_name = "Equal_Weight_Strategy"
-    elif selected_strategy == 'max_sharpe':
-        portfolio_weights = portfolio.weights_sharpe
-        strategy_name = "Maximum_Sharpe_Ratio_Strategy"
-    else:
-        raise PreventUpdate
-
-    # Export portfolio and return file download spec
-    df = export_portfolio(portfolio_weights, strategy_name)
-    return dcc.send_data_frame(df.to_csv, f"portfolio_{strategy_name}.csv", index=False)
+    # Apply dark theme
+    fig.update_layout(
+        margin=dict(l=0, r=0, b=0, t=0),
+        scene=dict(
+            xaxis_title='',
+            yaxis_title='',
+            zaxis_title='',
+            xaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
+            yaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
+            zaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
+        ),
+        paper_bgcolor='black',  # Background of the entire figure
+        font=dict(color='white'),  # Text color
+        coloraxis_colorbar=dict(
+            title="Sector",
+            tickvals=list(sector_color_map.values()),
+            ticktext=list(sector_color_map.keys())
+        )
+    )
+    return fig
