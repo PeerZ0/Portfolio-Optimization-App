@@ -47,6 +47,7 @@ class Portfolio:
             {'type': 'ineq', 'fun': lambda x: np.sum(x) - len(self.tickers) * min_weight}
         ]
         self.sp500 = yf.download('^GSPC', start=start_date, end=end_date)['Adj Close']
+        self.sp500_returns = self.sp500.pct_change().dropna()
         self.weights_eq = self.equal_weight_portfolio()
         self.weights_min = self.min_variance_portfolio()
         self.weights_sharpe = self.max_sharpe_ratio_portfolio()
@@ -218,7 +219,10 @@ class Portfolio:
         fig.add_trace(go.Scatter(x=cumulative_sp500_returns.index, y=cumulative_sp500_returns, mode='lines', name='S&P 500 Benchmark'))
         
         fig.update_layout(
-            title='Cumulative Returns of Portfolio vs S&P 500',
+            title=dict(
+                text="CUMULATIVE RETURNS VS BENCHMARK",
+                font=dict(size=24)
+            ),
             xaxis_title='Date',
             yaxis_title='Cumulative Return',
             template='plotly_white'
@@ -266,81 +270,119 @@ class Portfolio:
         
         return summary_stats
 
-    def get_summary_statistics_table(self, portfolio_weights, risk_free_rate=0.01):
-        """
-        Get a summary statistics table of the given portfolio.
-
-        Parameters
-        ----------
-        portfolio_weights : dict
-            A dictionary containing the weights of each ticker in the portfolio.
-        risk_free_rate : float
-            The risk-free rate used to calculate the Sharpe ratio.
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame containing summary statistics of the portfolio.
-        """
-        # Calculate summary statistics
-        summary_stats = self.get_summary_statistics(portfolio_weights, risk_free_rate)
-        summary_df = pd.DataFrame(list(summary_stats.items()), columns=['Metric', 'Value'])
-        
-        return summary_df
-
-
-    def plot_portfolio_allocation(self, portfolio_weights, selected_strategy):
-        """
-        Plot a pie chart showing the allocation of the given portfolio weights using Plotly.
-
-        Parameters
-        ----------
-        portfolio_weights : dict
-            A dictionary containing the weights of each ticker in the portfolio.
-        selected_strategy : str
-            The strategy used to generate the portfolio (min_variance, equal_weight, or max_sharpe).
-
-        Returns
-        -------
-        plotly.graph_objects.Figure
-            A pie chart figure showing the portfolio allocation.
-        """
-        
-        labels = list(portfolio_weights.keys())
-        values = list(portfolio_weights.values())
-        
-        # Adjust chart for min_variance and max_sharpe strategies
-        if selected_strategy in ['min_variance', 'max_sharpe']:
-            # Sort the allocation by weight
-            sorted_allocation = pd.Series(portfolio_weights).sort_values(ascending=False)
-            
-            # Summarize all under 0.01 as 'Others'
-            other_allocation = sorted_allocation[sorted_allocation < 0.01].sum()
-            sorted_allocation = sorted_allocation[sorted_allocation >= 0.01]
-            
-            labels = list(sorted_allocation.index) + ['Others']
-            values = list(sorted_allocation.values) + [other_allocation]
-                                    
-        fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-        fig.update_layout(title_text=f'Portfolio Allocation', template='plotly_white')
-
-        return self._apply_theme(fig)
+    def _format_percentage(self, value):
+        """Format number as percentage string"""
+        return f"{value * 100:.2f}%"
     
+    def _get_date_range_str(self):
+        """Get formatted date range string"""
+        start_date = self.returns.index[0].strftime('%Y-%m-%d')
+        end_date = self.returns.index[-1].strftime('%Y-%m-%d')
+        return f"{start_date} to {end_date}"
+
+    def get_summary_statistics_table(self, weights):
+        """Calculate and format summary statistics for the portfolio"""
+        # Calculate portfolio returns
+        portfolio_returns = np.sum(self.returns * pd.Series(weights), axis=1)
+        benchmark_returns = self.sp500_returns
+        
+        # Align portfolio and benchmark returns
+        aligned_data = pd.concat([portfolio_returns, benchmark_returns], axis=1).dropna()
+        portfolio_returns = aligned_data.iloc[:, 0]
+        benchmark_returns = aligned_data.iloc[:, 1]
+        
+        # Calculate metrics for both portfolio and benchmark
+        def calculate_metrics(returns):
+            cum_return = (1 + returns).prod() - 1
+            daily_ret = returns.mean()
+            monthly_ret = (1 + daily_ret)**21 - 1
+            yearly_ret = (1 + daily_ret)**252 - 1
+            vol = returns.std() * np.sqrt(252)
+            
+            # Calculate CAGR
+            total_years = len(returns) / 252  # Convert trading days to years
+            cagr = (1 + cum_return)**(1/total_years) - 1
+            
+            # Calculate downside deviation
+            neg_returns = returns[returns < 0]
+            down_dev = np.sqrt(np.mean(neg_returns**2)) * np.sqrt(252)
+            
+            # Calculate additional statistics
+            sharpe = yearly_ret / vol if vol != 0 else 0
+            sortino = yearly_ret / down_dev if down_dev != 0 else 0
+            skew = returns.skew()
+            kurt = returns.kurtosis()
+            
+            return {
+                'cum_return': cum_return,
+                'cagr': cagr,
+                'daily_ret': daily_ret,
+                'monthly_ret': monthly_ret,
+                'yearly_ret': yearly_ret,
+                'vol': vol,
+                'sharpe': sharpe,
+                'sortino': sortino,
+                'skew': skew,
+                'kurt': kurt
+            }
+
+        # Calculate metrics
+        port_metrics = calculate_metrics(portfolio_returns)
+        bench_metrics = calculate_metrics(benchmark_returns)
+        
+        # Calculate Beta
+        covariance = np.cov(portfolio_returns, benchmark_returns)[0][1]
+        market_variance = np.var(benchmark_returns)
+        beta = covariance / market_variance if market_variance != 0 else 0
+
+        data = {
+            'Metric': [
+                'Period',
+                'Cumulative Return',
+                'CAGR',
+                'Expected Daily Return',
+                'Expected Monthly Return',
+                'Expected Yearly Return',
+                'Annualized Volatility',
+                'Beta',
+                'Sharpe Ratio',
+                'Sortino Ratio',
+                'Skewness',
+                'Kurtosis'
+            ],
+            'Portfolio': [
+                self._get_date_range_str(),
+                self._format_percentage(port_metrics['cum_return']),
+                self._format_percentage(port_metrics['cagr']),
+                self._format_percentage(port_metrics['daily_ret']),
+                self._format_percentage(port_metrics['monthly_ret']),
+                self._format_percentage(port_metrics['yearly_ret']),
+                self._format_percentage(port_metrics['vol']),
+                f"{beta:.2f}",
+                f"{port_metrics['sharpe']:.2f}",
+                f"{port_metrics['sortino']:.2f}",
+                f"{port_metrics['skew']:.2f}",
+                f"{port_metrics['kurt']:.2f}"
+            ],
+            'S&P 500': [
+                self._get_date_range_str(),
+                self._format_percentage(bench_metrics['cum_return']),
+                self._format_percentage(bench_metrics['cagr']),
+                self._format_percentage(bench_metrics['daily_ret']),
+                self._format_percentage(bench_metrics['monthly_ret']),
+                self._format_percentage(bench_metrics['yearly_ret']),
+                self._format_percentage(bench_metrics['vol']),
+                "1.00",  # Beta of market is always 1
+                f"{bench_metrics['sharpe']:.2f}",
+                f"{bench_metrics['sortino']:.2f}",
+                f"{bench_metrics['skew']:.2f}",
+                f"{bench_metrics['kurt']:.2f}"
+            ]
+        }
+        return pd.DataFrame(data)
+
     def create_weighted_sector_treemap(self, weights):
-        """
-        Generate a weighted treemap of sectors for the given tickers.
-
-        Parameters
-        ----------
-        weights : dict
-            A dictionary mapping tickers to their respective weights.
-
-        Returns
-        -------
-        plotly.graph_objects.Figure
-            A treemap figure showing sectors with their respective weights.
-        """
-
+        """Generate a weighted treemap of sectors for the given tickers."""
         # Check if all tickers have corresponding weights
         if set(self.tickers) - set(weights.keys()):
             raise ValueError("All tickers must have corresponding weights in the weights dictionary.")
@@ -389,31 +431,57 @@ class Portfolio:
         # Filter combined_df to exclude weights < 0.01%
         combined_df = combined_df[combined_df['Weight'] >= 0.0001]
 
-        # Create custom text
-        custom_text = combined_df.apply(
-        lambda x: (f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Weight: {x['Weight_n']:.2f}%"
-                   if not pd.isna(x['Weight_n'])
-                   else f"Portfolio Weight: {x['Weight']*100:.2f}%<br>Sector Total Weight: {combined_df[combined_df['Parent'] == x['Name']]['Weight'].sum()*100:.2f}%"),
-        axis=1)
-        # Generate Treemap
+        # Create custom text with more detailed information and bold sector names
+        def format_text(row):
+            if pd.isna(row['Weight_n']):  # Sector level
+                return f"<b>{row['Name']}</b><br>Sector Weight: {row['Weight']*100:.2f}%"
+            else:  # Stock level
+                return f"{row['Name']}<br>Portfolio Weight: {row['Weight']*100:.2f}%<br>Sector Weight: {row['Weight_n']:.1f}%"
+
+        # Generate Treemap with updated styling and information
         fig = go.Figure(go.Treemap(
             labels=combined_df['Name'],
             parents=combined_df['Parent'],
-            #values=combined_df['Weight'],
-            text=custom_text,  # Display both absolute and normalized weights
-            textinfo="label+text+value",
-            root_color="lightgrey"
+            values=combined_df['Weight'],
+            text=combined_df.apply(format_text, axis=1),
+            textinfo="text",
+            hovertemplate="<b>%{label}</b><br>" +
+                        "Portfolio Weight: %{value:.2%}<br>" +
+                        "<extra></extra>",
+            marker=dict(
+                colors=combined_df['Weight'],
+                colorscale=[
+                    [0, '#4d4d4d'],    # Dark grey for small weights
+                    [0.5, '#FF8000'],   # Orange for medium weights
+                    [1, '#ffd700']      # Gold for large weights
+                ],
+                showscale=True,
+                colorbar=dict(
+                    title="Weight %",
+                    tickformat=".1%",
+                    thickness=15,
+                    len=0.85,
+                    bgcolor='rgba(0,0,0,0)',
+                    tickfont=dict(color='#FFFFFF'),
+                    titlefont=dict(color='#FFFFFF')
+                )
+            ),
+            root_color="rgba(0,0,0,0)",
+            maxdepth=2
         ))
 
-        # Update layout for clarity
+        # Update layout with terminal theme
         fig.update_layout(
-            title="Sector Treemap with Stocks: Absolute and Normalized Weights",
-            margin=dict(t=50, l=25, r=25, b=25)
+            title=dict(
+                text="SECTOR AND STOCK ALLOCATION",
+                font=dict(size=24)
+            ),
+            margin=dict(t=50, l=25, r=25, b=25),
+            treemapcolorway=['#FF8000'],  # Use the terminal orange color
+            **self.plot_config
         )
 
-        return self._apply_theme(fig)
-
-
+        return fig
 
     def plot_annualized_returns(self, portfolio_weights):
         """
@@ -436,48 +504,21 @@ class Portfolio:
         contribution_to_portfolio = [portfolio_weights[ticker] * annualized_returns[ticker] for ticker in self.tickers]
 
         fig = go.Figure()
-        fig.add_trace(go.Bar(x=labels, y=contribution_to_portfolio, name='Contribution to Portfolio Return'))
+        fig.add_trace(go.Bar(
+            x=labels, 
+            y=contribution_to_portfolio,
+            name='Contribution to Portfolio Return',
+            marker_color='#FF8000'  # Terminal orange color
+        ))
 
         fig.update_layout(
-            title='Contribution of Each Asset to Portfolio Return',
+            title=dict(
+                text="ASSET RETURN CONTRIBUTION",
+                font=dict(size=24)
+            ),
             xaxis_title='Asset',
             yaxis_title='Contribution to Portfolio Return',
             template='plotly_white'
         )
         
         return self._apply_theme(fig)
-
-if __name__ == "__main__":
-    from user import User
-    user = User()
-    user.data = {
-            "preferred_stocks": [],  # List of stock tickers the user wants in their portfolio
-            "available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE'],  # List of stock tickers available for investment
-            "sectors_to_avoid": [],  # List of sectors the user wishes to avoid investing in
-            "risk_tolerance": 5,  # Risk tolerance level on a scale of 1 to 10, default is 5 (medium risk)
-            "max_equity_investment": 30,  # Maximum allowable investment in a single equity (in percentage), default is 30%
-        }
-    # user.data = {"available_stocks": ["AAPL", "MSFT", 'SW', 'TSCO', 'DHL.DE', 'BNR.DE', 'DB1.DE', 'AIZ', 'DRI', 'CMS', 'WM', 'HD', 'HUM', 'ENEL.MI', 'ENI.MI', 'TMO', 'CVX', 'QIA.DE', 'MTD', 'MTD', 'NDA-FI.HE', 'AD.AS', 'EIX', 'ETN', 'MUV2.DE', 'PPL', 'SOON.SW', 'FRE.DE', 'EVRG', 'CS.PA', 'ZURN.SW', 'MMC', 'C', 'UNP', 'PNC', 'AIR.PA', 'MA', 'NI', 'ZAL.DE', 'XEL', 'AI.PA', 'RSG', 'URI', 'SLB', 'PCG', 'BBVA.MC', 'GD', 'OTIS']}  # List of stock tickers available for investment}
-    port = Portfolio(user)
-    weights = port.equal_weight_portfolio()
-    port.create_weighted_sector_treemap(weights)
-    """custom_text = combined_data.apply(
-    lambda x: f"Absolute Weight: {x['Weight']:.3f}<br>Normalized: {x['Weight_n']:.2f}%", axis=1
-)
-
-    # Generate Treemap
-    fig = go.Figure(go.Treemap(
-        labels=combined_data['Name'], 
-        parents=combined_data['Parent'], 
-        values=combined_data['Weight'], 
-        text=custom_text,  # Display both absolute and normalized weights
-        textinfo="label+text+value",
-        root_color="lightgrey"
-    ))
-
-    # Update layout for clarity
-    fig.update_layout(
-        title="Sector Treemap with Stocks: Absolute and Normalized Weights",
-        margin=dict(t=50, l=25, r=25, b=25)
-)
-    fig.show()"""

@@ -61,7 +61,6 @@ layout = html.Div([
         html.H2("PORTFOLIO VISUALIZATION", className="text-center terminal-title"),
         html.Div([
             dcc.Graph(id='cumulative-returns-plot', className="mb-4"),
-            dcc.Graph(id='portfolio-allocation-plot', className="mb-4"),
             dcc.Graph(id='annualized-returns-plot', className="mb-4"),
             dcc.Graph(id='sector-allocation-plot', className="mb-4")
         ], className="w-85 mx-auto")
@@ -77,7 +76,6 @@ layout = html.Div([
     [
         Output('summary-statistics-table', 'children'),
         Output('cumulative-returns-plot', 'figure'),
-        Output('portfolio-allocation-plot', 'figure'),
         Output('annualized-returns-plot', 'figure'),
         Output('sector-allocation-plot', 'figure')
     ],
@@ -98,28 +96,47 @@ def update_dashboard(selected_strategy):
     }
     portfolio_weights = weights_map.get(selected_strategy)
     if not portfolio_weights:
-        return None, None, None, None, None
+        return None, None, None, None
 
     # Create summary table with terminal styling
     summary_df = portfolio.get_summary_statistics_table(portfolio_weights)
     summary_table = html.Table(
         [
-            html.Thead(html.Tr([html.Th(col, style={'color': '#FF8000'}) for col in summary_df.columns])),
+            html.Thead(html.Tr([
+                html.Th(col, style={
+                    'color': '#FF8000',
+                    'padding': '10px',
+                    'border-bottom': '1px solid #FF8000',
+                    'text-align': 'left'
+                }) for col in summary_df.columns
+            ])),
             html.Tbody([
-                html.Tr([html.Td(summary_df.iloc[i][col], style={'color': '#FFFFFF'}) 
-                        for col in summary_df.columns])
-                for i in range(len(summary_df))
+                html.Tr([
+                    html.Td(
+                        summary_df.iloc[i][col],
+                        style={
+                            'color': '#FFFFFF',
+                            'padding': '10px',
+                            'border-bottom': '1px solid #333'
+                        }
+                    ) for col in summary_df.columns
+                ]) for i in range(len(summary_df))
             ])
         ],
-        style={'width': '100%', 'border-collapse': 'collapse'}
+        style={
+            'width': '100%',
+            'border-collapse': 'collapse',
+            'backgroundColor': '#111',
+            'borderRadius': '5px',
+            'overflow': 'hidden'
+        }
     )
 
     # Generate plots with terminal theme
     plots = [
         portfolio.plot_cumulative_returns(portfolio_weights),
-        portfolio.plot_portfolio_allocation(portfolio_weights, selected_strategy),
-        portfolio.plot_annualized_returns(portfolio_weights),
-        portfolio.create_weighted_sector_treemap(portfolio_weights)
+        portfolio.create_weighted_sector_treemap(portfolio_weights),
+        portfolio.plot_annualized_returns(portfolio_weights)
     ]
 
     # Apply terminal theme to all plots
@@ -147,6 +164,9 @@ def download_csv(n_clicks, selected_strategy):
     """
     Export portfolio data to CSV based on selected strategy.
     """
+    if n_clicks is None:
+        raise PreventUpdate
+
     # Ensure portfolio is initialized
     if not user.portfolio:
         user.portfolio = Portfolio(user)
@@ -155,15 +175,16 @@ def download_csv(n_clicks, selected_strategy):
 
     if selected_strategy == 'min_variance':
         portfolio_weights = portfolio.weights_min
-        strategy_name = "Minimum Variance Strategy"
+        strategy_name = "Minimum_Variance_Strategy"
     elif selected_strategy == 'equal_weight':
         portfolio_weights = portfolio.weights_eq
-        strategy_name = "Equal Weight Strategy"
+        strategy_name = "Equal_Weight_Strategy"
     elif selected_strategy == 'max_sharpe':
         portfolio_weights = portfolio.weights_sharpe
-        strategy_name = "Maximum Sharpe Ratio Strategy"
+        strategy_name = "Maximum_Sharpe_Ratio_Strategy"
     else:
-        return None
+        raise PreventUpdate
 
-    # Export portfolio and return file download
-    return export_portfolio(portfolio_weights, strategy_name)
+    # Export portfolio and return file download spec
+    df = export_portfolio(portfolio_weights, strategy_name)
+    return dcc.send_data_frame(df.to_csv, f"portfolio_{strategy_name}.csv", index=False)

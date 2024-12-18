@@ -1,22 +1,36 @@
-Optimized Portfolio Weights according to Maximum Sharpe Ratio Strategy
+Optimized Portfolio Weights according to Minimum Variance Strategy
 Ticker,Weight,Company Name,Sector,Industry,Website,Country
-C,0.05,Citigroup Inc.,Financial Services,Banks - Diversified,https://www.citigroup.com,United States
-SLB,0.05,Schlumberger Limited,Energy,Oil & Gas Equipment & Services,https://www.slb.com,United States
-HPQ,0.05,HP Inc.,Technology,Computer Hardware,https://www.hp.com,United States
-OMC,0.05,Omnicom Group Inc.,Communication Services,Advertising Agencies,https://www.omnicomgroup.com,United States
-ISP.MI,0.05,Intesa Sanpaolo S.p.A.,Financial Services,Banks - Regional,https://www.intesasanpaolo.com,Italy
-ASML.AS,0.05,ASML Holding N.V.,Technology,Semiconductor Equipment & Materials,https://www.asml.com,Netherlands
-ADBE,0.05,Adobe Inc.,Technology,Software - Infrastructure,https://www.adobe.com,United States
-POOL,0.05,Pool Corporation,Industrials,Industrial Distribution,https://www.poolcorp.com,United States
-BBVA.MC,0.05,"Banco Bilbao Vizcaya Argentaria, S.A.",Financial Services,Banks - Diversified,https://www.bbva.com,Spain
-URI,0.05,"United Rentals, Inc.",Industrials,Rental & Leasing Services,https://www.unitedrentals.com,United States
-BK,0.05,The Bank of New York Mellon Corporation,Financial Services,Banks - Diversified,https://www.bny.com,United States
-USB,0.05,U.S. Bancorp,Financial Services,Banks - Regional,https://www.usbank.com,United States
-MU,0.05,"Micron Technology, Inc.",Technology,Semiconductors,https://www.micron.com,United States
-IFX.DE,0.05,Infineon Technologies AG,Technology,Semiconductors,https://www.infineon.com,Germany
-GEN,0.05,Gen Digital Inc.,Technology,Software - Infrastructure,https://www.gendigital.com,United States
-IT,0.05,"Gartner, Inc.",Technology,Information Technology Services,https://www.gartner.com,United States
-SIE.DE,0.05,Siemens Aktiengesellschaft,Industrials,Specialty Industrial Machinery,https://www.siemens.com,Germany
-TER,0.05,"Teradyne, Inc.",Technology,Semiconductor Equipment & Materials,https://www.teradyne.com,United States
-LRCX,0.05,Lam Research Corporation,Technology,Semiconductor Equipment & Materials,https://www.lamresearch.com,United States
-AMAT,0.05,"Applied Materials, Inc.",Technology,Semiconductor Equipment & Materials,https://www.appliedmaterials.com,United States
+RSG,0.05,"Republic Services, Inc.",Industrials,Waste Management,https://www.republicservices.com,United States
+AD.AS,0.05,Koninklijke Ahold Delhaize N.V.,Consumer Defensive,Grocery Stores,https://www.aholddelhaize.com,Netherlands
+WM,0.05,"Waste Management, Inc.",Industrials,Waste Management,https://www.wm.com,United States
+MBG.DE,0.05,Mercedes-Benz Group AG,Consumer Cyclical,Auto Manufacturers,https://group.mercedes-benz.com,Germany
+EOAN.DE,0.05,E.ON SE,Utilities,Utilities - Diversified,https://www.eon.com,Germany
+NOVN.SW,0.05,Novartis AG,Healthcare,Drug Manufacturers - General,https://www.novartis.com,Switzerland
+CL,0.05,Colgate-Palmolive Company,Consumer Defensive,Household & Personal Products,https://www.colgatepalmolive.com,United States
+ZURN.SW,0.05,Zurich Insurance Group AG,Financial Services,Insurance - Diversified,https://www.zurich.com,Switzerland
+ENI.MI,0.05,Eni S.p.A.,Energy,Oil & Gas Integrated,https://www.eni.com,Italy
+MA,0.047,Mastercard Incorporated,Financial Services,Credit Services,https://www.mastercard.com,United States
+BKNG,0.045,Booking Holdings Inc.,Consumer Cyclical,Travel Services,https://www.bookingholdings.com,United States
+SO,0.04,The Southern Company,Utilities,Utilities - Regulated Electric,https://www.southerncompany.com,United States
+MMC,0.038,"Marsh & McLennan Companies, Inc.",Financial Services,Insurance Brokers,https://www.mmc.com,United States
+CVX,0.038,Chevron Corporation,Energy,Oil & Gas Integrated,https://www.chevron.com,United States
+VZ,0.034,Verizon Communications Inc.,Communication Services,Telecom Services,https://www.verizon.com,United States
+HUM,0.027,Humana Inc.,Healthcare,Healthcare Plans,https://www.humana.com,United States
+RWE.DE,0.027,RWE Aktiengesellschaft,Utilities,Utilities - Diversified,https://www.group.rwe/en,Germany
+T,0.027,AT&T Inc.,Communication Services,Telecom Services,https://www.att.com,United States
+CMS,0.026,CMS Energy Corporation,Utilities,Utilities - Regulated Electric,https://www.cmsenergy.com,United States
+LONN.SW,0.025,Lonza Group AG,Healthcare,Diagnostics & Research,https://www.lonza.com,Switzerland
+ENEL.MI,0.024,Enel SpA,Utilities,Utilities - Diversified,https://www.enel.com,Italy
+TSCO,0.024,Tractor Supply Company,Consumer Cyclical,Specialty Retail,https://www.tractorsupply.com,United States
+SREN.SW,0.021,Swiss Re AG,Financial Services,Insurance - Reinsurance,https://www.swissre.com,Switzerland
+NDA-FI.HE,0.02,Nordea Bank Abp,Financial Services,Banks - Regional,https://www.nordea.com,Finland
+HOLN.SW,0.019,Holcim AG,Basic Materials,Building Materials,https://www.holcim.com,Switzerland
+EXC,0.017,Exelon Corporation,Utilities,Utilities - Regulated Electric,https://www.exeloncorp.com,United States
+ELV,0.014,"Elevance Health, Inc.",Healthcare,Healthcare Plans,https://www.elevancehealth.com,United States
+OTIS,0.012,Otis Worldwide Corporation,Industrials,Specialty Industrial Machinery,https://www.otis.com,United States
+AIR.PA,0.008,Airbus SE,Industrials,Aerospace & Defense,https://www.airbus.com,Netherlands
+OMC,0.007,Omnicom Group Inc.,Communication Services,Advertising Agencies,https://www.omnicomgroup.com,United States
+INGA.AS,0.005,ING Groep N.V.,Financial Services,Banks - Diversified,https://www.ing.com,Netherlands
+AIZ,0.004,"Assurant, Inc.",Financial Services,Insurance - Property & Casualty,https://www.assurant.com,United States
+AMT,0.002,American Tower Corporation,Real Estate,REIT - Specialty,https://www.americantower.com,United States
+SIKA.SW,0.001,Sika AG,Basic Materials,Specialty Chemicals,https://www.sika.com,Switzerland

@@ -6,9 +6,9 @@ such as company name, sector, industry, website, and country.
 
 import pandas as pd
 
-def export_portfolio(weights, strategy_name, output_file='static/portfolio_export.csv'):
+def export_portfolio(weights, strategy_name):
     """
-    Exports a portfolio of stocks with additional information from a static ticker file.
+    Creates a portfolio DataFrame with additional information from a static ticker file.
 
     Parameters
     ----------
@@ -16,13 +16,11 @@ def export_portfolio(weights, strategy_name, output_file='static/portfolio_expor
         Dictionary containing tickers as keys and weights as values.
     strategy_name : str
         Name of the strategy used for optimization.
-    output_file : str, optional
-        Path to save the resulting CSV file (default is 'static/portfolio_export.csv').
 
     Returns
     -------
-    str
-        Path to the saved CSV file.
+    pandas.DataFrame
+        Portfolio data with additional information.
     """
     # Load ticker data
     try:
@@ -46,31 +44,31 @@ def export_portfolio(weights, strategy_name, output_file='static/portfolio_expor
     if missing_tickers:
         print(f"Warning: The following tickers were not found in the ticker_data file: {missing_tickers}")
 
-    # Select relevant columns for the export
-    export_columns = [
-        'Ticker','Weight', 'longName', 'sector', 'industry', 'website', 'country'
-    ]
+    # Select and rename relevant columns
+    columns_map = {
+        'Ticker': 'Ticker',
+        'Weight': 'Weight',
+        'longName': 'Company Name',
+        'sector': 'Sector',
+        'industry': 'Industry',
+        'website': 'Website',
+        'country': 'Country'
+    }
     
-    # Filter to keep only relevant columns (some might be missing in data)
-    export_columns = [col for col in export_columns if col in portfolio_df.columns]
-    portfolio_df = portfolio_df[export_columns]
-
-    # Sort by Weight in descending order
-    portfolio_df = portfolio_df.sort_values(by='Weight', ascending=False)
-
-    # Round Weight to three decimal places
-    portfolio_df['Weight'] = portfolio_df['Weight'].round(3)
-    portfolio_df = portfolio_df[portfolio_df['Weight'] > 0]
+    # Filter columns that exist in the data
+    available_columns = [col for col, new_name in columns_map.items() if col in portfolio_df.columns]
+    portfolio_df = portfolio_df[available_columns]
+    
     # Rename columns
-    portfolio_df.rename(columns={'longName': 'Company Name'}, inplace=True)
-    portfolio_df.rename(columns={'sector': 'Sector'}, inplace=True)
-    portfolio_df.rename(columns={'industry': 'Industry'}, inplace=True)
-    portfolio_df.rename(columns={'website': 'Website'}, inplace=True)
-    portfolio_df.rename(columns={'country': 'Country'}, inplace=True)
+    for col in available_columns:
+        if col in columns_map:
+            portfolio_df.rename(columns={col: columns_map[col]}, inplace=True)
 
-    # Write header and DataFrame to CSV
-    with open(output_file, 'w') as f:
-        f.write(f"Optimized Portfolio Weights according to {strategy_name}\n")
-        portfolio_df.to_csv(f, index=False)
+    # Format the data
+    portfolio_df['Weight'] = (portfolio_df['Weight'] * 100).round(2).astype(str) + '%'
+    portfolio_df = portfolio_df.sort_values(by='Weight', ascending=False)
+    
+    # Filter out zero weights
+    portfolio_df = portfolio_df[portfolio_df['Weight'] != '0%']
 
-    return output_file
+    return portfolio_df

@@ -57,6 +57,12 @@ layout = dbc.Container([
             dbc.Card([
                 dbc.CardBody([
                     html.H5("RISK TOLERANCE", className="text-info"),
+                    html.P("1 = LOW RISK; 10 = HIGH RISK", 
+                          className="small mb-2",
+                          style={
+                              "fontFamily": "Roboto Mono",
+                              "color": "#aaa"
+                          }),
                     dcc.Slider(
                         id="risk-slider",
                         min=1,
@@ -76,7 +82,16 @@ layout = dbc.Container([
                     dcc.Input(
                         id="max-investment",
                         type="number",
-                        className="form-control terminal-input"
+                        min=0,
+                        max=100,
+                        className="form-control terminal-input",
+                        placeholder="Enter value between 0-100"
+                    ),
+                    html.Small(
+                        "Value must be between 0 and 100",
+                        className="small mb-2",
+                        style={"fontFamily": "Roboto Mono",
+                                "color": "#aaa"}
                     )
                 ])
             ], className="h-100 terminal-card animate__animated animate__fadeInRight")
@@ -110,7 +125,7 @@ def update_inputs_on_load(pathname):
         preferred_stocks = user.data.get("preferred_stocks", [])
         avoided_sectors = user.data.get("sectors_to_avoid", [])
         risk_tolerance = user.data.get("risk_tolerance", 5)
-        max_investment = user.data.get("max_equity_investment", 30)
+        max_investment = user.data.get("max_equity_investment", 5)
         return preferred_stocks, avoided_sectors, risk_tolerance, max_investment
     return dash.no_update, dash.no_update, dash.no_update, dash.no_update
 
