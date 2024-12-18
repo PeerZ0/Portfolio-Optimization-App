@@ -215,10 +215,10 @@ def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_invest
     colors = [sector_color_map[sector] for sector in sectors]
 
     # Generate random positions for the 3D scatter plot
-    num_stocks = len(available_data)
-    x = np.random.uniform(0, 100, num_stocks)
-    y = np.random.uniform(0, 100, num_stocks)
-    z = np.random.uniform(0, 100, num_stocks)
+    # num_stocks = len(available_data)
+    x = pd.qcut(available_data['marketCap'], q=10, labels=False) + 1
+    y = available_data['overallRisk']
+    z = available_data['sector']
 
     # Create the 3D scatter plot
     fig = go.Figure(data=[go.Scatter3d(
@@ -238,21 +238,29 @@ def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_invest
 
     # Apply dark theme
     fig.update_layout(
-        margin=dict(l=0, r=0, b=0, t=0),
-        scene=dict(
-            xaxis_title='',
-            yaxis_title='',
-            zaxis_title='',
-            xaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
-            yaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
-            zaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
+    margin=dict(l=0, r=0, b=0, t=0),
+    scene=dict(
+        xaxis=dict(
+            title = 'Market Cap',           # Ensure no ticks are displayed
+            backgroundcolor='black',
+            gridcolor='gray',
+            showbackground=True,
         ),
-        paper_bgcolor='black',  # Background of the entire figure
-        font=dict(color='white'),  # Text color
-        coloraxis_colorbar=dict(
-            title="Sector",
-            tickvals=list(sector_color_map.values()),
-            ticktext=list(sector_color_map.keys())
+        yaxis=dict(
+            title = 'Risk',
+            backgroundcolor='black',
+            gridcolor='gray',
+            showbackground=True,
+        ),
+        zaxis=dict(
+            title = 'Sector',
+            backgroundcolor='black',
+            gridcolor='gray',
+            showbackground=True,
         )
+    ),
+    paper_bgcolor='black',  # Background of the entire figure
+    font=dict(color='white')  # Text color
     )
+
     return fig
