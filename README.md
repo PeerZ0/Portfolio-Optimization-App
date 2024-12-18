@@ -1,4 +1,4 @@
-# Portfolio Optimization
+# Portfolio Optimization App
 
 A simple Python-based Dash app that runs several optimization algorithms to find the best investment portfolio allocation based on the user's preferences and then visualizes the results in a dashboard. The app currently covers around 620 tickers, webscraped from the largest indices around the world.
 
@@ -23,6 +23,10 @@ WARNING: Calculations are hardware intensive and can take a while to run, especi
 ## Installation
 
 1. Clone the repository
+```bash
+git clone git@github.com:PeerZ0/Portfolio-Optimization-App.git
+cd Portfolio-Optimization-App
+````
 2. Create a virtual environment:
 ```bash
 python -m venv .venv
