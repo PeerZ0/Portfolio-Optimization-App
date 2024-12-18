@@ -35,11 +35,10 @@ loader_style = {
     'animation': 'l3 1s infinite linear'
 }
 
-# Add keyframes animation
+# Add keyframes animation for the loading dots
 dash.clientside_callback(
     """
     function(trigger) {
-        // Creates and injects CSS animation for loading dots
         const style = document.createElement('style');
         style.textContent = `
             @keyframes l3 {
@@ -75,22 +74,22 @@ layout = html.Div([
 )
 def process_portfolio(_):
     """
-    Initialize portfolio data and handle redirection.
+    Process and initialize the portfolio object.
 
-    This callback:
-    1. Builds list of available stocks based on user preferences
-    2. Creates new portfolio instance
-    3. Redirects to portfolio dashboard when complete
+    This callback function runs when the loading page is displayed. It:
+    1. Builds the list of available tickers based on user preferences
+    2. Initializes the portfolio object
+    3. Redirects to the portfolio dashboard
 
     Parameters
     ----------
     _ : any
-        Unused parameter required by callback
+        Unused parameter required by the callback.
 
     Returns
     -------
     str
-        Redirect URL to portfolio dashboard
+        Redirect URL to the portfolio dashboard.
     """
     # Build list of available stocks based on user preferences
     available_stocks = build_available_tickers(user)
