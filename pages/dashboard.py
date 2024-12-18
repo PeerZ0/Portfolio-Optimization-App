@@ -1,16 +1,10 @@
-# pages/dashboard.py
-"""
-Portfolio Builder Dashboard
-
-This module implements the main dashboard page where users can set their portfolio
-preferences including preferred stocks, sectors to avoid, risk tolerance, and
-maximum investment per equity.
-"""
-
 import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
 from state import user
 
 # Load stock data
@@ -118,10 +112,20 @@ layout = dbc.Container([
         ], width={"size": 6, "offset": 3})
     ]),
 
+    # 3D Plot Section
+    dbc.Row([
+        dbc.Col([
+            html.H5("Preferred Assets 3D Plot", className="text-info text-center mt-4"),
+            dcc.Graph(id="preferred-assets-plot", style={"height": "500px"})
+        ], width=12)
+    ], className="mt-4"),
+
     dcc.Store(id="user-store"),
     dcc.Location(id="url", refresh=True)
 ], fluid=True, className="py-5 terminal-container")
 
+
+# Callbacks
 @callback(
     Output("preferred-stocks", "value"),
     Output("avoid-sectors", "value"),
@@ -130,19 +134,6 @@ layout = dbc.Container([
     Input("url", "pathname")
 )
 def update_inputs_on_load(pathname):
-    """
-    Update input fields with user's saved preferences when page loads.
-
-    Parameters
-    ----------
-    pathname : str
-        Current URL pathname.
-
-    Returns
-    -------
-    tuple
-        Tuple containing (preferred_stocks, avoided_sectors, risk_tolerance, max_investment).
-    """
     if pathname == "/":
         preferred_stocks = user.data.get("preferred_stocks", [])
         avoided_sectors = user.data.get("sectors_to_avoid", [])
@@ -150,6 +141,7 @@ def update_inputs_on_load(pathname):
         max_investment = user.data.get("max_equity_investment", 5)
         return preferred_stocks, avoided_sectors, risk_tolerance, max_investment
     return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+
 
 @callback(
     Output("url", "pathname"),  # Update the pathname of the dcc.Location
@@ -159,28 +151,8 @@ def update_inputs_on_load(pathname):
     State("risk-slider", "value"),
     State("max-investment", "value")
 )
+
 def handle_inputs(n_clicks, preferred, avoid, risk, max_inv):
-    """
-    Handle form submission and update user preferences.
-
-    Parameters
-    ----------
-    n_clicks : int
-        Number of times the create button has been clicked.
-    preferred : list
-        List of preferred stock tickers.
-    avoid : list
-        List of sectors to avoid.
-    risk : int
-        Risk tolerance level (1-10).
-    max_inv : float
-        Maximum investment percentage per equity.
-
-    Returns
-    -------
-    str
-        Redirect URL path.
-    """
     if n_clicks > 0:
         # Update user data
         user.data.update({
@@ -192,3 +164,83 @@ def handle_inputs(n_clicks, preferred, avoid, risk, max_inv):
 
         # Redirect to the loading page
         return "/loading"
+
+
+@callback(
+    Output("preferred-assets-plot", "figure"),
+    Input("preferred-stocks", "value"),
+    Input("avoid-sectors", "value"),
+    Input("risk-slider", "value"),
+    Input("max-investment", "value")
+)
+def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_investment):
+    """if not preferred_stocks:
+        return go.Figure()"""
+
+    plot_data = {
+        "preferred_stocks": preferred_stocks,
+        "available_stocks": [],
+        "sectors_to_avoid": avoided_sectors,
+        "risk_tolerance": risk_tolerance,
+        "max_equity_investment": max_investment,
+    }
+
+    # Fetch data for the preferred tickers
+    def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
+        if user["sectors_to_avoid"]:
+            df = df[~df['sector'].isin(user["sectors_to_avoid"])]
+        if user["risk_tolerance"]:
+            max_risk = user["risk_tolerance"]
+            df = df[df['overallRisk'] <= max_risk]
+        return df
+
+    def build_available_tickers(user):
+        df = pd.read_csv('static/ticker_data.csv')
+        required_columns = ['Ticker', 'sector', 'marketCap', 'currentPrice', 'overallRisk']
+        if not all(col in df.columns for col in required_columns):
+            raise ValueError("Missing required columns in ticker_data.csv")
+        df['sector'] = df['sector'].fillna('Unknown')
+        df['overallRisk'] = df['overallRisk'].fillna(5)
+        preferred_stocks = set(user["preferred_stocks"])
+        preferred_df = df[df['Ticker'].isin(preferred_stocks)]
+        available_df = filter_by_user_preferences(df[~df['Ticker'].isin(preferred_stocks)], user)
+        final_df = pd.concat([preferred_df, available_df])
+        return final_df
+
+    available_data = build_available_tickers(plot_data)
+    tick_len = str(len(available_data))
+    num_stocks = len(available_data)
+
+    x = np.random.uniform(0, 100, num_stocks)
+    y = np.random.uniform(0, 100, num_stocks)
+    z = np.random.uniform(0, 100, num_stocks)
+
+    fig = go.Figure(data=[go.Scatter3d(
+        x=x,
+        y=y,
+        z=z,
+        mode='markers+text',
+        textposition="top center",
+        marker=dict(
+            size=10,
+            color=z,
+            colorscale='Viridis',
+            opacity=0.8
+        )
+    )])
+
+    # Apply dark theme
+    fig.update_layout(
+        margin=dict(l=0, r=0, b=0, t=0),
+        scene=dict(
+            xaxis_title=tick_len,
+            yaxis_title='Y-axis',
+            zaxis_title='Z-axis',
+            xaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
+            yaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
+            zaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
+        ),
+        paper_bgcolor='black',  # Background of the entire figure
+        font=dict(color='white')  # Text color
+    )
+    return fig
