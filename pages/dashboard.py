@@ -1,3 +1,4 @@
+# pages/dashboard.py
 """
 Portfolio Dashboard Page
 

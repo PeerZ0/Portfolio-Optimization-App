@@ -85,13 +85,13 @@ layout = dbc.Container([
                     dcc.Input(
                         id="max-investment",
                         type="number",
-                        min=0,
+                        min=1,
                         max=100,
                         className="form-control terminal-input",
-                        placeholder="Enter value between 0-100"
+                        placeholder="Enter value between 1-100"
                     ),
                     html.Small(
-                        "Value must be between 0 and 100",
+                        "Value must be between 1 and 100",
                         className="small mb-2",
                         style={"fontFamily": "Roboto Mono",
                                 "color": "#aaa"}
