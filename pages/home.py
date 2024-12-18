@@ -1,3 +1,17 @@
+# pages/home.py
+"""
+Home Page Module
+
+This module implements the home page of the portfolio builder application. It provides
+the user interface for collecting investment preferences and visualizing the asset universe.
+
+Features:
+1. Stock and sector selection
+2. Risk tolerance configuration
+3. Investment limit settings
+4. 3D visualization of available assets
+"""
+
 import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
@@ -134,6 +148,19 @@ layout = dbc.Container([
     Input("url", "pathname")
 )
 def update_inputs_on_load(pathname):
+    """
+    Update input fields when the page loads.
+
+    Parameters
+    ----------
+    pathname : str
+        Current URL pathname.
+
+    Returns
+    -------
+    tuple
+        Contains (preferred_stocks, avoided_sectors, risk_tolerance, max_investment).
+    """
     if pathname == "/":
         preferred_stocks = user.data.get("preferred_stocks", [])
         avoided_sectors = user.data.get("sectors_to_avoid", [])
@@ -151,8 +178,28 @@ def update_inputs_on_load(pathname):
     State("risk-slider", "value"),
     State("max-investment", "value")
 )
-
 def handle_inputs(n_clicks, preferred, avoid, risk, max_inv):
+    """
+    Process user inputs and update the application state.
+
+    Parameters
+    ----------
+    n_clicks : int
+        Number of times the create button was clicked.
+    preferred : list
+        List of preferred stock tickers.
+    avoid : list
+        List of sectors to avoid.
+    risk : int
+        Risk tolerance level (1-10).
+    max_inv : float
+        Maximum investment percentage per equity.
+
+    Returns
+    -------
+    str
+        Redirect pathname.
+    """
     if n_clicks > 0:
         # Update user data
         user.data.update({
@@ -174,6 +221,25 @@ def handle_inputs(n_clicks, preferred, avoid, risk, max_inv):
     Input("max-investment", "value")
 )
 def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_investment):
+    """
+    Generate a 3D scatter plot visualization of the asset universe.
+
+    Parameters
+    ----------
+    preferred_stocks : list
+        List of preferred stock tickers.
+    avoided_sectors : list
+        List of sectors to exclude.
+    risk_tolerance : int
+        Risk tolerance level (1-10).
+    max_investment : float
+        Maximum investment percentage per equity.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        3D scatter plot of the asset universe.
+    """
     plot_data = {
         "preferred_stocks": preferred_stocks,
         "available_stocks": [],
@@ -184,6 +250,21 @@ def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_invest
 
     # Fetch data for the preferred tickers
     def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
+        """
+        Filter the stock universe based on user preferences.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            DataFrame containing stock data.
+        user : dict
+            Dictionary containing user preferences.
+
+        Returns
+        -------
+        pd.DataFrame
+            Filtered DataFrame matching user preferences.
+        """
         if user["sectors_to_avoid"]:
             df = df[~df['sector'].isin(user["sectors_to_avoid"])]
         if user["risk_tolerance"]:
@@ -192,6 +273,24 @@ def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_invest
         return df
 
     def build_available_tickers(user):
+        """
+        Build a DataFrame of available tickers based on user preferences.
+
+        Parameters
+        ----------
+        user : dict
+            Dictionary containing user preferences.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame containing filtered and processed ticker data.
+
+        Raises
+        ------
+        ValueError
+            If required columns are missing in ticker_data.csv.
+        """
         df = pd.read_csv('static/ticker_data.csv')
         required_columns = ['Ticker', 'sector', 'marketCap', 'currentPrice', 'overallRisk']
         if not all(col in df.columns for col in required_columns):
