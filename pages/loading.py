@@ -99,4 +99,4 @@ def process_portfolio(_):
     user.portfolio = Portfolio(user)
     
     # Redirect to portfolio dashboard
-    return "/portfolio"
+    return "/dashboard"
