@@ -1,7 +1,11 @@
 # services/export_portfolio.py
 """
-Service to export the optimized portfolio to a CSV file with additional information for each ticker
-such as company name, sector, industry, website, and country.
+Portfolio Export Service
+
+This module provides functionality to export portfolio data to CSV format with
+additional company information. It enriches the portfolio weights with data from
+a static ticker database including company details, sector classification, and
+contact information.
 """
 
 import pandas as pd
@@ -13,14 +17,21 @@ def export_portfolio(weights, strategy_name):
     Parameters
     ----------
     weights : dict
-        Dictionary containing tickers as keys and weights as values.
+        Dictionary containing tickers as keys and their portfolio weights as values.
     strategy_name : str
-        Name of the strategy used for optimization.
+        Name of the optimization strategy used (e.g., 'min_variance', 'max_sharpe').
 
     Returns
     -------
     pandas.DataFrame
-        Portfolio data with additional information.
+        Enriched portfolio data including company information and formatted weights.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the static/ticker_data.csv file is not found.
+    ValueError
+        If the required 'Ticker' column is missing from the data.
     """
     # Load ticker data
     try:

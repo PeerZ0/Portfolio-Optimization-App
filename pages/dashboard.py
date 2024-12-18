@@ -1,3 +1,12 @@
+# pages/dashboard.py
+"""
+Portfolio Builder Dashboard
+
+This module implements the main dashboard page where users can set their portfolio
+preferences including preferred stocks, sectors to avoid, risk tolerance, and
+maximum investment per equity.
+"""
+
 import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
@@ -121,6 +130,19 @@ layout = dbc.Container([
     Input("url", "pathname")
 )
 def update_inputs_on_load(pathname):
+    """
+    Update input fields with user's saved preferences when page loads.
+
+    Parameters
+    ----------
+    pathname : str
+        Current URL pathname.
+
+    Returns
+    -------
+    tuple
+        Tuple containing (preferred_stocks, avoided_sectors, risk_tolerance, max_investment).
+    """
     if pathname == "/":
         preferred_stocks = user.data.get("preferred_stocks", [])
         avoided_sectors = user.data.get("sectors_to_avoid", [])
@@ -138,6 +160,27 @@ def update_inputs_on_load(pathname):
     State("max-investment", "value")
 )
 def handle_inputs(n_clicks, preferred, avoid, risk, max_inv):
+    """
+    Handle form submission and update user preferences.
+
+    Parameters
+    ----------
+    n_clicks : int
+        Number of times the create button has been clicked.
+    preferred : list
+        List of preferred stock tickers.
+    avoid : list
+        List of sectors to avoid.
+    risk : int
+        Risk tolerance level (1-10).
+    max_inv : float
+        Maximum investment percentage per equity.
+
+    Returns
+    -------
+    str
+        Redirect URL path.
+    """
     if n_clicks > 0:
         # Update user data
         user.data.update({

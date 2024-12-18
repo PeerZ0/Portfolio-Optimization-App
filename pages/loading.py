@@ -1,9 +1,24 @@
+# pages/loading.py
+"""
+Loading Page Module
+
+This module implements an intermediate loading screen that:
+1. Displays while the portfolio is being constructed
+2. Features an animated terminal-themed loading indicator
+3. Handles the initialization of portfolio data
+4. Redirects to the portfolio dashboard when ready
+
+The page uses CSS animations for the loading indicator and maintains the
+terminal theme consistent with the rest of the application.
+"""
+
 import dash
 from dash import html, dcc, callback, Input, Output
 from state import user
 from services.build_list import build_available_tickers
 from models.portfolio import Portfolio
 
+# Register the page
 dash.register_page(__name__, path="/loading")
 
 # Custom loader style with terminal theme
@@ -20,10 +35,11 @@ loader_style = {
     'animation': 'l3 1s infinite linear'
 }
 
-# Add keyframes animation using inline styles
+# Add keyframes animation
 dash.clientside_callback(
     """
     function(trigger) {
+        // Creates and injects CSS animation for loading dots
         const style = document.createElement('style');
         style.textContent = `
             @keyframes l3 {
@@ -41,6 +57,7 @@ dash.clientside_callback(
     Input("loading-animation", "id")
 )
 
+# Define page layout
 layout = html.Div([
     html.H2("PROCESSING YOUR PORTFOLIO", 
             className="text-center mt-5 terminal-title"),
@@ -57,7 +74,30 @@ layout = html.Div([
     Input("loading-output", "children")
 )
 def process_portfolio(_):
+    """
+    Initialize portfolio data and handle redirection.
+
+    This callback:
+    1. Builds list of available stocks based on user preferences
+    2. Creates new portfolio instance
+    3. Redirects to portfolio dashboard when complete
+
+    Parameters
+    ----------
+    _ : any
+        Unused parameter required by callback
+
+    Returns
+    -------
+    str
+        Redirect URL to portfolio dashboard
+    """
+    # Build list of available stocks based on user preferences
     available_stocks = build_available_tickers(user)
     user.data["available_stocks"] = available_stocks
+    
+    # Initialize portfolio object
     user.portfolio = Portfolio(user)
+    
+    # Redirect to portfolio dashboard
     return "/portfolio"

@@ -1,3 +1,15 @@
+"""
+Portfolio Dashboard Page
+
+This module implements the portfolio visualization dashboard that displays:
+1. Portfolio performance metrics and statistics
+2. Interactive visualizations including returns, volatility, and allocations
+3. Portfolio strategy selection and data export functionality
+
+The dashboard provides a comprehensive view of the portfolio's performance and
+characteristics using a terminal-themed design for consistency with the application.
+"""
+
 import dash
 from dash import html, dcc, Input, Output, State, callback
 import dash_bootstrap_components as dbc
@@ -90,7 +102,29 @@ layout = html.Div([
     Input('portfolio-strategy-dropdown', 'value')
 )
 def update_dashboard(selected_strategy):
-    """Update dashboard components based on the selected strategy."""
+    """
+    Update all dashboard components based on the selected portfolio strategy.
+
+    This callback handles:
+    1. Portfolio initialization if needed
+    2. Weight calculation based on selected strategy
+    3. Generation of summary statistics table
+    4. Creation of all visualization plots
+
+    Parameters
+    ----------
+    selected_strategy : str
+        The selected portfolio strategy ('min_variance', 'equal_weight', or 'max_sharpe')
+
+    Returns
+    -------
+    tuple
+        Contains (summary_table, plot1, plot2, ..., plotN) where:
+        - summary_table : dash_html_components.Table
+            Formatted table of portfolio statistics
+        - plot1..plotN : plotly.graph_objects.Figure
+            Various portfolio visualization plots
+    """
     if not user.portfolio:
         user.portfolio = Portfolio(user)
     
@@ -175,6 +209,23 @@ def update_dashboard(selected_strategy):
 def download_csv(n_clicks, selected_strategy):
     """
     Export portfolio data to CSV based on selected strategy.
+
+    Parameters
+    ----------
+    n_clicks : int
+        Number of times the download button has been clicked
+    selected_strategy : str
+        The selected portfolio strategy
+
+    Returns
+    -------
+    dict
+        Download specification for Dash's dcc.Download component
+
+    Raises
+    ------
+    PreventUpdate
+        If button hasn't been clicked or invalid strategy selected
     """
     if n_clicks is None:
         raise PreventUpdate

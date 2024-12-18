@@ -1,23 +1,38 @@
-# Build a list of available tickers based on user preferences.
+# services/build_list.py
+"""
+Portfolio Stock Selection Service
+
+This module implements the logic for filtering and selecting stocks based on user
+preferences. It takes into account:
+1. Preferred stocks (always included)
+2. Sectors to avoid
+3. Risk tolerance levels
+4. Market capitalization requirements
+
+The module provides functions to filter stocks and build the final list of
+available tickers for portfolio optimization.
+"""
 
 import pandas as pd
 from typing import List, Dict
 
 def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
     """
-    Filter the DataFrame based on user preferences.
+    Filter the stock universe based on user preferences.
     
     Parameters
     ----------
     df : pd.DataFrame
-        The DataFrame containing ticker data.
+        DataFrame containing stock data with columns for sector, risk, etc.
     user : User
-        The user object containing preferences such as sectors to avoid and risk tolerance.
+        User object containing preference attributes:
+        - sectors_to_avoid: List of sectors to exclude
+        - risk_tolerance: Integer 1-10 indicating max acceptable risk
     
     Returns
     -------
     pd.DataFrame
-        The filtered DataFrame based on user preferences.
+        Filtered DataFrame containing only stocks matching user preferences.
     """
     if user.data["sectors_to_avoid"]:
         # Remove rows corresponding to sectors the user wants to avoid
@@ -31,17 +46,31 @@ def filter_by_user_preferences(df: pd.DataFrame, user) -> pd.DataFrame:
 
 def build_available_tickers(user) -> List[Dict]:
     """
-    Build a list of available tickers based on user preferences.
+    Build list of available tickers based on user preferences.
+
+    This function:
+    1. Loads the stock universe from ticker_data.csv
+    2. Applies user preferences to filter stocks
+    3. Ensures preferred stocks are included regardless of filters
+    4. Validates data quality and handles missing values
 
     Parameters
     ----------
     user : User
-        The user object containing preferences such as sectors to avoid, preferred stocks, and risk tolerance.
+        User object containing:
+        - preferred_stocks: List of tickers to always include
+        - sectors_to_avoid: List of sectors to exclude
+        - risk_tolerance: Integer 1-10 for max risk level
 
     Returns
     -------
-    list of dict
-        A list of tickers available to the user based on their preferences.
+    list of str
+        List of ticker symbols available for portfolio optimization.
+
+    Raises
+    ------
+    ValueError
+        If required columns are missing from ticker_data.csv.
     """
     try:
         # Read the CSV file containing ticker data

@@ -13,6 +13,7 @@ WARNING: Calculations are hardware intensive and can take a while to run, especi
 3. Select any constraints to the optimization on the Dash page (sectors to avoid, max investment per stock, risk tolerance etc.)
 4. Wait for the optimization to finish (can take a while)
 5. View the results on the dashboard
+6. (Optional) Download the results as a CSV file or go back to the Dash page to set different constraints
 
 ## Requirements
 
@@ -35,7 +36,7 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ````
-5. Visit the dashboard at [http://127.0.0.1:8060/]
+5. Visit the dashboard at http://127.0.0.1:8060/
 
 ## Project Structure
 
@@ -46,7 +47,7 @@ python main.py
 ├── assets/           # CSS stylesheet
 ├── models/           # Core classes and data structures
 ├── pages/            # Dash web application pages
-├── services/         # Data retrieval and processing services
+├── services/         # Data processing services
 ├── static/           # Stock data storage
 └── requirements.txt  # Project dependencies
 ```
