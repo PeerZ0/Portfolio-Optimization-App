@@ -61,8 +61,12 @@ layout = html.Div([
         html.H2("PORTFOLIO VISUALIZATION", className="text-center terminal-title"),
         html.Div([
             dcc.Graph(id='cumulative-returns-plot', className="mb-4"),
+            dcc.Graph(id='sector-allocation-plot', className="mb-4"),
+            dcc.Graph(id='rolling-volatility-plot', className="mb-4"),  # Add this line
             dcc.Graph(id='annualized-returns-plot', className="mb-4"),
-            dcc.Graph(id='sector-allocation-plot', className="mb-4")
+            dcc.Graph(id='monthly-returns-plot', className="mb-4"),
+            dcc.Graph(id='monthly-returns-histogram', className="mb-4"),
+            dcc.Graph(id='daily-returns-plot', className="mb-4"),
         ], className="w-85 mx-auto")
     ]),
 
@@ -76,8 +80,12 @@ layout = html.Div([
     [
         Output('summary-statistics-table', 'children'),
         Output('cumulative-returns-plot', 'figure'),
+        Output('sector-allocation-plot', 'figure'),
+        Output('rolling-volatility-plot', 'figure'),
         Output('annualized-returns-plot', 'figure'),
-        Output('sector-allocation-plot', 'figure')
+        Output('monthly-returns-plot', 'figure'),
+        Output('monthly-returns-histogram', 'figure'),
+        Output('daily-returns-plot', 'figure'),
     ],
     Input('portfolio-strategy-dropdown', 'value')
 )
@@ -96,7 +104,7 @@ def update_dashboard(selected_strategy):
     }
     portfolio_weights = weights_map.get(selected_strategy)
     if not portfolio_weights:
-        return None, None, None, None
+        return None, None, None, None, None, None, None
 
     # Create summary table with terminal styling
     summary_df = portfolio.get_summary_statistics_table(portfolio_weights)
@@ -135,8 +143,12 @@ def update_dashboard(selected_strategy):
     # Generate plots with terminal theme
     plots = [
         portfolio.plot_cumulative_returns(portfolio_weights),
+        portfolio.plot_rolling_volatility(portfolio_weights),  # Add this line
         portfolio.create_weighted_sector_treemap(portfolio_weights),
-        portfolio.plot_annualized_returns(portfolio_weights)
+        portfolio.plot_annualized_returns(portfolio_weights),
+        portfolio.plot_monthly_returns_distribution(portfolio_weights),
+        portfolio.plot_monthly_returns_histogram(portfolio_weights),
+        portfolio.plot_daily_returns_series(portfolio_weights),
     ]
 
     # Apply terminal theme to all plots

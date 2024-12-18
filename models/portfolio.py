@@ -18,7 +18,7 @@ import datetime
 import plotly.graph_objs as go
 
 class Portfolio:
-    def __init__(self, user, min_weight: float = 0.0, start_date='2023-01-01', end_date=datetime.date.today()):
+    def __init__(self, user, min_weight: float = 0.0, start_date='2022-01-01', end_date=datetime.date.today()):
         """
         Initialize the Portfolio with historical stock data and calculate statistics.
 
@@ -519,6 +519,257 @@ class Portfolio:
             xaxis_title='Asset',
             yaxis_title='Contribution to Portfolio Return',
             template='plotly_white'
+        )
+        
+        return self._apply_theme(fig)
+
+    def plot_monthly_returns_distribution(self, portfolio_weights):
+        """
+        Plot a bar chart showing the distribution of monthly returns.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            Dictionary containing the weights of each ticker in the portfolio.
+
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            Bar chart showing monthly returns distribution.
+        """
+        # Calculate portfolio daily returns
+        portfolio_returns = self.returns.dot(pd.Series(portfolio_weights))
+        
+        # Convert to monthly returns
+        monthly_returns = (portfolio_returns + 1).resample('M').prod() - 1
+        
+        # Create histogram using go.Bar
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=monthly_returns.index.strftime('%Y-%m'),
+            y=monthly_returns,
+            marker_color=['#FF8000' if x >= 0 else '#FF4444' for x in monthly_returns],
+            name='Monthly Returns'
+        ))
+
+        fig.update_layout(
+            title=dict(
+                text="MONTHLY RETURNS DISTRIBUTION TIMESERIES",
+                font=dict(size=24)
+            ),
+            xaxis_title='Month',
+            yaxis_title='Return',
+            xaxis=dict(
+                tickangle=45,
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            yaxis=dict(
+                tickformat='.1%',
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            bargap=0.1
+        )
+        
+        return self._apply_theme(fig)
+
+    def plot_daily_returns_series(self, portfolio_weights):
+        """
+        Plot a time series of daily returns.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            Dictionary containing the weights of each ticker in the portfolio.
+
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            Line plot showing daily returns over time.
+        """
+        # Calculate portfolio daily returns
+        portfolio_returns = self.returns.dot(pd.Series(portfolio_weights))
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=portfolio_returns.index,
+            y=portfolio_returns,
+            mode='lines',
+            name='Daily Returns',
+            line=dict(color='#FF8000', width=1)
+        ))
+
+        # Add a horizontal line at y=0
+        fig.add_hline(
+            y=0, 
+            line_dash="dash", 
+            line_color="#FFFFFF",
+            opacity=0.5
+        )
+
+        fig.update_layout(
+            title=dict(
+                text="DAILY RETURNS TIME SERIES",
+                font=dict(size=24)
+            ),
+            xaxis_title='Date',
+            yaxis_title='Return',
+            xaxis=dict(
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            yaxis=dict(
+                tickformat='.1%',
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            showlegend=False
+        )
+        
+        return self._apply_theme(fig)
+
+    def plot_monthly_returns_histogram(self, portfolio_weights):
+        """
+        Plot a histogram with density curve of monthly returns distribution.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            Dictionary containing the weights of each ticker in the portfolio.
+
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            Histogram with density plot of monthly returns distribution.
+        """
+        # Calculate portfolio daily returns
+        portfolio_returns = self.returns.dot(pd.Series(portfolio_weights))
+        
+        # Convert to monthly returns
+        monthly_returns = (portfolio_returns + 1).resample('M').prod() - 1
+        
+        # Create histogram
+        fig = go.Figure()
+        
+        # Add histogram
+        fig.add_trace(go.Histogram(
+            x=monthly_returns,
+            name='Monthly Returns',
+            nbinsx=30,
+            histnorm='probability density',
+            marker_color='#FF8000',
+            opacity=0.7
+        ))
+        
+        # Add density curve using kernel density estimation
+        import numpy as np
+        from scipy import stats
+        
+        kde = stats.gaussian_kde(monthly_returns)
+        x_range = np.linspace(monthly_returns.min(), monthly_returns.max(), 100)
+        y_range = kde(x_range)
+        
+        fig.add_trace(go.Scatter(
+            x=x_range,
+            y=y_range,
+            mode='lines',
+            name='Density',
+            line=dict(color='#FFFFFF', width=2)
+        ))
+
+        fig.update_layout(
+            title=dict(
+                text="MONTHLY RETURNS DISTRIBUTION HISTORGRAM",
+                font=dict(size=24)
+            ),
+            xaxis_title='Monthly Return',
+            yaxis_title='Density',
+            xaxis=dict(
+                tickformat='.1%',
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            bargap=0.1,
+            showlegend=True
+        )
+        
+        return self._apply_theme(fig)
+
+    def plot_rolling_volatility(self, portfolio_weights):
+        """
+        Plot rolling 3-month volatility of the portfolio compared to the S&P 500.
+
+        Parameters
+        ----------
+        portfolio_weights : dict
+            Dictionary containing the weights of each ticker in the portfolio.
+
+        Returns
+        -------
+        plotly.graph_objects.Figure
+            Line plot showing rolling volatility comparison.
+        """
+        # Calculate portfolio daily returns
+        portfolio_returns = self.returns.dot(pd.Series(portfolio_weights))
+        
+        # Align portfolio and benchmark returns
+        aligned_data = pd.concat([portfolio_returns, self.sp500_returns], axis=1).dropna()
+        portfolio_returns = aligned_data.iloc[:, 0]
+        benchmark_returns = aligned_data.iloc[:, 1]
+        
+        # Calculate rolling volatilities (63 trading days ≈ 3 months)
+        portfolio_vol = portfolio_returns.rolling(window=63).std() * np.sqrt(252)
+        benchmark_vol = benchmark_returns.rolling(window=63).std() * np.sqrt(252)
+
+        # Create the plot
+        fig = go.Figure()
+        
+        # Add portfolio volatility line
+        fig.add_trace(go.Scatter(
+            x=portfolio_vol.index,
+            y=portfolio_vol,
+            mode='lines',
+            name='Portfolio Volatility',
+            line=dict(color='#FF8000', width=2)
+        ))
+        
+        # Add benchmark volatility line
+        fig.add_trace(go.Scatter(
+            x=benchmark_vol.index,
+            y=benchmark_vol,
+            mode='lines',
+            name='S&P 500 Volatility',
+            line=dict(color='#FFFFFF', width=2, dash='dash')
+        ))
+
+        fig.update_layout(
+            title=dict(
+                text="ROLLING 3-MONTH VOLATILITY VS BENCHMARK",
+                font=dict(size=24)
+            ),
+            xaxis_title='Date',
+            yaxis_title='Annualized Volatility',
+            xaxis=dict(
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            yaxis=dict(
+                tickformat='.1%',
+                showgrid=True,
+                gridcolor='#333333'
+            ),
+            showlegend=True,
+            legend=dict(
+                yanchor="top",
+                y=0.99,
+                xanchor="left",
+                x=0.01
+            )
         )
         
         return self._apply_theme(fig)

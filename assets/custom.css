@@ -85,3 +85,63 @@
     border: 1px solid #333333 !important;
     color: #FFFFFF !important;
 }
+
+/* Slider styles */
+.rc-slider-track {
+    background-color: #FF8000 !important;
+}
+
+.rc-slider-handle {
+    border: 2px solid #FF8000 !important;
+    background-color: #FF8000 !important;
+}
+
+.rc-slider-handle:hover {
+    border-color: #FF8000 !important;
+}
+
+.rc-slider-handle:active {
+    border-color: #FF8000 !important;
+    box-shadow: 0 0 5px #FF8000 !important;
+}
+
+.rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
+    border-color: #FF8000 !important;
+    box-shadow: 0 0 5px #FF8000 !important;
+}
+
+.rc-slider-rail {
+    background-color: #333333 !important;
+}
+
+/* Additional Slider styles for dots */
+.rc-slider-dot {
+    border-color: #FF8000 !important;
+    background-color: #000000 !important;
+}
+
+.rc-slider-dot-active {
+    border-color: #FF8000 !important;
+    background-color: #FF8000 !important;
+}
+
+/* Selected dropdown item border fix */
+.Select--multi .Select-value {
+    border-color: #FF8000 !important;
+    background-color: transparent !important;
+}
+
+.Select--multi .Select-value-icon {
+    border-color: #FF8000 !important;
+}
+
+/* Multi-select close button styles */
+.Select--multi .Select-value-icon {
+    border-color: #FF8000 !important;
+    color: #FF8000 !important;
+}
+
+.Select--multi .Select-value-icon:hover {
+    background-color: #333333 !important;
+    color: #FF8000 !important;
+}
