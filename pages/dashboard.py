@@ -115,7 +115,7 @@ layout = dbc.Container([
     # 3D Plot Section
     dbc.Row([
         dbc.Col([
-            html.H5("Preferred Assets 3D Plot", className="text-info text-center mt-4"),
+            html.H5("Asset Universe", className="text-info text-center mt-4"),
             dcc.Graph(id="preferred-assets-plot", style={"height": "500px"})
         ], width=12)
     ], className="mt-4"),
@@ -174,9 +174,6 @@ def handle_inputs(n_clicks, preferred, avoid, risk, max_inv):
     Input("max-investment", "value")
 )
 def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_investment):
-    """if not preferred_stocks:
-        return go.Figure()"""
-
     plot_data = {
         "preferred_stocks": preferred_stocks,
         "available_stocks": [],
@@ -207,24 +204,34 @@ def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_invest
         final_df = pd.concat([preferred_df, available_df])
         return final_df
 
+    # Build dataset
     available_data = build_available_tickers(plot_data)
-    tick_len = str(len(available_data))
-    num_stocks = len(available_data)
+    tickers = list(available_data['Ticker'])
+    sectors = available_data['sector']
 
+    # Assign unique colors to sectors
+    unique_sectors = sectors.unique()
+    sector_color_map = {sector: i for i, sector in enumerate(unique_sectors)}
+    colors = [sector_color_map[sector] for sector in sectors]
+
+    # Generate random positions for the 3D scatter plot
+    num_stocks = len(available_data)
     x = np.random.uniform(0, 100, num_stocks)
     y = np.random.uniform(0, 100, num_stocks)
     z = np.random.uniform(0, 100, num_stocks)
 
+    # Create the 3D scatter plot
     fig = go.Figure(data=[go.Scatter3d(
         x=x,
         y=y,
         z=z,
-        mode='markers+text',
-        textposition="top center",
+        mode='markers',
+        text=tickers,  # Ticker names for hover text
+        hovertemplate='%{text}<extra></extra>',  # Show only the ticker name on hover
         marker=dict(
             size=10,
-            color=z,
-            colorscale='Viridis',
+            color=colors,  # Assign colors based on sector
+            colorscale='Viridis',  # Color scale for sectors
             opacity=0.8
         )
     )])
@@ -233,14 +240,19 @@ def update_3d_plot(preferred_stocks, avoided_sectors, risk_tolerance, max_invest
     fig.update_layout(
         margin=dict(l=0, r=0, b=0, t=0),
         scene=dict(
-            xaxis_title=tick_len,
-            yaxis_title='Y-axis',
-            zaxis_title='Z-axis',
+            xaxis_title='',
+            yaxis_title='',
+            zaxis_title='',
             xaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
             yaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
             zaxis=dict(backgroundcolor='black', gridcolor='gray', showbackground=True),
         ),
         paper_bgcolor='black',  # Background of the entire figure
-        font=dict(color='white')  # Text color
+        font=dict(color='white'),  # Text color
+        coloraxis_colorbar=dict(
+            title="Sector",
+            tickvals=list(sector_color_map.values()),
+            ticktext=list(sector_color_map.keys())
+        )
     )
     return fig
